@@ -45,7 +45,6 @@ get_header();
 
             <div class="contact-hub-directory" data-reveal style="--reveal-delay: 100ms;">
                 <div class="contact-hub-directory__head">
-                    <span><?php esc_html_e('Contact Directory', 'spek-theme'); ?></span>
                     <h2><?php esc_html_e('Πώς μπορούμε να βοηθήσουμε;', 'spek-theme'); ?></h2>
                 </div>
 
@@ -54,41 +53,33 @@ get_header();
                     <a class="contact-route contact-route--primary" href="<?php echo esc_url($product_mail); ?>">
                         <span class="contact-route__number">01</span>
                         <div class="contact-route__copy">
-                            <small><?php esc_html_e('Product Support', 'spek-theme'); ?></small>
                             <strong><?php esc_html_e('Προϊόντα & Τεχνική Υποστήριξη', 'spek-theme'); ?></strong>
                             <p><?php esc_html_e('Κωδικοί, εφαρμογές και τεχνικές πληροφορίες για τα προϊόντα SPEK.', 'spek-theme'); ?></p>
                         </div>
-                        <span class="contact-route__action"><?php esc_html_e('Αποστολή email', 'spek-theme'); ?> ↗</span>
                     </a>
 
                     <a class="contact-route" href="<?php echo esc_url($commercial_mail); ?>">
                         <span class="contact-route__number">02</span>
                         <div class="contact-route__copy">
-                            <small><?php esc_html_e('Commercial', 'spek-theme'); ?></small>
                             <strong><?php esc_html_e('Εμπορική & B2B Συνεργασία', 'spek-theme'); ?></strong>
                             <p><?php esc_html_e('Διαθεσιμότητα, εμπορικά αιτήματα και νέες επαγγελματικές συνεργασίες.', 'spek-theme'); ?></p>
                         </div>
-                        <span class="contact-route__action"><?php esc_html_e('Επικοινωνία', 'spek-theme'); ?> ↗</span>
                     </a>
 
                     <a class="contact-route" href="<?php echo esc_url(spek_page_url('partners/')); ?>">
                         <span class="contact-route__number">03</span>
                         <div class="contact-route__copy">
-                            <small><?php esc_html_e('Partner Network', 'spek-theme'); ?></small>
                             <strong><?php esc_html_e('Δίκτυο Συνεργατών', 'spek-theme'); ?></strong>
                             <p><?php esc_html_e('Βρείτε συνεργάτη ή σημείο πώλησης SPEK ανά περιοχή.', 'spek-theme'); ?></p>
                         </div>
-                        <span class="contact-route__action"><?php esc_html_e('Εύρεση συνεργάτη', 'spek-theme'); ?> →</span>
                     </a>
 
                     <a class="contact-route" href="<?php echo esc_url(spek_page_url('company-details/')); ?>">
                         <span class="contact-route__number">04</span>
                         <div class="contact-route__copy">
-                            <small><?php esc_html_e('Corporate', 'spek-theme'); ?></small>
                             <strong><?php esc_html_e('Εταιρικές Πληροφορίες', 'spek-theme'); ?></strong>
                             <p><?php esc_html_e('Επίσημα στοιχεία εταιρείας για επαγγελματική και εταιρική χρήση.', 'spek-theme'); ?></p>
                         </div>
-                        <span class="contact-route__action"><?php esc_html_e('Προβολή στοιχείων', 'spek-theme'); ?> →</span>
                     </a>
 
                 </div>

@@ -12986,3 +12986,309 @@ body .front-page .container {
         font-size: clamp(36px, 10vw, 48px);
     }
 }
+
+/* =========================================================
+   SPEK Contact Hub Clean Directory
+   Remove decorative blue microcopy + mobile polish
+   ========================================================= */
+
+.contact-hub-directory__head {
+    justify-content: flex-end;
+    padding: clamp(24px, 2.4vw, 32px) clamp(24px, 2.7vw, 36px);
+}
+
+.contact-hub-directory__head h2 {
+    max-width: 100%;
+    text-align: right;
+}
+
+.contact-route {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 18px;
+    min-height: 108px;
+}
+
+.contact-route__copy strong {
+    margin-bottom: 7px;
+}
+
+.contact-route__copy p {
+    max-width: 680px;
+}
+
+.contact-route__action,
+.contact-route__copy > small,
+.contact-hub-directory__head > span {
+    display: none !important;
+}
+
+.contact-route::after {
+    content: "→";
+    position: absolute;
+    right: clamp(22px, 2.3vw, 34px);
+    top: 50%;
+    color: rgba(15, 76, 129, 0.34);
+    font-size: 17px;
+    line-height: 1;
+    transform: translateY(-50%);
+    transition:
+        color 0.3s ease,
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contact-route:hover::after {
+    color: var(--color-accent);
+    transform: translate(4px, -50%);
+}
+
+.contact-route__copy {
+    padding-right: 38px;
+}
+
+@media (max-width: 1100px) {
+    .contact-hub-hero__grid {
+        grid-template-columns: 1fr;
+        gap: 46px;
+    }
+
+    .contact-hub-hero__intro {
+        max-width: 760px;
+    }
+
+    .contact-hub-directory {
+        width: 100%;
+    }
+
+    .contact-hub-directory__head {
+        justify-content: flex-start;
+    }
+
+    .contact-hub-directory__head h2 {
+        text-align: left;
+        max-width: 620px;
+    }
+
+    .contact-route {
+        min-height: 104px;
+    }
+
+    .contact-direct__links {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .contact-hub-page {
+        --contact-hub-edge: 16px;
+    }
+
+    .contact-hub-hero {
+        padding: 30px 0 58px;
+    }
+
+    .contact-hub-hero__grid {
+        gap: 34px;
+    }
+
+    .contact-hub-hero__intro {
+        max-width: none;
+    }
+
+    .contact-hub-hero__intro .eyebrow {
+        margin-bottom: 14px;
+        font-size: 10px;
+    }
+
+    .contact-hub-hero__intro h1 {
+        max-width: 100%;
+        margin-bottom: 18px;
+        font-size: clamp(40px, 11.5vw, 54px);
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+    }
+
+    .contact-hub-hero__intro > p {
+        max-width: 100%;
+        font-size: 15px;
+        line-height: 1.62;
+    }
+
+    .contact-hub-hero__signature {
+        margin-top: 24px;
+        gap: 10px;
+    }
+
+    .contact-hub-hero__signature span {
+        font-size: 13px;
+    }
+
+    .contact-hub-hero__signature i {
+        width: 44px;
+    }
+
+    .contact-hub-hero__signature small {
+        font-size: 9px;
+    }
+
+    .contact-hub-directory {
+        border-radius: 24px 24px 48px 24px;
+        box-shadow: 0 18px 48px rgba(17, 32, 46, 0.09);
+    }
+
+    .contact-hub-directory__head {
+        padding: 22px 20px 20px;
+    }
+
+    .contact-hub-directory__head h2 {
+        font-size: clamp(28px, 7.5vw, 36px);
+        line-height: 1;
+        letter-spacing: -0.045em;
+    }
+
+    .contact-route {
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 10px;
+        min-height: 0;
+        padding: 19px 20px;
+    }
+
+    .contact-route:hover {
+        padding-left: 20px;
+    }
+
+    .contact-route__number {
+        padding-top: 2px;
+        font-size: 9px;
+    }
+
+    .contact-route__copy {
+        padding-right: 24px;
+    }
+
+    .contact-route__copy strong {
+        margin-bottom: 6px;
+        font-size: 18px;
+        line-height: 1.12;
+    }
+
+    .contact-route__copy p {
+        font-size: 12.5px;
+        line-height: 1.5;
+    }
+
+    .contact-route::after {
+        right: 16px;
+        font-size: 15px;
+    }
+
+    .contact-direct {
+        padding: 52px 0 60px;
+    }
+
+    .contact-direct__bar {
+        border-radius: 24px 24px 48px 24px;
+    }
+
+    .contact-direct__heading {
+        padding: 24px 22px;
+    }
+
+    .contact-direct__heading .eyebrow {
+        margin-bottom: 10px;
+        font-size: 9px;
+    }
+
+    .contact-direct__heading h2 {
+        font-size: 30px;
+        line-height: 1;
+    }
+
+    .contact-direct__links {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-direct__links a {
+        min-height: 112px;
+        padding: 22px 20px;
+        border-top: 1px solid var(--color-border);
+        border-left: 0;
+    }
+
+    .contact-direct__links strong {
+        font-size: 18px;
+    }
+
+    .contact-direct__links span {
+        font-size: 10px;
+    }
+
+    .contact-hub-location {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-hub-location__media {
+        min-height: 320px;
+        max-height: 430px;
+    }
+
+    .contact-hub-location__content {
+        padding: 52px 18px 58px;
+    }
+
+    .contact-hub-location__content .eyebrow {
+        margin-bottom: 12px;
+        font-size: 9px;
+    }
+
+    .contact-hub-location__content h2 {
+        max-width: 100%;
+        margin-bottom: 14px;
+        font-size: 36px;
+        line-height: 1;
+    }
+
+    .contact-hub-location__content p,
+    .contact-hub-location__content address {
+        max-width: 100%;
+        font-size: 14px;
+        line-height: 1.55;
+    }
+
+    .contact-hub-location__actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 9px;
+        margin-top: 22px;
+    }
+
+    .contact-hub-location__actions .button {
+        width: 100%;
+        min-height: 46px;
+    }
+}
+
+@media (max-width: 420px) {
+    .contact-hub-hero__intro h1 {
+        font-size: 39px;
+    }
+
+    .contact-hub-directory__head h2 {
+        font-size: 29px;
+    }
+
+    .contact-route {
+        padding-inline: 17px;
+    }
+
+    .contact-route__copy strong {
+        font-size: 17px;
+    }
+
+    .contact-direct__heading h2 {
+        font-size: 28px;
+    }
+
+    .contact-hub-location__content h2 {
+        font-size: 33px;
+    }
+}
