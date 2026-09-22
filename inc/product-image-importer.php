@@ -119,7 +119,8 @@ function spek_ajax_image_import_upload_file(): void
         wp_send_json_error(['message' => __('Δεν παραλήφθηκε εικόνα.', 'spek-theme')], 400);
     }
 
-    $original_name = sanitize_file_name(wp_basename((string) ($_POST['original_name'] ?? $_FILES['image_file']['name'] ?? 'image.jpg')));
+    $original_name = sanitize_text_field(wp_unslash((string) ($_POST['original_name'] ?? $_FILES['image_file']['name'] ?? 'image.jpg')));
+    $original_name = wp_basename($original_name);
     $ext = spek_image_import_allowed_extension($original_name);
     if ($ext === '') {
         wp_send_json_error(['message' => __('Μη υποστηριζόμενος τύπος εικόνας.', 'spek-theme')], 400);
@@ -137,7 +138,9 @@ function spek_ajax_image_import_upload_file(): void
 
     $id = wp_generate_password(12, false, false);
     $files_dir = trailingslashit($dir) . 'files';
-    $stored_name = $id . '--' . ($original_name ?: 'image.' . $ext);
+    $safe_name = sanitize_file_name($original_name);
+    if ($safe_name === '') { $safe_name = 'image.' . $ext; }
+    $stored_name = $id . '--' . $safe_name;
     $target = trailingslashit($files_dir) . $stored_name;
 
     if (!@move_uploaded_file($_FILES['image_file']['tmp_name'], $target)) {
@@ -183,7 +186,10 @@ function spek_image_import_normalize_text(string $value): string
 
 function spek_image_import_product_index(): array
 {
-    $sku_data = function_exists('spek_import_product_sku_index') ? spek_import_product_sku_index() : ['index' => []];
+    $sku_data = function_exists('spek_import_product_sku_index')
+        ? spek_import_product_sku_index()
+        : ['index' => []];
+
     $raw_index = (array) ($sku_data['index'] ?? []);
 
     if (!$raw_index) {
@@ -195,15 +201,20 @@ function spek_image_import_product_index(): array
             'no_found_rows' => true,
             'suppress_filters' => true,
         ]);
+
         foreach ($ids as $id) {
-            $sku = trim((string) get_post_meta((int) $id, 'product_code', true));
-            if ($sku !== '') { $raw_index[$sku][] = (int) $id; }
+            $product_code = trim((string) get_post_meta((int) $id, 'product_code', true));
+            if ($product_code !== '') {
+                $raw_index[$product_code][] = (int) $id;
+            }
         }
     }
 
     $sku = [];
     $numeric = [];
     $products = [];
+    $aliases = [];
+
     foreach ($raw_index as $code => $ids) {
         $ids = array_values(array_unique(array_map('intval', (array) $ids)));
         if (!$ids) { continue; }
@@ -223,12 +234,41 @@ function spek_image_import_product_index(): array
         }
 
         $sku[(string) $code] = $record;
+
         if (ctype_digit((string) $code)) {
             $numeric[(string) ((int) $code)] = $record;
         }
     }
 
-    $aliases = [];
+    // Legacy product codes can exist inside the enriched source descriptions.
+    // They are only aliases when that numeric code is not already a current SKU.
+    foreach ($products as $id => $record) {
+        $source =
+            (string) get_post_meta($id, '_spek_source_description_el', true)
+            . ' '
+            . (string) get_post_meta($id, '_spek_source_description_en', true);
+
+        if (
+            $source !== ''
+            && preg_match_all('/(?<![0-9])([0-9]{4,5})(?![0-9])/u', $source, $matches)
+        ) {
+            foreach (array_unique($matches[1]) as $legacy_code) {
+                $canonical = (string) ((int) $legacy_code);
+
+                if (isset($numeric[$canonical])) {
+                    continue;
+                }
+
+                if (!isset($aliases[$canonical])) {
+                    $aliases[$canonical] = [];
+                }
+
+                $aliases[$canonical][(int) $id] = $record;
+            }
+        }
+    }
+
+    // Known aliases from the SPEK 2026 migration. Current SKU matches always win.
     $fallback_alias_skus = apply_filters('spek_image_import_legacy_sku_aliases', [
         '62123' => '31000',
         '1020'  => '10084',
@@ -240,16 +280,22 @@ function spek_image_import_product_index(): array
         '2003'  => '27119',
     ]);
 
-    foreach ((array) $fallback_alias_skus as $legacy => $current) {
+    foreach ((array) $fallback_alias_skus as $legacy => $current_sku) {
         $legacy = (string) ((int) $legacy);
-        $current = function_exists('spek_import_normalize_sku')
-            ? spek_import_normalize_sku($current)
-            : (string) $current;
+        $current_sku = function_exists('spek_import_normalize_sku')
+            ? spek_import_normalize_sku($current_sku)
+            : (string) $current_sku;
 
-        if (isset($numeric[$legacy]) || !isset($sku[$current]) || !empty($sku[$current]['ambiguous'])) {
+        if (
+            isset($numeric[$legacy])
+            || !isset($sku[$current_sku])
+            || !empty($sku[$current_sku]['ambiguous'])
+        ) {
             continue;
         }
-        $aliases[$legacy] = $sku[$current];
+
+        $record = $sku[$current_sku];
+        $aliases[$legacy][(int) $record['id']] = $record;
     }
 
     return [
@@ -275,13 +321,22 @@ function spek_image_import_code_match(string $filename, array $index): array
                 : ['status' => 'matched', 'method' => 'code', 'confidence' => 100, 'record' => $r, 'reason' => 'leading_numeric_code'];
         }
 
-        if (isset($index['aliases'][$canonical])) {
+        if (!empty($index['aliases'][$canonical])) {
+            $records = array_values($index['aliases'][$canonical]);
+
+            if (count($records) === 1) {
+                return [
+                    'status' => 'matched',
+                    'method' => 'code',
+                    'confidence' => 96,
+                    'record' => $records[0],
+                    'reason' => 'legacy_numeric_code',
+                ];
+            }
+
             return [
-                'status' => 'matched',
-                'method' => 'code',
-                'confidence' => 96,
-                'record' => $index['aliases'][$canonical],
-                'reason' => 'legacy_numeric_code',
+                'status' => 'ambiguous',
+                'reason' => 'legacy_code_candidates',
             ];
         }
     }
