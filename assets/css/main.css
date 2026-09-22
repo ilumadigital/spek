@@ -13729,3 +13729,1230 @@ body .front-page .container {
         animation: none;
     }
 }
+
+/* =========================================================
+   SPEK Product Finder Flagship UI
+   ========================================================= */
+
+.product-finder-v2 {
+    --finder-navy: #10283d;
+    --finder-blue: #174f8a;
+    --finder-blue-deep: #0c3764;
+    --finder-red: #d7233f;
+    overflow: clip;
+    background:
+        radial-gradient(circle at 88% 4%, rgba(23, 79, 138, 0.055), transparent 23%),
+        linear-gradient(180deg, #ffffff 0%, #f6f8fa 48%, #ffffff 100%);
+}
+
+.finder-hero {
+    position: relative;
+    padding: clamp(70px, 7vw, 108px) 0 clamp(52px, 5vw, 76px);
+    overflow: hidden;
+}
+
+.finder-hero::after {
+    content: "FINDER";
+    position: absolute;
+    right: -1vw;
+    bottom: -3vw;
+    color: rgba(23, 79, 138, 0.025);
+    font-size: clamp(120px, 17vw, 270px);
+    font-weight: 700;
+    line-height: 0.78;
+    letter-spacing: -0.08em;
+    pointer-events: none;
+}
+
+.finder-hero__grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: clamp(44px, 6vw, 100px);
+    align-items: end;
+}
+
+.finder-hero__content {
+    max-width: 840px;
+}
+
+.finder-hero__content h1 {
+    max-width: 760px;
+    margin-bottom: 20px;
+    color: var(--finder-navy);
+    font-size: clamp(50px, 5vw, 80px);
+    line-height: 0.94;
+    letter-spacing: -0.06em;
+}
+
+.finder-hero__content p {
+    max-width: 720px;
+    margin: 0;
+    color: #60717e;
+    font-size: clamp(16px, 1.2vw, 19px);
+    line-height: 1.65;
+}
+
+.finder-hero__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 4px;
+}
+
+.finder-hero__meta > div {
+    display: grid;
+    gap: 2px;
+    min-width: 76px;
+}
+
+.finder-hero__meta strong {
+    color: var(--finder-blue);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+}
+
+.finder-hero__meta span {
+    color: #6b7a86;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.finder-hero__meta > i {
+    width: 30px;
+    height: 1px;
+    background: rgba(23, 79, 138, 0.18);
+}
+
+.finder-app--v2 {
+    padding: 0 0 clamp(100px, 9vw, 150px);
+    background: transparent;
+}
+
+.finder-app--v2 > .container {
+    width: min(calc(100% - 36px), 1540px);
+    max-width: 1540px;
+}
+
+.spek-finder--v2 {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    max-width: none;
+    min-height: 760px;
+    overflow: hidden;
+    border: 1px solid rgba(16, 40, 61, 0.08);
+    border-radius: 34px 34px 82px 34px;
+    background: #ffffff;
+    box-shadow: 0 30px 90px rgba(20, 44, 64, 0.09);
+}
+
+.spek-finder-nav {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 34px 28px 28px;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 80% 8%, rgba(215, 35, 63, 0.18), transparent 24%),
+        linear-gradient(155deg, var(--finder-blue) 0%, var(--finder-blue-deep) 72%, #092b4c 100%);
+}
+
+.spek-finder-nav::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 36px;
+    bottom: 36px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.spek-finder-nav__brand {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 48px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.spek-finder-nav__brand span {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: 0.02em;
+}
+
+.spek-finder-nav__brand small {
+    color: rgba(255, 255, 255, 0.52);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.spek-finder__progress--rail {
+    display: grid;
+    gap: 0;
+    margin: 0;
+}
+
+.spek-finder__progress--rail > span {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 3px 13px;
+    width: auto;
+    height: auto;
+    min-height: 86px;
+    padding: 14px 8px;
+    border-radius: 0;
+    color: rgba(255, 255, 255, 0.45);
+    background: transparent;
+    text-align: left;
+}
+
+.spek-finder__progress--rail > span::before {
+    content: "";
+    position: absolute;
+    left: 27px;
+    top: 52px;
+    bottom: -18px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.spek-finder__progress--rail > span:last-child::before {
+    display: none;
+}
+
+.spek-finder__progress--rail i {
+    grid-row: 1 / 3;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.62);
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.spek-finder__progress--rail b {
+    align-self: end;
+    color: rgba(255, 255, 255, 0.64);
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.spek-finder__progress--rail small {
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 10px;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.spek-finder__progress--rail > span.is-current i {
+    color: var(--finder-blue-deep);
+    border-color: #ffffff;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(4, 23, 40, 0.18);
+}
+
+.spek-finder__progress--rail > span.is-current b {
+    color: #ffffff;
+}
+
+.spek-finder__progress--rail > span.is-current small {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.spek-finder__progress--rail > span.is-complete i {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 0;
+}
+
+.spek-finder__progress--rail > span.is-complete i::after {
+    content: "✓";
+    font-size: 13px;
+}
+
+.spek-finder__progress--rail > span.is-complete b {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.spek-finder-nav__help {
+    margin-top: auto;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 20px 20px 38px 20px;
+    background: rgba(255, 255, 255, 0.065);
+}
+
+.spek-finder-nav__help > span {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.spek-finder-nav__help p {
+    margin-bottom: 12px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.spek-finder-nav__help a {
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.spek-finder-nav__help a i {
+    margin-left: 4px;
+    font-style: normal;
+}
+
+.spek-finder-workspace {
+    position: relative;
+    min-width: 0;
+    background:
+        radial-gradient(circle at 92% 4%, rgba(23, 79, 138, 0.045), transparent 27%),
+        #ffffff;
+}
+
+.spek-finder-mobile-progress {
+    display: none;
+}
+
+.spek-finder--v2 .spek-finder-panel {
+    display: none;
+    min-height: 760px;
+    padding: clamp(42px, 5vw, 76px);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.spek-finder--v2 .spek-finder-panel.is-active {
+    display: block;
+    animation: spekFinderPanelIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.spek-finder--v2 .spek-finder__intro.is-active {
+    display: grid;
+}
+
+.spek-finder__intro {
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+    gap: clamp(44px, 6vw, 88px);
+    align-items: center;
+}
+
+.spek-finder-start__content {
+    max-width: 780px;
+}
+
+.spek-finder-start__content h2,
+.spek-finder--v2 .spek-finder__head h2 {
+    max-width: 800px;
+    margin: 0 0 18px;
+    color: var(--finder-navy);
+    font-size: clamp(40px, 4vw, 64px);
+    line-height: 0.97;
+    letter-spacing: -0.055em;
+}
+
+.spek-finder-start__content > p,
+.spek-finder--v2 .spek-finder__head > p {
+    max-width: 720px;
+    margin: 0;
+    color: #667783;
+    font-size: 17px;
+    line-height: 1.65;
+}
+
+.spek-finder-start__features {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 34px;
+}
+
+.spek-finder-start__features > div {
+    min-height: 128px;
+    padding: 18px;
+    border: 1px solid rgba(16, 40, 61, 0.08);
+    border-radius: 18px 18px 32px 18px;
+    background: #f8fafb;
+}
+
+.spek-finder-start__features span {
+    display: block;
+    margin-bottom: 18px;
+    color: var(--finder-blue);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.spek-finder-start__features strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--finder-navy);
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.spek-finder-start__features small {
+    color: #71808b;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.spek-finder-start__actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 30px;
+}
+
+.spek-finder-start__actions .button {
+    gap: 18px;
+}
+
+.spek-finder-start__actions > small {
+    color: #7b8993;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.spek-finder-start__visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 430px;
+    overflow: hidden;
+    border: 1px solid rgba(23, 79, 138, 0.08);
+    border-radius: 28px 28px 70px 28px;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(23, 79, 138, 0.10), transparent 30%),
+        linear-gradient(145deg, #f9fbfc 0%, #eef3f7 100%);
+}
+
+.spek-finder-start__mark {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 160px;
+    height: 160px;
+    border: 1px solid rgba(23, 79, 138, 0.15);
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 22px 54px rgba(20, 44, 64, 0.10);
+}
+
+.spek-finder-start__mark span {
+    color: var(--finder-blue);
+    font-size: 29px;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.spek-finder-start__mark small {
+    margin-top: -14px;
+    color: #6d7c87;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+}
+
+.spek-finder-orbit {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border: 1px solid rgba(23, 79, 138, 0.12);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.spek-finder-orbit--one {
+    width: 250px;
+    height: 250px;
+    animation: spekFinderOrbit 16s linear infinite;
+}
+
+.spek-finder-orbit--two {
+    width: 350px;
+    height: 350px;
+    border-style: dashed;
+    animation: spekFinderOrbit 24s linear infinite reverse;
+}
+
+.spek-finder-start__node {
+    position: absolute;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    color: var(--finder-blue);
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(20, 44, 64, 0.10);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.spek-finder-start__node--one { top: 18%; right: 23%; }
+.spek-finder-start__node--two { bottom: 20%; left: 18%; }
+.spek-finder-start__node--three {
+    right: 14%;
+    bottom: 14%;
+    color: #ffffff;
+    background: var(--finder-red);
+}
+
+.spek-finder--v2 .spek-finder__head {
+    max-width: 860px;
+    margin-bottom: 38px;
+}
+
+.spek-finder__step-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.spek-finder__step-label > span {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: #ffffff;
+    background: var(--finder-blue);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.spek-finder__step-label > small {
+    color: var(--finder-blue);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.spek-finder-options--cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.spek-finder--v2 .spek-finder-option > span {
+    position: relative;
+    min-height: 170px;
+    padding: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(16, 40, 61, 0.09);
+    border-radius: 20px 20px 42px 20px;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafb 100%);
+    box-shadow: none;
+}
+
+.spek-finder-option__index {
+    display: block;
+    color: #91a0ab;
+    font-style: normal;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.spek-finder-option__check {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(23, 79, 138, 0.15);
+    border-radius: 50%;
+    color: transparent;
+    background: #ffffff;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.spek-finder--v2 .spek-finder-option strong {
+    margin-top: auto;
+    max-width: 90%;
+    color: var(--finder-navy);
+    font-size: 20px;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+}
+
+.spek-finder--v2 .spek-finder-option em {
+    margin-top: 8px;
+    color: #778690;
+    font-size: 11px;
+}
+
+.spek-finder--v2 .spek-finder-option:hover > span {
+    border-color: rgba(23, 79, 138, 0.22);
+    box-shadow: 0 16px 38px rgba(23, 79, 138, 0.08);
+    transform: translateY(-4px);
+}
+
+.spek-finder--v2 .spek-finder-option input:checked + span {
+    border-color: rgba(23, 79, 138, 0.42);
+    background:
+        radial-gradient(circle at 88% 12%, rgba(23, 79, 138, 0.11), transparent 28%),
+        #ffffff;
+    box-shadow: 0 18px 44px rgba(23, 79, 138, 0.11);
+    transform: translateY(-4px);
+}
+
+.spek-finder--v2 .spek-finder-option input:checked + span strong,
+.spek-finder--v2 .spek-finder-option input:checked + span em {
+    color: var(--finder-navy);
+}
+
+.spek-finder--v2 .spek-finder-option input:checked + span .spek-finder-option__check {
+    color: #ffffff;
+    border-color: var(--finder-blue);
+    background: var(--finder-blue);
+}
+
+.spek-finder-options--applications {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.spek-finder--v2 .spek-finder-chip {
+    display: block;
+}
+
+.spek-finder--v2 .spek-finder-chip > span {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) 24px;
+    gap: 12px;
+    align-items: center;
+    min-height: 78px;
+    padding: 16px 18px;
+    border: 1px solid rgba(16, 40, 61, 0.09);
+    border-radius: 17px 17px 30px 17px;
+    color: var(--finder-navy);
+    background: #ffffff;
+    text-align: left;
+}
+
+.spek-finder--v2 .spek-finder-chip > span > i {
+    color: #93a0aa;
+    font-style: normal;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.spek-finder--v2 .spek-finder-chip > span > strong {
+    font-size: 14px;
+    line-height: 1.25;
+}
+
+.spek-finder--v2 .spek-finder-chip > span > b {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(23, 79, 138, 0.14);
+    border-radius: 50%;
+    color: transparent;
+    background: #f8fafb;
+    font-size: 10px;
+}
+
+.spek-finder--v2 .spek-finder-chip:hover > span {
+    color: var(--finder-navy);
+    border-color: rgba(23, 79, 138, 0.22);
+    background: #f9fbfc;
+}
+
+.spek-finder--v2 .spek-finder-chip input:checked + span {
+    color: var(--finder-navy);
+    border-color: rgba(23, 79, 138, 0.40);
+    background: rgba(23, 79, 138, 0.055);
+}
+
+.spek-finder--v2 .spek-finder-chip input:checked + span > b {
+    color: #ffffff;
+    border-color: var(--finder-blue);
+    background: var(--finder-blue);
+}
+
+.spek-finder--v2 .spek-finder-form-grid {
+    gap: 14px;
+}
+
+.spek-finder--v2 .spek-finder-field {
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid rgba(16, 40, 61, 0.085);
+    border-radius: 19px 19px 34px 19px;
+    background: #fbfcfd;
+}
+
+.spek-finder-field__label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.spek-finder--v2 .spek-finder-field__label label {
+    color: var(--finder-navy);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.spek-finder-field__label > span {
+    color: #8997a1;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.spek-finder--v2 .spek-finder-field input,
+.spek-finder--v2 .spek-finder-field select {
+    min-height: 56px;
+    padding: 0 15px;
+    border-color: rgba(16, 40, 61, 0.10);
+    border-radius: 13px;
+    background: #ffffff;
+}
+
+.spek-finder-specs-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(23, 79, 138, 0.045);
+}
+
+.spek-finder-specs-note > span {
+    display: grid;
+    place-items: center;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(23, 79, 138, 0.18);
+    border-radius: 50%;
+    color: var(--finder-blue);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.spek-finder-specs-note p {
+    margin: 1px 0 0;
+    color: #657682;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.spek-finder--v2 .spek-finder-actions {
+    margin-top: 34px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(16, 40, 61, 0.07);
+}
+
+.spek-finder--v2 .spek-finder-actions .button {
+    gap: 12px;
+}
+
+.spek-finder--v2 .button:disabled {
+    opacity: 0.34;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.spek-finder--v2 .spek-finder__head--results {
+    align-items: center;
+}
+
+.spek-finder-results-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -14px 0 28px;
+}
+
+.spek-finder-results-summary > span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid rgba(23, 79, 138, 0.10);
+    border-radius: 999px;
+    color: #60717e;
+    background: #f8fafb;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.spek-finder--v2 .spek-finder-loading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 26px;
+    padding: 18px 20px;
+    border: 1px solid rgba(23, 79, 138, 0.10);
+    border-radius: 16px;
+    color: var(--finder-navy);
+    background: rgba(23, 79, 138, 0.04);
+}
+
+.spek-finder--v2 .spek-finder-loading[hidden] {
+    display: none;
+}
+
+.spek-finder-loading__spinner {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    border: 2px solid rgba(23, 79, 138, 0.15);
+    border-top-color: var(--finder-blue);
+    border-radius: 50%;
+    animation: spekFinderSpin 0.8s linear infinite;
+}
+
+.spek-finder--v2 .spek-finder-loading strong,
+.spek-finder--v2 .spek-finder-loading small {
+    display: block;
+}
+
+.spek-finder--v2 .spek-finder-loading strong {
+    color: var(--finder-navy);
+    font-size: 13px;
+}
+
+.spek-finder--v2 .spek-finder-loading small {
+    margin-top: 2px;
+    color: #788791;
+    font-size: 10px;
+}
+
+.spek-finder--v2 .spek-finder-results-count {
+    margin-top: 9px !important;
+    color: var(--finder-blue) !important;
+    font-size: 13px !important;
+}
+
+.spek-finder--v2 .spek-finder-results.products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.spek-finder--v2 .spek-product-card.is-finder-result {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: spekFinderResultIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--finder-result-delay, 0ms);
+}
+
+.spek-finder--v2 .spek-product-card {
+    border-color: rgba(16, 40, 61, 0.08);
+    border-radius: 20px 20px 38px 20px;
+    box-shadow: 0 12px 30px rgba(20, 44, 64, 0.055);
+}
+
+.spek-finder--v2 .spek-product-card:hover {
+    border-color: rgba(23, 79, 138, 0.20);
+    box-shadow: 0 20px 46px rgba(20, 44, 64, 0.09);
+}
+
+@keyframes spekFinderPanelIn {
+    from { opacity: 0; transform: translate3d(0, 18px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes spekFinderResultIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spekFinderOrbit {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes spekFinderSpin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1180px) {
+    .finder-hero__grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .finder-hero__meta {
+        flex-wrap: wrap;
+    }
+
+    .spek-finder--v2 {
+        grid-template-columns: 250px minmax(0, 1fr);
+    }
+
+    .spek-finder-nav {
+        padding-inline: 22px;
+    }
+
+    .spek-finder--v2 .spek-finder-panel {
+        padding: 42px;
+    }
+
+    .spek-finder-options--cards,
+    .spek-finder-options--applications {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .spek-finder__intro {
+        grid-template-columns: 1fr;
+    }
+
+    .spek-finder-start__visual {
+        display: none;
+    }
+
+    .spek-finder--v2 .spek-finder-results.products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 860px) {
+    .finder-hero {
+        padding: 52px 0 44px;
+    }
+
+    .finder-hero__content h1 {
+        font-size: clamp(44px, 8vw, 62px);
+    }
+
+    .finder-hero__meta {
+        display: none;
+    }
+
+    .finder-app--v2 > .container {
+        width: min(calc(100% - 24px), 1540px);
+    }
+
+    .spek-finder--v2 {
+        display: block;
+        min-height: 0;
+        border-radius: 26px 26px 54px 26px;
+    }
+
+    .spek-finder-nav {
+        min-height: 0;
+        padding: 24px 22px 20px;
+    }
+
+    .spek-finder-nav::after,
+    .spek-finder-nav__help {
+        display: none;
+    }
+
+    .spek-finder-nav__brand {
+        margin-bottom: 18px;
+        padding-bottom: 16px;
+    }
+
+    .spek-finder__progress--rail {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .spek-finder__progress--rail > span {
+        display: block;
+        min-height: auto;
+        padding: 0;
+        text-align: center;
+    }
+
+    .spek-finder__progress--rail > span::before,
+    .spek-finder__progress--rail b,
+    .spek-finder__progress--rail small {
+        display: none;
+    }
+
+    .spek-finder__progress--rail i {
+        width: 34px;
+        height: 34px;
+        margin-inline: auto;
+    }
+
+    .spek-finder-mobile-progress {
+        display: grid;
+        grid-template-columns: auto minmax(70px, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 20px;
+        border-bottom: 1px solid rgba(16, 40, 61, 0.07);
+        background: #ffffff;
+    }
+
+    .spek-finder-mobile-progress > span,
+    .spek-finder-mobile-progress > strong {
+        color: #667783;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .spek-finder-mobile-progress > div {
+        height: 3px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(23, 79, 138, 0.10);
+    }
+
+    .spek-finder-mobile-progress > div > i {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--finder-blue), var(--finder-red));
+        transition: width 0.4s ease;
+    }
+
+    .spek-finder--v2 .spek-finder-panel {
+        min-height: 0;
+        padding: 34px 28px 40px;
+    }
+}
+
+@media (max-width: 640px) {
+    .finder-hero {
+        padding: 38px 0 34px;
+    }
+
+    .finder-hero__content .eyebrow {
+        margin-bottom: 13px;
+        font-size: 9px;
+    }
+
+    .finder-hero__content h1 {
+        max-width: 100%;
+        margin-bottom: 16px;
+        font-size: clamp(39px, 11.5vw, 52px);
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+    }
+
+    .finder-hero__content p {
+        font-size: 15px;
+        line-height: 1.58;
+    }
+
+    .finder-app--v2 > .container {
+        width: calc(100% - 16px);
+    }
+
+    .spek-finder--v2 {
+        border-radius: 22px 22px 42px 22px;
+        box-shadow: 0 18px 50px rgba(20, 44, 64, 0.08);
+    }
+
+    .spek-finder-nav {
+        padding: 20px 16px 16px;
+    }
+
+    .spek-finder-nav__brand {
+        margin-bottom: 14px;
+    }
+
+    .spek-finder-nav__brand span {
+        font-size: 17px;
+    }
+
+    .spek-finder-nav__brand small {
+        font-size: 8px;
+    }
+
+    .spek-finder__progress--rail i {
+        width: 30px;
+        height: 30px;
+        font-size: 8px;
+    }
+
+    .spek-finder-mobile-progress {
+        padding: 12px 16px;
+    }
+
+    .spek-finder--v2 .spek-finder-panel {
+        padding: 28px 18px 32px;
+    }
+
+    .spek-finder-start__content h2,
+    .spek-finder--v2 .spek-finder__head h2 {
+        font-size: clamp(32px, 9vw, 43px);
+        line-height: 1;
+        letter-spacing: -0.045em;
+    }
+
+    .spek-finder-start__content > p,
+    .spek-finder--v2 .spek-finder__head > p {
+        font-size: 15px;
+        line-height: 1.58;
+    }
+
+    .spek-finder-start__features {
+        grid-template-columns: 1fr;
+        gap: 9px;
+        margin-top: 26px;
+    }
+
+    .spek-finder-start__features > div {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        min-height: 0;
+        padding: 15px 16px;
+    }
+
+    .spek-finder-start__features span {
+        grid-row: 1 / 3;
+        margin: 1px 0 0;
+    }
+
+    .spek-finder-start__features strong {
+        margin: 0 0 3px;
+    }
+
+    .spek-finder-start__actions {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .spek-finder-start__actions .button {
+        width: 100%;
+    }
+
+    .spek-finder-start__actions > small {
+        text-align: center;
+    }
+
+    .spek-finder--v2 .spek-finder__head {
+        margin-bottom: 26px;
+    }
+
+    .spek-finder__step-label {
+        margin-bottom: 12px;
+    }
+
+    .spek-finder-options--cards,
+    .spek-finder-options--applications,
+    .spek-finder--v2 .spek-finder-form-grid,
+    .spek-finder--v2 .spek-finder-results.products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .spek-finder--v2 .spek-finder-option > span {
+        min-height: 126px;
+        padding: 18px;
+    }
+
+    .spek-finder--v2 .spek-finder-option strong {
+        font-size: 18px;
+    }
+
+    .spek-finder--v2 .spek-finder-chip > span {
+        min-height: 68px;
+        padding: 14px 15px;
+    }
+
+    .spek-finder--v2 .spek-finder-field {
+        padding: 16px;
+    }
+
+    .spek-finder--v2 .spek-finder-actions {
+        position: sticky;
+        z-index: 8;
+        bottom: 0;
+        gap: 9px;
+        margin: 26px -18px -32px;
+        padding: 14px 18px calc(14px + env(safe-area-inset-bottom));
+        border-top: 1px solid rgba(16, 40, 61, 0.08);
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    .spek-finder--v2 .spek-finder-actions .button {
+        flex: 1 1 0;
+        min-width: 0;
+        padding-inline: 14px;
+        font-size: 13px;
+    }
+
+    .spek-finder--v2 .spek-finder__head--results {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .spek-finder--v2 .spek-finder__head--results .button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 390px) {
+    .spek-finder-mobile-progress {
+        grid-template-columns: 1fr auto;
+    }
+
+    .spek-finder-mobile-progress > div {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .spek-finder--v2 .spek-finder-panel {
+        padding-inline: 15px;
+    }
+
+    .spek-finder--v2 .spek-finder-actions {
+        margin-left: -15px;
+        margin-right: -15px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spek-finder--v2 .spek-finder-panel.is-active,
+    .spek-finder-orbit,
+    .spek-finder-loading__spinner,
+    .spek-finder--v2 .spek-product-card.is-finder-result {
+        animation: none !important;
+    }
+}
