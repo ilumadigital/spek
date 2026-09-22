@@ -10435,3 +10435,115 @@ body .front-page .container {
         white-space: normal;
     }
 }
+
+
+/* =========================================================
+   SPEK paired homepage section groups
+   One architectural panel for every two homepage sections
+   ========================================================= */
+
+/* Individual sections are no longer standalone panels */
+.front-page > .section {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.home-section-group {
+    position: relative;
+    width: min(calc(100% - 32px), 1880px);
+    margin: 24px auto 0;
+    overflow: hidden;
+    border: 1px solid rgba(16, 40, 61, 0.08);
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(20, 44, 64, 0.055);
+}
+
+.home-section-group--one {
+    border-radius: 42px 42px 92px 42px;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f7f9fb 100%);
+}
+
+.home-section-group--two {
+    border-radius: 92px 42px 42px 42px;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f5f8fa 100%);
+}
+
+.home-section-group--three {
+    margin-bottom: 28px;
+    border-radius: 42px 92px 42px 42px;
+    background:
+        linear-gradient(180deg, #f7f9fb 0%, #ffffff 100%);
+}
+
+/* Sections inside a group stay structurally intact but visually belong together */
+.home-section-group > .section {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.home-section-group > .section + .section {
+    border-top: 1px solid rgba(16, 40, 61, 0.07);
+}
+
+/* Preserve the white / light-grey contrast between the two halves */
+.home-section-group--one > .product-categories,
+.home-section-group--two > .why-spek,
+.home-section-group--three > .store-preview {
+    background: #ffffff;
+}
+
+.home-section-group--one > .finder-preview,
+.home-section-group--two > .catalogue-preview,
+.home-section-group--three > .b2b-cta {
+    background:
+        linear-gradient(180deg, rgba(247, 249, 251, 0.92) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+/* Remove decorative outer radii that belonged to standalone panels */
+.home-section-group > .product-categories,
+.home-section-group > .finder-preview,
+.home-section-group > .why-spek,
+.home-section-group > .catalogue-preview,
+.home-section-group > .store-preview,
+.home-section-group > .b2b-cta {
+    border-radius: 0 !important;
+}
+
+@media (max-width: 1100px) {
+    .home-section-group {
+        width: calc(100% - 20px);
+        margin-top: 18px;
+        border-radius: 34px 34px 58px 34px;
+    }
+
+    .home-section-group--two {
+        border-radius: 58px 34px 34px 34px;
+    }
+
+    .home-section-group--three {
+        border-radius: 34px 58px 34px 34px;
+    }
+}
+
+@media (max-width: 680px) {
+    .home-section-group {
+        width: calc(100% - 10px);
+        margin-top: 10px;
+        border-radius: 24px 24px 38px 24px;
+        box-shadow: 0 14px 36px rgba(22, 43, 61, 0.05);
+    }
+
+    .home-section-group--two,
+    .home-section-group--three {
+        border-radius: 24px 24px 38px 24px;
+    }
+}
