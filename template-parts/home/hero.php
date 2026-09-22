@@ -39,7 +39,9 @@ $hero_slides = [
 ];
 ?>
 
-<section class="spek-hero-v2 spek-hero-v2--minimal" data-hero-slider data-hero-delay="6000">
+<div class="spek-hero-stage" data-home-hero-stage>
+
+<section class="spek-hero-v2 spek-hero-v2--minimal" data-hero-slider data-hero-delay="6000" data-home-hero>
 
     <div class="spek-hero-v2__bg" aria-hidden="true">
         <?php foreach ($hero_slides as $index => $slide) : ?>
@@ -82,6 +84,14 @@ $hero_slides = [
 
 </section>
 
+    <a class="spek-hero-v2__view-more" href="#home-product-range" data-hero-view-more aria-label="<?php esc_attr_e('View More', 'spek-theme'); ?>">
+        <span><?php esc_html_e('View More', 'spek-theme'); ?></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 4v15M6.5 13.5 12 19l5.5-5.5" />
+        </svg>
+    </a>
+</div>
+
 <style>
 .spek-hero-v2.spek-hero-v2--minimal {
     position: relative;
@@ -89,14 +99,14 @@ $hero_slides = [
     height: 100svh;
     min-height: 100vh;
     min-height: 100svh;
-    width: calc(100% - 24px);
-    max-width: 1920px;
-    margin-inline: auto;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
     display: flex;
     align-items: center;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.38);
-    border-radius: 0 0 58px 58px;
+    border-radius: 0 0 clamp(120px, 14vw, 220px) 0;
     background: #dfe7ed;
     box-shadow:
         0 34px 90px rgba(15, 41, 62, 0.14),
@@ -248,7 +258,7 @@ $hero_slides = [
     inset: 12px;
     z-index: 4;
     border: 1px solid rgba(255, 255, 255, 0.20);
-    border-radius: 0 0 46px 46px;
+    border-radius: 0 0 clamp(108px, 12vw, 196px) 0;
     pointer-events: none;
     box-shadow: inset 0 0 0 1px rgba(7, 31, 49, 0.025);
 }
@@ -267,8 +277,8 @@ $hero_slides = [
 
 @media (max-width: 820px) {
     .spek-hero-v2.spek-hero-v2--minimal {
-        width: calc(100% - 16px);
-        border-radius: 0 0 42px 42px;
+        width: 100%;
+        border-radius: 0 0 112px 0;
         height: 100vh;
         height: 100svh;
         min-height: 100vh;
@@ -307,14 +317,14 @@ $hero_slides = [
 
     .spek-hero-v2--minimal::after {
         inset: 8px;
-        border-radius: 0 0 34px 34px;
+        border-radius: 0 0 96px 0;
     }
 }
 
 @media (max-width: 560px) {
     .spek-hero-v2.spek-hero-v2--minimal {
-        width: calc(100% - 10px);
-        border-radius: 0 0 30px 30px;
+        width: 100%;
+        border-radius: 0 0 88px 0;
         height: 100vh;
         height: 100svh;
         min-height: 100vh;
@@ -362,7 +372,7 @@ $hero_slides = [
 
     .spek-hero-v2--minimal::after {
         inset: 5px;
-        border-radius: 0 0 24px 24px;
+        border-radius: 0 0 72px 0;
     }
 }
 </style>
