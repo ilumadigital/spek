@@ -153,6 +153,10 @@ function spek_render_product_media_metabox($post): void
     $installation_video = get_post_meta($post->ID, 'product_installation_video', true);
     $datasheet = get_post_meta($post->ID, 'product_datasheet', true);
     $catalogue_pdf = get_post_meta($post->ID, 'product_catalogue_pdf', true);
+    $gallery_ids = function_exists('spek_image_import_gallery_ids')
+        ? spek_image_import_gallery_ids((int) $post->ID)
+        : array_values(array_filter(array_map('absint', (array) get_post_meta($post->ID, 'product_gallery', true))));
+    wp_enqueue_media();
     ?>
 
     <div class="spek-product-admin">
@@ -200,10 +204,80 @@ function spek_render_product_media_metabox($post): void
             </div>
         </div>
 
-        <p class="description">
-            <?php esc_html_e('Για εικόνες προϊόντος χρησιμοποιήστε τη “Χαρακτηριστική εικόνα” δεξιά. Για gallery θα το κάνουμε σε επόμενο βήμα με media uploader.', 'spek-theme'); ?>
-        </p>
+        <div class="spek-product-admin__field spek-product-admin__field--full" style="margin-top:18px">
+            <label style="display:block;margin-bottom:8px"><strong><?php esc_html_e('Gallery προϊόντος', 'spek-theme'); ?></strong></label>
+            <input type="hidden" id="spek_product_gallery_ids" name="spek_product_gallery_ids" value="<?php echo esc_attr(implode(',', $gallery_ids)); ?>">
+            <div id="spek_product_gallery_preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                <?php foreach ($gallery_ids as $attachment_id) : ?>
+                    <span data-id="<?php echo esc_attr((string) $attachment_id); ?>" style="display:inline-flex;border:1px solid #dcdcde;border-radius:4px;padding:3px;background:#fff">
+                        <?php echo wp_get_attachment_image($attachment_id, [72, 72]); ?>
+                    </span>
+                <?php endforeach; ?>
+            </div>
+            <button type="button" class="button" id="spek_product_gallery_choose"><?php esc_html_e('Επιλογή / αλλαγή gallery', 'spek-theme'); ?></button>
+            <button type="button" class="button" id="spek_product_gallery_clear" <?php echo empty($gallery_ids) ? 'style="display:none"' : ''; ?>><?php esc_html_e('Καθαρισμός gallery', 'spek-theme'); ?></button>
+            <p class="description"><?php esc_html_e('Η χαρακτηριστική εικόνα παραμένει ξεχωριστή. Το μαζικό εργαλείο “Εισαγωγή εικόνων” συμπληρώνει αυτόματα και το gallery.', 'spek-theme'); ?></p>
+        </div>
     </div>
+
+    <script>
+    (function($){
+        if (typeof wp === 'undefined' || !wp.media) { return; }
+        let frame;
+        const input = $('#spek_product_gallery_ids');
+        const preview = $('#spek_product_gallery_preview');
+        const clearBtn = $('#spek_product_gallery_clear');
+
+        $('#spek_product_gallery_choose').on('click', function(e){
+            e.preventDefault();
+            if (frame) { frame.open(); return; }
+
+            frame = wp.media({
+                title: <?php echo wp_json_encode(__('Επιλογή εικόνων gallery', 'spek-theme')); ?>,
+                button: { text: <?php echo wp_json_encode(__('Χρήση επιλεγμένων εικόνων', 'spek-theme')); ?> },
+                library: { type: 'image' },
+                multiple: true
+            });
+
+            frame.on('open', function(){
+                const selection = frame.state().get('selection');
+                (input.val() || '').split(',').filter(Boolean).forEach(function(id){
+                    const attachment = wp.media.attachment(parseInt(id, 10));
+                    attachment.fetch();
+                    selection.add(attachment);
+                });
+            });
+
+            frame.on('select', function(){
+                const selection = frame.state().get('selection').toJSON();
+                const ids = selection.map(x => x.id);
+                input.val(ids.join(','));
+                preview.empty();
+
+                selection.forEach(function(x){
+                    const src = (x.sizes && x.sizes.thumbnail) ? x.sizes.thumbnail.url : x.url;
+                    $('<span/>', {
+                        'data-id': x.id,
+                        css: {display:'inline-flex',border:'1px solid #dcdcde',borderRadius:'4px',padding:'3px',background:'#fff'}
+                    }).append(
+                        $('<img/>',{src:src,css:{width:'72px',height:'72px',objectFit:'cover'}})
+                    ).appendTo(preview);
+                });
+
+                clearBtn.toggle(ids.length > 0);
+            });
+
+            frame.open();
+        });
+
+        clearBtn.on('click', function(e){
+            e.preventDefault();
+            input.val('');
+            preview.empty();
+            clearBtn.hide();
+        });
+    })(jQuery);
+    </script>
 
     <?php
 }
@@ -250,6 +324,12 @@ function spek_save_product_data($post_id): void
                 sanitize_textarea_field(wp_unslash($_POST[$field]))
             );
         }
+    }
+
+    if (isset($_POST['spek_product_gallery_ids'])) {
+        $raw_gallery = sanitize_text_field(wp_unslash($_POST['spek_product_gallery_ids']));
+        $gallery_ids = array_values(array_unique(array_filter(array_map('absint', preg_split('/[\s,]+/', $raw_gallery)))));
+        update_post_meta($post_id, 'product_gallery', $gallery_ids);
     }
 
     $url_fields = [
