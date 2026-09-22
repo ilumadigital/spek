@@ -12708,3 +12708,281 @@ body .front-page .container {
         transition: none;
     }
 }
+
+/* =========================================================
+   SPEK Contact Hub Refinement
+   Smaller type, tighter rhythm, more corporate proportions
+   ========================================================= */
+
+.contact-hub-hero {
+    min-height: auto;
+    padding: clamp(58px, 6.2vw, 96px) 0 clamp(70px, 7vw, 108px);
+}
+
+.contact-hub-hero__grid {
+    grid-template-columns: minmax(0, 0.82fr) minmax(560px, 1.18fr);
+    gap: clamp(48px, 6vw, 104px);
+}
+
+.contact-hub-hero__intro {
+    max-width: 650px;
+}
+
+.contact-hub-hero__intro h1 {
+    max-width: 600px;
+    margin-bottom: 22px;
+    font-size: clamp(52px, 5vw, 82px);
+    line-height: 0.94;
+    letter-spacing: -0.062em;
+}
+
+.contact-hub-hero__intro > p {
+    max-width: 590px;
+    font-size: clamp(16px, 1.15vw, 19px);
+    line-height: 1.68;
+}
+
+.contact-hub-hero__signature {
+    margin-top: 34px;
+}
+
+.contact-hub-hero__signature span {
+    font-size: 14px;
+}
+
+.contact-hub-hero__signature i {
+    width: 58px;
+}
+
+.contact-hub-hero__signature small {
+    font-size: 10px;
+}
+
+.contact-hub-directory {
+    border-radius: 30px 30px 66px 30px;
+    box-shadow: 0 26px 70px rgba(17, 32, 46, 0.105);
+}
+
+.contact-hub-directory__head {
+    align-items: center;
+    padding: clamp(24px, 2.5vw, 34px);
+}
+
+.contact-hub-directory__head h2 {
+    max-width: 460px;
+    font-size: clamp(30px, 2.7vw, 44px);
+    line-height: 0.98;
+    letter-spacing: -0.048em;
+}
+
+.contact-route {
+    min-height: 116px;
+    padding: 20px clamp(22px, 2.5vw, 34px);
+    gap: 17px;
+}
+
+.contact-route:hover {
+    padding-left: clamp(28px, 3vw, 42px);
+}
+
+.contact-route__copy small {
+    font-size: 9px;
+    margin-bottom: 4px;
+}
+
+.contact-route__copy strong {
+    margin-bottom: 5px;
+    font-size: clamp(19px, 1.65vw, 24px);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+}
+
+.contact-route__copy p {
+    max-width: 560px;
+    font-size: 13px;
+    line-height: 1.48;
+}
+
+.contact-route__action {
+    font-size: 11px;
+}
+
+.contact-direct {
+    padding: clamp(68px, 6vw, 98px) 0;
+}
+
+.contact-direct__bar {
+    grid-template-columns: minmax(240px, 0.48fr) minmax(0, 1.52fr);
+    gap: 0;
+    border-radius: 30px 30px 62px 30px;
+    box-shadow: 0 20px 54px rgba(17, 32, 46, 0.085);
+}
+
+.contact-direct__heading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(28px, 3vw, 42px);
+}
+
+.contact-direct__heading .eyebrow {
+    margin-bottom: 14px;
+}
+
+.contact-direct__heading h2 {
+    font-size: clamp(30px, 2.7vw, 42px);
+    line-height: 1;
+    letter-spacing: -0.045em;
+}
+
+.contact-direct__links a {
+    min-height: 158px;
+    padding: 28px 26px;
+}
+
+.contact-direct__links small {
+    font-size: 9px;
+}
+
+.contact-direct__links strong {
+    font-size: clamp(17px, 1.4vw, 21px);
+    line-height: 1.22;
+}
+
+.contact-direct__links span {
+    font-size: 11px;
+}
+
+.contact-hub-location {
+    grid-template-columns: minmax(0, 1.18fr) minmax(400px, 0.82fr);
+    min-height: min(64vh, 650px);
+}
+
+.contact-hub-location__media {
+    min-height: 500px;
+}
+
+.contact-hub-location__content {
+    padding: clamp(46px, 5vw, 82px) var(--contact-hub-edge);
+}
+
+.contact-hub-location__content .eyebrow {
+    margin-bottom: 16px;
+}
+
+.contact-hub-location__content h2 {
+    max-width: 570px;
+    margin-bottom: 16px;
+    font-size: clamp(38px, 3.8vw, 58px);
+    line-height: 0.98;
+    letter-spacing: -0.052em;
+}
+
+.contact-hub-location__content p,
+.contact-hub-location__content address {
+    max-width: 570px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.contact-hub-location__actions {
+    margin-top: 24px;
+}
+
+.contact-hub-location__actions .button {
+    min-height: 48px;
+    padding-inline: 20px;
+    font-size: 13px;
+}
+
+@media (min-width: 1500px) {
+    .contact-hub-hero__grid {
+        grid-template-columns: minmax(0, 0.78fr) minmax(620px, 1.22fr);
+    }
+
+    .contact-hub-hero__intro h1 {
+        font-size: 78px;
+    }
+
+    .contact-hub-directory__head h2 {
+        font-size: 42px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .contact-hub-hero {
+        padding: 54px 0 82px;
+    }
+
+    .contact-hub-hero__grid {
+        gap: 40px;
+    }
+
+    .contact-hub-directory__head {
+        align-items: flex-start;
+    }
+
+    .contact-direct__bar {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-direct__heading {
+        padding: 30px;
+    }
+
+    .contact-hub-location {
+        min-height: auto;
+    }
+
+    .contact-hub-location__media {
+        min-height: 480px;
+    }
+}
+
+@media (max-width: 760px) {
+    .contact-hub-hero {
+        padding: 36px 0 66px;
+    }
+
+    .contact-hub-hero__intro h1 {
+        font-size: clamp(42px, 12vw, 58px);
+        line-height: 0.96;
+    }
+
+    .contact-hub-hero__intro > p {
+        font-size: 16px;
+    }
+
+    .contact-hub-directory__head h2 {
+        font-size: clamp(30px, 8.5vw, 40px);
+    }
+
+    .contact-route__copy strong {
+        font-size: 20px;
+    }
+
+    .contact-direct {
+        padding: 64px 0;
+    }
+
+    .contact-direct__heading h2 {
+        font-size: 34px;
+    }
+
+    .contact-direct__links a {
+        min-height: 132px;
+        padding: 24px 22px;
+    }
+
+    .contact-hub-location__media {
+        min-height: 390px;
+    }
+
+    .contact-hub-location__content {
+        padding-block: 64px;
+    }
+
+    .contact-hub-location__content h2 {
+        font-size: clamp(36px, 10vw, 48px);
+    }
+}
