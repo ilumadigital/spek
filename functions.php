@@ -24,6 +24,7 @@ $required_files = [
     '/inc/product-metaboxes.php',
     '/inc/catalogue-metaboxes.php',
     '/inc/product-importer.php',
+    '/inc/product-image-importer.php',
     '/inc/partner-metaboxes.php',
     '/inc/product-query.php',
     '/inc/helpers.php',
