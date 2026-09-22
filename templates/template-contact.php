@@ -42,34 +42,96 @@ get_header();
                     <?php esc_html_e('Για προϊόντα, τεχνικές πληροφορίες, διαθεσιμότητα και εμπορικές συνεργασίες, επικοινωνήστε απευθείας με την ομάδα μας.', 'spek-theme'); ?>
                 </p>
 
-                <div class="contact-hero__quick">
-                    <a class="contact-quick-link" href="tel:<?php echo esc_attr($phone_href); ?>">
-                        <span><?php esc_html_e('Τηλέφωνο', 'spek-theme'); ?></span>
-                        <strong><?php echo esc_html($phone_display); ?></strong>
-                        <i aria-hidden="true">↗</i>
-                    </a>
-
-                    <a class="contact-quick-link" href="mailto:<?php echo esc_attr($email); ?>">
-                        <span><?php esc_html_e('Email', 'spek-theme'); ?></span>
-                        <strong><?php echo esc_html($email); ?></strong>
-                        <i aria-hidden="true">↗</i>
-                    </a>
-                </div>
             </div>
 
-            <figure class="contact-hero__visual" data-reveal style="--reveal-delay: 120ms;">
-                <img
-                    src="<?php echo esc_url($contact_image); ?>"
-                    alt="<?php esc_attr_e('Οι εγκαταστάσεις της SPEK στο Σχηματάρι', 'spek-theme'); ?>"
-                    loading="eager"
-                    decoding="async"
-                >
+            <div class="contact-form-card contact-form-card--premium contact-hero__form" data-reveal style="--reveal-delay: 100ms;">
+                <div class="contact-form-card__head">
+                    <span class="eyebrow"><?php esc_html_e('Contact Form', 'spek-theme'); ?></span>
+                    <h2><?php esc_html_e('Στείλτε το αίτημά σας.', 'spek-theme'); ?></h2>
+                    <p><?php esc_html_e('Συμπληρώστε τα στοιχεία σας και το θέμα επικοινωνίας.', 'spek-theme'); ?></p>
+                </div>
 
-                <figcaption>
-                    <span><?php esc_html_e('Παραγωγή & έδρα', 'spek-theme'); ?></span>
-                    <strong><?php esc_html_e('Σχηματάρι · Ελλάδα', 'spek-theme'); ?></strong>
-                </figcaption>
-            </figure>
+                <?php if ($contact_status === 'success') : ?>
+                    <div class="contact-form-notice contact-form-notice--success" role="status">
+                        <?php esc_html_e('Το μήνυμά σας στάλθηκε. Η ομάδα της SPEK θα επικοινωνήσει μαζί σας.', 'spek-theme'); ?>
+                    </div>
+                <?php elseif ($contact_status === 'error') : ?>
+                    <div class="contact-form-notice contact-form-notice--error" role="alert">
+                        <?php esc_html_e('Δεν ήταν δυνατή η αποστολή. Ελέγξτε τα στοιχεία σας ή επικοινωνήστε μαζί μας τηλεφωνικά ή μέσω email.', 'spek-theme'); ?>
+                    </div>
+                <?php endif; ?>
+
+                <form class="spek-form spek-contact-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
+                    <input type="hidden" name="action" value="spek_contact_submit">
+                    <input type="hidden" name="redirect_to" value="<?php echo esc_url(get_permalink()); ?>">
+                    <?php wp_nonce_field('spek_contact_submit', 'spek_contact_nonce'); ?>
+
+                    <div class="spek-contact-hp" aria-hidden="true">
+                        <label for="website">Website</label>
+                        <input id="website" type="text" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+
+                    <div class="contact-form-grid">
+                        <div class="form-row">
+                            <label for="contact-name"><?php esc_html_e('Ονοματεπώνυμο', 'spek-theme'); ?> *</label>
+                            <input id="contact-name" type="text" name="name" autocomplete="name" required>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="contact-company"><?php esc_html_e('Εταιρεία / Οργανισμός', 'spek-theme'); ?></label>
+                            <input id="contact-company" type="text" name="company" autocomplete="organization">
+                        </div>
+
+                        <div class="form-row">
+                            <label for="contact-email"><?php esc_html_e('Email', 'spek-theme'); ?> *</label>
+                            <input id="contact-email" type="email" name="email" autocomplete="email" required>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="contact-phone"><?php esc_html_e('Τηλέφωνο', 'spek-theme'); ?></label>
+                            <input id="contact-phone" type="tel" name="phone" autocomplete="tel">
+                        </div>
+
+                        <div class="form-row form-row--full">
+                            <label for="contact-topic"><?php esc_html_e('Θέμα επικοινωνίας', 'spek-theme'); ?> *</label>
+                            <select id="contact-topic" name="topic" required>
+                                <option value=""><?php esc_html_e('Επιλέξτε θέμα', 'spek-theme'); ?></option>
+                                <?php foreach ($inquiry_types as $value => $label) : ?>
+                                    <option value="<?php echo esc_attr($value); ?>"><?php echo esc_html($label); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-row form-row--full">
+                            <label for="contact-message"><?php esc_html_e('Μήνυμα', 'spek-theme'); ?> *</label>
+                            <textarea id="contact-message" name="message" rows="6" required></textarea>
+                        </div>
+                    </div>
+
+                    <label class="contact-consent">
+                        <input type="checkbox" name="privacy" value="1" required>
+                        <span>
+                            <?php
+                            printf(
+                                wp_kses(
+                                    __('Έχω διαβάσει και αποδέχομαι την <a href="%s">Πολιτική Απορρήτου</a>.', 'spek-theme'),
+                                    ['a' => ['href' => []]]
+                                ),
+                                esc_url(spek_page_url('privacy-policy/'))
+                            );
+                            ?>
+                        </span>
+                    </label>
+
+                    <div class="contact-form-card__footer">
+                        <p><?php esc_html_e('Τα στοιχεία χρησιμοποιούνται αποκλειστικά για την απάντηση στο αίτημά σας.', 'spek-theme'); ?></p>
+
+                        <button type="submit" class="button button-primary">
+                            <?php esc_html_e('Αποστολή αιτήματος', 'spek-theme'); ?>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </section>
 
@@ -142,94 +204,7 @@ get_header();
                     </a>
                 </aside>
 
-                <div class="contact-form-card contact-form-card--premium" data-reveal style="--reveal-delay: 100ms;">
-                    <div class="contact-form-card__head">
-                        <span class="eyebrow"><?php esc_html_e('Contact Form', 'spek-theme'); ?></span>
-                        <h2><?php esc_html_e('Στείλτε το αίτημά σας.', 'spek-theme'); ?></h2>
-                        <p><?php esc_html_e('Συμπληρώστε τα στοιχεία σας και το θέμα επικοινωνίας.', 'spek-theme'); ?></p>
-                    </div>
-
-                    <?php if ($contact_status === 'success') : ?>
-                        <div class="contact-form-notice contact-form-notice--success" role="status">
-                            <?php esc_html_e('Το μήνυμά σας στάλθηκε. Η ομάδα της SPEK θα επικοινωνήσει μαζί σας.', 'spek-theme'); ?>
-                        </div>
-                    <?php elseif ($contact_status === 'error') : ?>
-                        <div class="contact-form-notice contact-form-notice--error" role="alert">
-                            <?php esc_html_e('Δεν ήταν δυνατή η αποστολή. Ελέγξτε τα στοιχεία σας ή επικοινωνήστε μαζί μας τηλεφωνικά ή μέσω email.', 'spek-theme'); ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <form class="spek-form spek-contact-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
-                        <input type="hidden" name="action" value="spek_contact_submit">
-                        <input type="hidden" name="redirect_to" value="<?php echo esc_url(get_permalink()); ?>">
-                        <?php wp_nonce_field('spek_contact_submit', 'spek_contact_nonce'); ?>
-
-                        <div class="spek-contact-hp" aria-hidden="true">
-                            <label for="website">Website</label>
-                            <input id="website" type="text" name="website" tabindex="-1" autocomplete="off">
-                        </div>
-
-                        <div class="contact-form-grid">
-                            <div class="form-row">
-                                <label for="contact-name"><?php esc_html_e('Ονοματεπώνυμο', 'spek-theme'); ?> *</label>
-                                <input id="contact-name" type="text" name="name" autocomplete="name" required>
-                            </div>
-
-                            <div class="form-row">
-                                <label for="contact-company"><?php esc_html_e('Εταιρεία / Οργανισμός', 'spek-theme'); ?></label>
-                                <input id="contact-company" type="text" name="company" autocomplete="organization">
-                            </div>
-
-                            <div class="form-row">
-                                <label for="contact-email"><?php esc_html_e('Email', 'spek-theme'); ?> *</label>
-                                <input id="contact-email" type="email" name="email" autocomplete="email" required>
-                            </div>
-
-                            <div class="form-row">
-                                <label for="contact-phone"><?php esc_html_e('Τηλέφωνο', 'spek-theme'); ?></label>
-                                <input id="contact-phone" type="tel" name="phone" autocomplete="tel">
-                            </div>
-
-                            <div class="form-row form-row--full">
-                                <label for="contact-topic"><?php esc_html_e('Θέμα επικοινωνίας', 'spek-theme'); ?> *</label>
-                                <select id="contact-topic" name="topic" required>
-                                    <option value=""><?php esc_html_e('Επιλέξτε θέμα', 'spek-theme'); ?></option>
-                                    <?php foreach ($inquiry_types as $value => $label) : ?>
-                                        <option value="<?php echo esc_attr($value); ?>"><?php echo esc_html($label); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="form-row form-row--full">
-                                <label for="contact-message"><?php esc_html_e('Μήνυμα', 'spek-theme'); ?> *</label>
-                                <textarea id="contact-message" name="message" rows="6" required></textarea>
-                            </div>
-                        </div>
-
-                        <label class="contact-consent">
-                            <input type="checkbox" name="privacy" value="1" required>
-                            <span>
-                                <?php
-                                printf(
-                                    wp_kses(
-                                        __('Έχω διαβάσει και αποδέχομαι την <a href="%s">Πολιτική Απορρήτου</a>.', 'spek-theme'),
-                                        ['a' => ['href' => []]]
-                                    ),
-                                    esc_url(spek_page_url('privacy-policy/'))
-                                );
-                                ?>
-                            </span>
-                        </label>
-
-                        <div class="contact-form-card__footer">
-                            <p><?php esc_html_e('Τα στοιχεία χρησιμοποιούνται αποκλειστικά για την απάντηση στο αίτημά σας.', 'spek-theme'); ?></p>
-
-                            <button type="submit" class="button button-primary">
-                                <?php esc_html_e('Αποστολή αιτήματος', 'spek-theme'); ?>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                <div class="contact-form-spacer" aria-hidden="true"></div>
 
             </div>
         </div>

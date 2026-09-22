@@ -12047,3 +12047,165 @@ body .front-page .container {
         transition: none;
     }
 }
+
+/* =========================================================
+   SPEK Contact Form Hero Span
+   Form replaces hero image and visually spans two sections.
+   ========================================================= */
+
+@media (min-width: 1101px) {
+    .contact-page {
+        overflow: clip;
+    }
+
+    .contact-hero {
+        min-height: calc(100svh - var(--spek-header-top-height, 92px));
+        align-items: stretch;
+        overflow: visible;
+        padding: clamp(46px, 6vh, 76px) 0 clamp(58px, 7vh, 90px);
+    }
+
+    .contact-hero__grid {
+        grid-template-columns: minmax(0, 0.78fr) minmax(560px, 1.22fr);
+        align-items: center;
+        gap: clamp(54px, 6vw, 112px);
+    }
+
+    .contact-hero__content {
+        align-self: center;
+        max-width: 720px;
+        padding-bottom: clamp(100px, 12vh, 150px);
+    }
+
+    .contact-hero__content h1 {
+        max-width: 720px;
+        font-size: clamp(58px, 6vw, 98px);
+    }
+
+    .contact-hero__form {
+        position: relative;
+        z-index: 20;
+        align-self: start;
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: -360px;
+        padding: clamp(32px, 3.4vw, 52px);
+        border-color: rgba(15, 76, 129, 0.12);
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow:
+            0 34px 100px rgba(15, 41, 62, 0.15),
+            0 2px 0 rgba(255, 255, 255, 0.9) inset;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+
+    .contact-hero__form .contact-form-card__head h2 {
+        font-size: clamp(36px, 3.4vw, 56px);
+    }
+
+    .contact-main {
+        position: relative;
+        z-index: 2;
+        padding-top: clamp(118px, 11vw, 180px);
+    }
+
+    .contact-main__intro {
+        display: block;
+        width: calc(39% - 24px);
+        max-width: 620px;
+        margin-bottom: clamp(44px, 5vw, 72px);
+    }
+
+    .contact-main__intro > div {
+        width: 100%;
+    }
+
+    .contact-main__intro h2 {
+        font-size: clamp(40px, 4vw, 62px);
+    }
+
+    .contact-main__intro > p {
+        max-width: 580px;
+        margin-top: 24px;
+    }
+
+    .contact-layout {
+        grid-template-columns: minmax(340px, 0.78fr) minmax(560px, 1.22fr);
+    }
+
+    .contact-form-spacer {
+        min-height: 390px;
+        pointer-events: none;
+    }
+
+    .contact-details {
+        position: relative;
+        top: auto;
+    }
+}
+
+/* The generic form input rule must not size the checkbox like a text field. */
+.contact-page .contact-consent input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 0 0 18px;
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    margin: 2px 0 0;
+    padding: 0 !important;
+    border: 1.5px solid rgba(15, 76, 129, 0.34);
+    border-radius: 5px;
+    background: #ffffff;
+    box-shadow: none;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.contact-page .contact-consent input[type="checkbox"]::before {
+    content: "";
+    width: 9px;
+    height: 5px;
+    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    transform: rotate(-45deg) scale(0);
+    transform-origin: center;
+    transition: transform 0.16s ease;
+}
+
+.contact-page .contact-consent input[type="checkbox"]:checked {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+}
+
+.contact-page .contact-consent input[type="checkbox"]:checked::before {
+    transform: rotate(-45deg) scale(1);
+}
+
+.contact-page .contact-consent input[type="checkbox"]:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 4px rgba(15, 76, 129, 0.10);
+}
+
+.contact-page .contact-consent {
+    cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+    .contact-hero__form {
+        position: relative;
+        z-index: 2;
+        margin: 0;
+    }
+
+    .contact-form-spacer {
+        display: none;
+    }
+
+    .contact-main__intro {
+        width: auto;
+        max-width: none;
+    }
+}
