@@ -10602,3 +10602,23 @@ body .front-page .container {
     margin-left: auto;
     margin-right: auto;
 }
+
+
+/* =========================================================
+   SPEK footer logo true horizontal center
+   Center only inside the full first grid column
+   ========================================================= */
+
+.site-footer__brand {
+    width: 100%;
+    max-width: none;
+    justify-self: stretch;
+    align-self: start;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.site-footer__brand .site-footer__logo {
+    margin: 0;
+}
