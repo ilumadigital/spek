@@ -1,0 +1,18 @@
+/*
+Theme Name: SPEK Theme
+Theme URI: https://spek.gr/
+Author: ILUMA Digital
+Author URI: https://iluma.gr/
+Description: Custom WordPress theme for SPEK Metalloplastiki SA. Premium corporate website, product catalogue, product finder and store locator.
+Version: 1.0.0
+Text Domain: spek-theme
+Domain Path: /languages
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 8.0
+License: Private
+*/
+
+/*
+Main styles are loaded from assets/css/main.css
+*/

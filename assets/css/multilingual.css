@@ -1,0 +1,22 @@
+/* Preserve the existing switcher shell; make the active flag discernible. */
+.language-switcher a {
+    min-height: 30px;
+    padding-inline: 3px;
+}
+.language-switcher img {
+    display: block;
+    width: 24px;
+    height: 16px;
+    object-fit: contain;
+}
+.language-switcher a:not(.is-active) img {
+    opacity: .55;
+}
+.language-switcher a:hover img,
+.language-switcher a:focus-visible img {
+    opacity: 1;
+}
+.language-switcher a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}

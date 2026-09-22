@@ -1,0 +1,53 @@
+.spek-product-admin {
+    padding: 6px 0;
+}
+
+.spek-product-admin__intro {
+    margin: 0 0 18px;
+    color: #50575e;
+}
+
+.spek-product-admin__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 22px;
+}
+
+.spek-product-admin__field {
+    display: grid;
+    gap: 7px;
+}
+
+.spek-product-admin__field--full {
+    margin-top: 22px;
+}
+
+.spek-product-admin__field label {
+    font-weight: 700;
+    color: #1d2327;
+}
+
+.spek-product-admin__field input,
+.spek-product-admin__field textarea {
+    width: 100%;
+    border: 1px solid #c3c4c7;
+    border-radius: 6px;
+    padding: 9px 10px;
+    font-size: 14px;
+}
+
+.spek-product-admin__field input:focus,
+.spek-product-admin__field textarea:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.column-thumbnail img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+}
