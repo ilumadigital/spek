@@ -89,10 +89,18 @@ $hero_slides = [
     height: 100svh;
     min-height: 100vh;
     min-height: 100svh;
+    width: calc(100% - 24px);
+    max-width: 1920px;
+    margin-inline: auto;
     display: flex;
     align-items: center;
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    border-radius: 0 0 58px 58px;
     background: #dfe7ed;
+    box-shadow:
+        0 34px 90px rgba(15, 41, 62, 0.14),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.30);
     isolation: isolate;
 }
 
@@ -146,14 +154,14 @@ $hero_slides = [
     margin: 0;
     padding:
         calc(var(--spek-header-top-height, 92px) + clamp(34px, 5vh, 70px))
-        clamp(28px, 6vw, 112px)
+        clamp(48px, 7.3vw, 140px)
         clamp(54px, 7vh, 92px);
 }
 
 .spek-hero-v2--minimal .spek-hero-v2__content {
     position: relative;
-    width: min(760px, 58vw);
-    max-width: 760px;
+    width: min(860px, 62vw);
+    max-width: 860px;
     margin: 0;
     padding: 0 0 0 clamp(18px, 2vw, 30px);
 }
@@ -169,8 +177,8 @@ $hero_slides = [
 }
 
 .spek-hero-v2--minimal .spek-hero-v2__content h1 {
-    max-width: 760px;
-    margin: 0 0 28px;
+    max-width: 840px;
+    margin: 0 0 30px;
     color: #ffffff;
     font-size: clamp(52px, 5.15vw, 82px);
     font-weight: 700;
@@ -228,6 +236,28 @@ $hero_slides = [
     border-color: #ffffff;
 }
 
+
+.spek-hero-v2--minimal::before {
+    opacity: 0.14;
+}
+
+.spek-hero-v2--minimal::after {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    z-index: 4;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 0 0 46px 46px;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(7, 31, 49, 0.025);
+}
+
+@media (min-width: 1400px) {
+    .spek-hero-v2--minimal .spek-hero-v2__content h1 {
+        font-size: clamp(64px, 4.65vw, 88px);
+    }
+}
+
 @media (max-width: 1100px) {
     .spek-hero-v2--minimal .spek-hero-v2__content {
         width: min(720px, 68vw);
@@ -236,6 +266,8 @@ $hero_slides = [
 
 @media (max-width: 820px) {
     .spek-hero-v2.spek-hero-v2--minimal {
+        width: calc(100% - 16px);
+        border-radius: 0 0 42px 42px;
         height: 100vh;
         height: 100svh;
         min-height: 100vh;
@@ -271,10 +303,17 @@ $hero_slides = [
     .spek-hero-v2--minimal .spek-hero-v2__content h1 {
         font-size: clamp(44px, 10vw, 66px);
     }
+
+    .spek-hero-v2--minimal::after {
+        inset: 8px;
+        border-radius: 0 0 34px 34px;
+    }
 }
 
 @media (max-width: 560px) {
     .spek-hero-v2.spek-hero-v2--minimal {
+        width: calc(100% - 10px);
+        border-radius: 0 0 30px 30px;
         height: 100vh;
         height: 100svh;
         min-height: 100vh;
@@ -318,6 +357,11 @@ $hero_slides = [
 
     .spek-hero-v2--minimal .spek-hero-v2__actions .button {
         width: 100%;
+    }
+
+    .spek-hero-v2--minimal::after {
+        inset: 5px;
+        border-radius: 0 0 24px 24px;
     }
 }
 </style>
