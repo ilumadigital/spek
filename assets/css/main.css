@@ -9729,3 +9729,345 @@ body .front-page .container {
         border-radius: 26px 26px 48px 26px;
     }
 }
+
+
+/* =========================================================
+   SPEK high-contrast corporate palette pass
+   White / cool grey / brand blue / controlled brand red
+   ========================================================= */
+
+:root {
+    --spek-blue: #174f8a;
+    --spek-blue-deep: #0c3764;
+    --spek-blue-soft: #eef4f9;
+    --spek-red: #d7233f;
+    --spek-red-deep: #b81730;
+    --spek-grey-25: #fcfdfe;
+    --spek-grey-50: #f7f9fb;
+    --spek-grey-100: #eef2f5;
+    --spek-grey-200: #e2e8ed;
+    --spek-navy: #10283d;
+}
+
+/* Global corporate cleanup */
+.site-header.spek-smart-header {
+    border-bottom-color: rgba(16, 40, 61, 0.10);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 34px rgba(16, 40, 61, 0.055);
+}
+
+.site-header.spek-smart-header.is-scrolled {
+    background: rgba(255, 255, 255, 0.985);
+    border-bottom-color: rgba(16, 40, 61, 0.13);
+    box-shadow: 0 14px 38px rgba(16, 40, 61, 0.075);
+}
+
+.site-header.spek-smart-header .site-nav__menu,
+.site-header.spek-smart-header .language-switcher {
+    border-color: rgba(16, 40, 61, 0.10);
+    background: #ffffff;
+}
+
+.site-header.spek-smart-header .site-nav__menu a:hover,
+.site-header.spek-smart-header .site-nav__menu .current-menu-item > a,
+.site-header.spek-smart-header .site-nav__menu .current_page_item > a {
+    color: var(--spek-blue);
+    background: var(--spek-blue-soft);
+}
+
+.site-header.spek-smart-header .site-header__cta {
+    border-color: var(--spek-blue);
+    background: var(--spek-blue);
+}
+
+.site-header.spek-smart-header .site-header__cta:hover {
+    border-color: var(--spek-blue-deep);
+    background: var(--spek-blue-deep);
+}
+
+/* Homepage color system */
+.front-page {
+    --color-accent: var(--spek-blue);
+    --color-accent-dark: var(--spek-blue-deep);
+    --color-accent-soft: var(--spek-blue-soft);
+    --color-gold: var(--spek-red);
+    --color-gold-soft: #fceef1;
+    --color-page: #ffffff;
+    --color-surface-soft: var(--spek-grey-50);
+    --color-border: var(--spek-grey-200);
+
+    color: var(--spek-navy);
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f8fafb 52%, #ffffff 100%);
+}
+
+.front-page::before {
+    opacity: 0.42;
+    background:
+        linear-gradient(rgba(23, 79, 138, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 79, 138, 0.018) 1px, transparent 1px);
+}
+
+/* White-first section canvases */
+.front-page > .product-categories,
+.front-page > .finder-preview,
+.front-page > .why-spek,
+.front-page > .catalogue-preview,
+.front-page > .store-preview,
+.front-page > .b2b-cta {
+    border-color: rgba(16, 40, 61, 0.08);
+    background:
+        linear-gradient(180deg, #ffffff 0%, #fafcfd 100%);
+    box-shadow: 0 20px 60px rgba(20, 44, 64, 0.055);
+}
+
+/* Alternating subtle grey only where it helps section separation */
+.front-page > .finder-preview,
+.front-page > .store-preview {
+    background:
+        linear-gradient(180deg, #f7f9fb 0%, #ffffff 100%);
+}
+
+.front-page > .why-spek {
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f4f7f9 100%);
+}
+
+.front-page > .catalogue-preview,
+.front-page > .b2b-cta {
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f9fbfc 100%);
+}
+
+/* Kill bronze decorative haze and replace it with brand-color restraint */
+.front-page > .product-categories::before,
+.front-page > .finder-preview::before,
+.front-page > .why-spek::before,
+.front-page > .catalogue-preview::before,
+.front-page > .store-preview::before,
+.front-page > .b2b-cta::before {
+    opacity: 0.22;
+}
+
+.front-page .eyebrow {
+    color: var(--spek-blue);
+    font-weight: 700;
+}
+
+.front-page .eyebrow::before {
+    width: 38px;
+    height: 2px;
+    background: var(--spek-red);
+}
+
+.front-page h2,
+.front-page h3,
+.front-page strong {
+    color: var(--spek-navy);
+}
+
+.front-page .section-heading h2,
+.front-page .finder-preview__content h2,
+.front-page .catalogue-preview__content h2,
+.front-page .store-preview__content h2,
+.front-page .b2b-cta__inner h2 {
+    color: var(--spek-navy);
+    font-weight: 700;
+}
+
+.front-page p {
+    color: #5e6f7d;
+}
+
+/* Stronger, clearer CTA hierarchy */
+.front-page .button-primary {
+    color: #ffffff;
+    border-color: var(--spek-blue);
+    background: var(--spek-blue);
+    box-shadow: 0 12px 28px rgba(23, 79, 138, 0.16);
+}
+
+.front-page .button-primary:hover {
+    color: #ffffff;
+    border-color: var(--spek-blue-deep);
+    background: var(--spek-blue-deep);
+    box-shadow: 0 16px 34px rgba(12, 55, 100, 0.20);
+}
+
+.front-page .button-secondary {
+    color: var(--spek-blue);
+    border-color: rgba(23, 79, 138, 0.22);
+    background: #ffffff;
+    box-shadow: none;
+}
+
+.front-page .button-secondary:hover {
+    color: var(--spek-red);
+    border-color: rgba(215, 35, 63, 0.28);
+    background: #ffffff;
+}
+
+/* Product cards */
+.front-page .category-card,
+.front-page .product-categories .category-card {
+    border-color: rgba(16, 40, 61, 0.09);
+    background: #ffffff;
+}
+
+.front-page .category-card::before,
+.front-page .product-categories .category-card::before {
+    opacity: 0.65;
+    background:
+        linear-gradient(135deg, rgba(23, 79, 138, 0.10), rgba(215, 35, 63, 0.055));
+}
+
+.front-page .category-card__icon,
+.front-page .product-categories .category-card__icon {
+    background:
+        linear-gradient(145deg, var(--spek-blue) 0%, #2e6eaa 100%);
+    box-shadow: 0 12px 26px rgba(23, 79, 138, 0.16);
+}
+
+.front-page .category-card__link {
+    color: var(--spek-blue);
+}
+
+.front-page .category-card:hover,
+.front-page .product-categories .category-card:hover {
+    border-color: rgba(23, 79, 138, 0.22);
+}
+
+.front-page .category-card:hover .category-card__link {
+    color: var(--spek-red);
+}
+
+/* Finder */
+.front-page .finder-preview::before,
+.front-page .premium-finder::before {
+    opacity: 0.22;
+    background:
+        linear-gradient(90deg, rgba(23, 79, 138, 0.035) 1px, transparent 1px),
+        linear-gradient(rgba(23, 79, 138, 0.035) 1px, transparent 1px);
+}
+
+.front-page .finder-step {
+    border-color: rgba(16, 40, 61, 0.09);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 14px 38px rgba(20, 44, 64, 0.06);
+}
+
+.front-page .finder-step span {
+    color: var(--spek-blue);
+    background: var(--spek-blue-soft);
+}
+
+.front-page .finder-step.is-active {
+    border-color: rgba(23, 79, 138, 0.18);
+    box-shadow: 0 18px 48px rgba(23, 79, 138, 0.10);
+}
+
+.front-page .finder-preview__line {
+    background: linear-gradient(
+        180deg,
+        var(--spek-blue) 0%,
+        rgba(23, 79, 138, 0.25) 72%,
+        var(--spek-red) 100%
+    );
+}
+
+/* Why SPEK */
+.front-page .why-spek::after {
+    color: rgba(23, 79, 138, 0.025);
+}
+
+.front-page .why-spek .feature-card {
+    border-color: rgba(16, 40, 61, 0.08);
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f8fafb 100%);
+}
+
+.front-page .why-spek .feature-card::before {
+    background: linear-gradient(
+        90deg,
+        var(--spek-blue) 0%,
+        var(--spek-blue) 72%,
+        var(--spek-red) 72%,
+        var(--spek-red) 100%
+    );
+}
+
+/* Catalogue */
+.front-page .catalogue-preview__box,
+.front-page .premium-catalogue-box {
+    border-color: rgba(16, 40, 61, 0.09);
+    background:
+        linear-gradient(135deg, #ffffff 0%, #f5f8fa 100%);
+    box-shadow: 0 20px 54px rgba(20, 44, 64, 0.07);
+}
+
+.front-page .catalogue-sheet--front {
+    border-color: rgba(23, 79, 138, 0.16);
+}
+
+.front-page .catalogue-chip {
+    color: var(--spek-blue);
+    border-color: rgba(23, 79, 138, 0.14);
+    background: rgba(255, 255, 255, 0.94);
+}
+
+/* Partner / map */
+.front-page .map-placeholder,
+.front-page .premium-map {
+    border-color: rgba(16, 40, 61, 0.09);
+    background:
+        radial-gradient(circle at 20% 18%, rgba(23, 79, 138, 0.08), transparent 26%),
+        linear-gradient(180deg, #ffffff 0%, #f4f7f9 100%);
+}
+
+.front-page .map-grid {
+    background:
+        linear-gradient(rgba(23, 79, 138, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 79, 138, 0.055) 1px, transparent 1px);
+}
+
+/* B2B closing block */
+.front-page .b2b-cta__inner {
+    border-color: rgba(16, 40, 61, 0.09);
+    background:
+        linear-gradient(135deg, #ffffff 0%, #f4f7f9 100%);
+    box-shadow: 0 20px 54px rgba(20, 44, 64, 0.065);
+}
+
+.front-page .b2b-cta__inner::before {
+    width: 112px;
+    background: linear-gradient(
+        90deg,
+        var(--spek-blue) 0%,
+        var(--spek-blue) 68%,
+        var(--spek-red) 68%,
+        var(--spek-red) 100%
+    );
+}
+
+.front-page .support-pill {
+    color: var(--spek-blue);
+    border-color: rgba(23, 79, 138, 0.13);
+    background: #ffffff;
+}
+
+/* Red used as sharp detail only */
+.front-page a:not(.button):hover {
+    color: var(--spek-red);
+}
+
+/* Stronger contrast on smaller screens too */
+@media (max-width: 680px) {
+    .front-page > .product-categories,
+    .front-page > .finder-preview,
+    .front-page > .why-spek,
+    .front-page > .catalogue-preview,
+    .front-page > .store-preview,
+    .front-page > .b2b-cta {
+        background: #ffffff;
+    }
+}
