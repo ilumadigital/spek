@@ -10547,3 +10547,40 @@ body .front-page .container {
         border-radius: 24px 24px 38px 24px;
     }
 }
+
+
+/* =========================================================
+   SPEK footer column alignment lock
+   Keep all navigation columns on the exact same top baseline
+   ========================================================= */
+
+.site-footer__column {
+    align-self: start;
+    display: grid;
+    grid-template-rows: 22px auto;
+    align-content: start;
+    margin: 0;
+    padding: 0;
+}
+
+.site-footer__column h3 {
+    display: flex;
+    align-items: flex-start;
+    height: 22px;
+    min-height: 22px;
+    margin: 0 0 22px;
+    padding: 0;
+    line-height: 1;
+}
+
+.site-footer__column .footer-menu,
+.site-footer__column > ul {
+    align-self: start;
+    margin: 0;
+    padding: 0;
+}
+
+.site-footer__column .footer-menu li:first-child,
+.site-footer__column > ul li:first-child {
+    margin-top: 0;
+}
