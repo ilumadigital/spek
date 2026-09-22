@@ -16,22 +16,22 @@ if (!defined('ABSPATH')) {
         <div data-reveal>
             <span class="eyebrow"><?php esc_html_e('B2B Support', 'spek-theme'); ?></span>
 
-            <h2><?php esc_html_e('Για επαγγελματίες, συνεργάτες και σημεία πώλησης.', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Επαγγελματική υποστήριξη από τη SPEK.', 'spek-theme'); ?></h2>
 
             <p>
-                <?php esc_html_e('Η ομάδα της SPEK μπορεί να σας υποστηρίξει με πληροφορίες προϊόντων, εμπορικά αιτήματα, καταλόγους και συνεργασίες.', 'spek-theme'); ?>
+                <?php esc_html_e('Για πληροφορίες προϊόντων, καταλόγους, διαθεσιμότητα και εμπορική συνεργασία, επικοινωνήστε με την ομάδα μας.', 'spek-theme'); ?>
             </p>
         </div>
 
         <div class="b2b-cta__meta" data-reveal style="--reveal-delay: 100ms;">
-            <span class="support-pill"><?php esc_html_e('Product information', 'spek-theme'); ?></span>
-            <span class="support-pill"><?php esc_html_e('Partner support', 'spek-theme'); ?></span>
-            <span class="support-pill"><?php esc_html_e('Catalogue access', 'spek-theme'); ?></span>
-            <span class="support-pill"><?php esc_html_e('Commercial requests', 'spek-theme'); ?></span>
+            <span class="support-pill"><?php esc_html_e('Πληροφορίες προϊόντων', 'spek-theme'); ?></span>
+            <span class="support-pill"><?php esc_html_e('Υποστήριξη συνεργατών', 'spek-theme'); ?></span>
+            <span class="support-pill"><?php esc_html_e('Τεχνικοί κατάλογοι', 'spek-theme'); ?></span>
+            <span class="support-pill"><?php esc_html_e('Εμπορικά αιτήματα', 'spek-theme'); ?></span>
         </div>
 
         <a href="<?php echo esc_url(spek_page_url('contact/')); ?>" class="button button-primary" data-reveal style="--reveal-delay: 180ms;">
-            <?php esc_html_e('Επικοινωνήστε μαζί μας', 'spek-theme'); ?>
+            <?php esc_html_e('Επικοινωνία', 'spek-theme'); ?>
         </a>
 
     </div>
