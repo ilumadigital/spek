@@ -421,6 +421,120 @@
         });
     }
 
+
+    function setupHomeMotion() {
+        const frontPage = document.querySelector('.front-page');
+
+        if (!frontPage) {
+            return;
+        }
+
+        const sections = Array.from(frontPage.children).filter((element) => element.classList.contains('section'));
+        const depthTargets = frontPage.querySelectorAll(
+            '.finder-preview__mockup, .catalogue-preview__visual, .store-preview__visual'
+        );
+        const heroStage = frontPage.querySelector('[data-home-hero-stage]');
+        const hero = frontPage.querySelector('[data-home-hero]');
+        const viewMore = frontPage.querySelector('[data-hero-view-more]');
+
+        sections.forEach((section) => {
+            section.setAttribute('data-home-section', '');
+        });
+
+        if (prefersReducedMotion) {
+            sections.forEach((section) => section.classList.add('is-home-visible'));
+            return;
+        }
+
+        if ('IntersectionObserver' in window) {
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+                    entry.target.classList.add('is-home-visible');
+                    observer.unobserve(entry.target);
+                });
+            }, {
+                threshold: 0.08,
+                rootMargin: '0px 0px -8% 0px',
+            });
+
+            sections.forEach((section) => sectionObserver.observe(section));
+        } else {
+            sections.forEach((section) => section.classList.add('is-home-visible'));
+        }
+
+        if (heroStage && hero && window.matchMedia('(pointer: fine)').matches) {
+            heroStage.addEventListener('pointermove', (event) => {
+                const rect = heroStage.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) - 0.5;
+                const y = ((event.clientY - rect.top) / rect.height) - 0.5;
+
+                hero.style.setProperty('--hero-pan-x', `${x * -12}px`);
+                hero.style.setProperty('--hero-pan-y', `${y * -9}px`);
+            });
+
+            heroStage.addEventListener('pointerleave', () => {
+                hero.style.setProperty('--hero-pan-x', '0px');
+                hero.style.setProperty('--hero-pan-y', '0px');
+            });
+        }
+
+        if (viewMore) {
+            viewMore.addEventListener('click', (event) => {
+                const href = viewMore.getAttribute('href');
+
+                if (!href || !href.startsWith('#')) {
+                    return;
+                }
+
+                const target = document.querySelector(href);
+
+                if (!target) {
+                    return;
+                }
+
+                event.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+
+        if (!depthTargets.length) {
+            return;
+        }
+
+        let ticking = false;
+
+        const updateDepth = () => {
+            const viewportHeight = window.innerHeight || 1;
+
+            depthTargets.forEach((target) => {
+                const rect = target.getBoundingClientRect();
+                const center = rect.top + (rect.height / 2);
+                const normalized = Math.max(-1, Math.min(1, (center - (viewportHeight / 2)) / viewportHeight));
+                target.style.setProperty('--home-depth-y', `${normalized * -10}px`);
+            });
+
+            ticking = false;
+        };
+
+        const requestDepthUpdate = () => {
+            if (ticking) {
+                return;
+            }
+
+            ticking = true;
+            window.requestAnimationFrame(updateDepth);
+        };
+
+        window.addEventListener('scroll', requestDepthUpdate, { passive: true });
+        window.addEventListener('resize', requestDepthUpdate);
+        updateDepth();
+    }
+
+
     function setupCompanyDetailsCopy() {
         const copyButtons = document.querySelectorAll('[data-copy-value]');
 
@@ -499,5 +613,6 @@
     setupParallax();
     setupMediaSliders();
     setupHeroBackgroundSlider();
+    setupHomeMotion();
     setupCompanyDetailsCopy();
 })();
