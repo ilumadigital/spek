@@ -85,7 +85,10 @@ $hero_slides = [
 <style>
 .spek-hero-v2.spek-hero-v2--minimal {
     position: relative;
-    min-height: calc(100svh - 76px);
+    height: 100vh;
+    height: 100svh;
+    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -138,12 +141,13 @@ $hero_slides = [
     align-items: center;
     width: 100%;
     max-width: none;
-    min-height: calc(100svh - 76px);
+    height: 100%;
+    min-height: 100%;
     margin: 0;
     padding:
-        clamp(88px, 11vh, 138px)
+        calc(var(--spek-header-top-height, 92px) + clamp(34px, 5vh, 70px))
         clamp(28px, 6vw, 112px)
-        clamp(72px, 9vh, 112px);
+        clamp(54px, 7vh, 92px);
 }
 
 .spek-hero-v2--minimal .spek-hero-v2__content {
@@ -231,9 +235,16 @@ $hero_slides = [
 }
 
 @media (max-width: 820px) {
-    .spek-hero-v2.spek-hero-v2--minimal,
+    .spek-hero-v2.spek-hero-v2--minimal {
+        height: 100vh;
+        height: 100svh;
+        min-height: 100vh;
+        min-height: 100svh;
+    }
+
     .spek-hero-v2--minimal .spek-hero-v2__inner {
-        min-height: calc(100svh - 70px);
+        height: 100%;
+        min-height: 100%;
     }
 
     .spek-hero-v2--minimal .spek-hero-v2__inner {
@@ -263,9 +274,16 @@ $hero_slides = [
 }
 
 @media (max-width: 560px) {
-    .spek-hero-v2.spek-hero-v2--minimal,
+    .spek-hero-v2.spek-hero-v2--minimal {
+        height: 100vh;
+        height: 100svh;
+        min-height: 100vh;
+        min-height: 100svh;
+    }
+
     .spek-hero-v2--minimal .spek-hero-v2__inner {
-        min-height: calc(100svh - 68px);
+        height: 100%;
+        min-height: 100%;
     }
 
     .spek-hero-v2--minimal .spek-hero-v2__inner {
