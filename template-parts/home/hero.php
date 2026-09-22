@@ -83,13 +83,6 @@ $hero_slides = [
     </div>
 
 </section>
-
-    <a class="spek-hero-v2__view-more" href="#home-product-range" data-hero-view-more aria-label="<?php esc_attr_e('View More', 'spek-theme'); ?>">
-        <span><?php esc_html_e('View More', 'spek-theme'); ?></span>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 4v15M6.5 13.5 12 19l5.5-5.5" />
-        </svg>
-    </a>
 </div>
 
 <style>
