@@ -10849,3 +10849,427 @@ body .front-page .container {
     }
 }
 
+/* =========================================================
+   SPEK Company Immersive Refresh
+   Full-width corporate layout + viewport hero + motion
+   ========================================================= */
+
+.spek-company-page {
+    --company-edge: clamp(22px, 4vw, 72px);
+    --company-section-gap: clamp(96px, 10vw, 160px);
+    overflow: clip;
+}
+
+.spek-company-page > section > .container,
+.spek-company-page > .company-global > .container,
+.spek-company-page .company-hero > .container {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: var(--company-edge);
+}
+
+.spek-company-page .company-timeline {
+    width: min(100%, 1380px);
+}
+
+.spek-company-page .company-history,
+.spek-company-page .company-production,
+.spek-company-page .company-values,
+.spek-company-page .company-quality {
+    padding-top: var(--company-section-gap);
+    padding-bottom: var(--company-section-gap);
+}
+
+.spek-company-page .company-intro {
+    padding-top: clamp(104px, 9vw, 150px);
+    padding-bottom: var(--company-section-gap);
+    background:
+        radial-gradient(circle at 92% 18%, rgba(15, 76, 129, 0.055), transparent 27%),
+        #ffffff;
+}
+
+.spek-company-page .company-intro__grid {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    gap: clamp(54px, 7vw, 120px);
+}
+
+.spek-company-page .company-intro__grid h2 {
+    max-width: 720px;
+    font-size: clamp(42px, 4.5vw, 72px);
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+}
+
+.spek-company-page .company-intro__copy {
+    max-width: 900px;
+}
+
+.spek-company-page .company-intro__media {
+    min-height: clamp(460px, 54vw, 680px);
+    margin-top: clamp(48px, 6vw, 86px);
+    border-radius: 32px 32px 86px 32px;
+}
+
+.spek-company-page .company-intro__media img {
+    min-height: inherit;
+    transform: scale(1.045);
+    transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, translate;
+}
+
+.spek-company-page .company-intro__media.is-visible img {
+    transform: scale(1);
+}
+
+.spek-company-page .company-production__intro,
+.spek-company-page .company-values__grid,
+.spek-company-page .company-global__inner {
+    gap: clamp(52px, 6vw, 110px);
+}
+
+.spek-company-page .company-production__grid--media,
+.spek-company-page .company-quality__grid {
+    gap: clamp(16px, 1.6vw, 26px);
+}
+
+.spek-company-page .company-facility {
+    margin-top: clamp(68px, 6vw, 110px);
+    padding: clamp(42px, 5vw, 78px);
+}
+
+.spek-company-page .company-production__mosaic {
+    margin-top: clamp(68px, 6vw, 110px);
+}
+
+.spek-company-page .company-global {
+    padding: clamp(112px, 10vw, 170px) 0;
+}
+
+.spek-company-page .company-global__map {
+    min-height: min(42vw, 560px);
+}
+
+.spek-company-page .company-closing {
+    margin-top: clamp(76px, 7vw, 120px);
+    padding: clamp(48px, 6vw, 90px);
+}
+
+@media (min-width: 1101px) and (min-height: 760px) {
+    .spek-company-page .company-hero {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        height: calc(100svh - var(--spek-header-top-height, 92px));
+        min-height: 0;
+        padding: clamp(18px, 2.6vh, 30px) 0 clamp(18px, 2.4vh, 28px);
+        overflow: hidden;
+    }
+
+    .spek-company-page .company-hero__grid {
+        min-height: 0;
+        gap: clamp(42px, 5vw, 86px);
+        align-items: center;
+    }
+
+    .spek-company-page .company-hero__content {
+        align-self: center;
+    }
+
+    .spek-company-page .company-hero__content h1 {
+        max-width: 780px;
+        margin-bottom: clamp(18px, 2.4vh, 26px);
+        font-size: clamp(50px, 5.1vw, 82px);
+    }
+
+    .spek-company-page .company-hero__lead {
+        max-width: 720px;
+        font-size: clamp(16px, 1.2vw, 19px);
+        line-height: 1.58;
+    }
+
+    .spek-company-page .company-hero__actions {
+        margin-top: clamp(20px, 2.8vh, 30px);
+    }
+
+    .spek-company-page .company-hero__visual {
+        height: min(53vh, 520px);
+        min-height: 360px;
+        border-radius: 30px 30px 92px 30px;
+    }
+
+    .spek-company-page .company-facts {
+        width: auto;
+        max-width: none;
+        margin: clamp(14px, 1.8vh, 22px) var(--company-edge) 0;
+        padding-inline: 0;
+        transform: none;
+        border-radius: 24px;
+    }
+
+    .spek-company-page .company-fact {
+        min-height: 94px;
+        padding: clamp(16px, 2vh, 22px) clamp(18px, 1.8vw, 30px);
+    }
+
+    .spek-company-page .company-fact strong {
+        margin-bottom: 6px;
+        font-size: clamp(24px, 2vw, 34px);
+    }
+
+    .spek-company-page .company-fact span {
+        font-size: 12px;
+        line-height: 1.35;
+    }
+}
+
+.spek-company-page.has-company-motion [data-company-section] {
+    opacity: 0.9;
+    translate: 0 34px;
+    transition:
+        opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1),
+        translate 1.05s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spek-company-page.has-company-motion [data-company-section].is-company-visible {
+    opacity: 1;
+    translate: 0 0;
+}
+
+.spek-company-page [data-reveal] {
+    --company-reveal-x: 0px;
+    opacity: 0;
+    filter: blur(9px);
+    transform: translate3d(var(--company-reveal-x), 36px, 0) scale(0.985);
+    transition:
+        opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.spek-company-page [data-reveal].is-visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+}
+
+.spek-company-page .company-timeline__item--left[data-reveal] {
+    --company-reveal-x: -42px;
+}
+
+.spek-company-page .company-timeline__item--right[data-reveal] {
+    --company-reveal-x: 42px;
+}
+
+.spek-company-page .company-process-card[data-reveal]:nth-child(odd),
+.spek-company-page .company-quality-card[data-reveal]:nth-child(odd) {
+    --company-reveal-x: -22px;
+}
+
+.spek-company-page .company-process-card[data-reveal]:nth-child(even),
+.spek-company-page .company-quality-card[data-reveal]:nth-child(even) {
+    --company-reveal-x: 22px;
+}
+
+.spek-company-page .company-hero__visual {
+    translate: var(--company-hero-x, 0px) var(--company-hero-y, 0px);
+    transition:
+        translate 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.4s ease,
+        border-color 0.4s ease;
+    will-change: translate;
+}
+
+.spek-company-page .company-hero__visual > img {
+    transform: scale(1.035);
+    will-change: transform;
+}
+
+.spek-company-page .company-hero__visual.is-visible > img {
+    animation: spekCompanyHeroDrift 12s ease-in-out infinite alternate;
+}
+
+.spek-company-page .company-intro__media img,
+.spek-company-page .company-facility__visual--photo > img,
+.spek-company-page .company-production__mosaic img,
+.spek-company-page .company-global__map {
+    translate: 0 var(--company-depth-y, 0px);
+    will-change: translate, transform;
+}
+
+.spek-company-page .company-facility__visual--photo > img,
+.spek-company-page .company-production__mosaic img {
+    transition:
+        translate 0.16s linear,
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spek-company-page .company-process-card--media,
+.spek-company-page .company-quality-card,
+.spek-company-page .company-value-card {
+    transition:
+        transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.45s ease,
+        border-color 0.35s ease;
+}
+
+.spek-company-page .company-process-card--media:hover,
+.spek-company-page .company-quality-card:hover,
+.spek-company-page .company-value-card:hover {
+    transform: translateY(-9px);
+    box-shadow: var(--shadow-lg);
+}
+
+.spek-company-page .company-timeline__line {
+    transform: translateX(-50%) scaleY(var(--company-timeline-progress, 0));
+    transform-origin: 50% 0%;
+    transition: transform 0.12s linear;
+}
+
+.spek-company-page .company-timeline__marker span {
+    animation: spekCompanyMarkerPulse 2.8s ease-in-out infinite;
+}
+
+.spek-company-page .company-global__orbit--one {
+    animation: spekCompanyOrbitOne 18s linear infinite;
+}
+
+.spek-company-page .company-global__orbit--two {
+    animation: spekCompanyOrbitTwo 22s linear infinite reverse;
+}
+
+.spek-company-page .company-global__pin {
+    animation: spekCompanyPinPulse 2.6s ease-in-out infinite;
+}
+
+.spek-company-page .company-global__pin--two { animation-delay: 0.45s; }
+.spek-company-page .company-global__pin--three { animation-delay: 0.9s; }
+.spek-company-page .company-global__pin--four { animation-delay: 1.35s; }
+
+@keyframes spekCompanyHeroDrift {
+    0% { transform: scale(1.035) translate3d(0, 0, 0); }
+    100% { transform: scale(1.085) translate3d(-0.8%, -0.4%, 0); }
+}
+
+@keyframes spekCompanyMarkerPulse {
+    0%, 100% { box-shadow: 0 0 14px rgba(15, 76, 129, 0.28); }
+    50% { box-shadow: 0 0 0 8px rgba(15, 76, 129, 0.07), 0 0 24px rgba(15, 76, 129, 0.34); }
+}
+
+@keyframes spekCompanyPinPulse {
+    0%, 100% { box-shadow: 0 0 0 8px rgba(200, 169, 106, 0.12); }
+    50% { box-shadow: 0 0 0 14px rgba(200, 169, 106, 0.035); }
+}
+
+@keyframes spekCompanyOrbitOne {
+    from { transform: translate(-50%, -50%) rotate(18deg); }
+    to { transform: translate(-50%, -50%) rotate(378deg); }
+}
+
+@keyframes spekCompanyOrbitTwo {
+    from { transform: translate(-50%, -50%) rotate(-18deg); }
+    to { transform: translate(-50%, -50%) rotate(342deg); }
+}
+
+@media (max-width: 1100px) {
+    .spek-company-page {
+        --company-edge: clamp(18px, 4vw, 36px);
+    }
+
+    .spek-company-page .company-hero {
+        padding-top: 42px;
+    }
+
+    .spek-company-page .company-hero__grid {
+        gap: 42px;
+    }
+
+    .spek-company-page .company-facts {
+        width: auto;
+        margin-inline: var(--company-edge);
+        padding-inline: 0;
+    }
+
+    .spek-company-page .company-intro__media {
+        min-height: clamp(380px, 64vw, 560px);
+    }
+
+    .spek-company-page .company-global__map {
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 780px) {
+    .spek-company-page {
+        --company-edge: 18px;
+        --company-section-gap: 92px;
+    }
+
+    .spek-company-page .company-hero {
+        padding-top: 28px;
+    }
+
+    .spek-company-page .company-hero__visual {
+        min-height: 390px;
+    }
+
+    .spek-company-page .company-facts {
+        margin-top: 34px;
+        transform: none;
+    }
+
+    .spek-company-page .company-intro {
+        padding-top: 94px;
+    }
+
+    .spek-company-page .company-intro__grid {
+        gap: 34px;
+    }
+
+    .spek-company-page .company-intro__grid h2 {
+        font-size: clamp(38px, 10vw, 54px);
+    }
+
+    .spek-company-page .company-intro__media {
+        min-height: 420px;
+        margin-top: 46px;
+        border-radius: 26px 26px 58px 26px;
+    }
+
+    .spek-company-page .company-global {
+        padding-block: 100px;
+    }
+
+    .spek-company-page .company-global__map {
+        min-height: 360px;
+    }
+
+    .spek-company-page .company-timeline__item--left[data-reveal],
+    .spek-company-page .company-timeline__item--right[data-reveal],
+    .spek-company-page .company-process-card[data-reveal],
+    .spek-company-page .company-quality-card[data-reveal] {
+        --company-reveal-x: 0px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spek-company-page .company-hero__visual.is-visible > img,
+    .spek-company-page .company-timeline__marker span,
+    .spek-company-page .company-global__orbit,
+    .spek-company-page .company-global__pin {
+        animation: none !important;
+    }
+
+    .spek-company-page.has-company-motion [data-company-section],
+    .spek-company-page [data-reveal] {
+        opacity: 1;
+        filter: none;
+        transform: none;
+        translate: none;
+        transition: none;
+    }
+
+    .spek-company-page .company-timeline__line {
+        transform: translateX(-50%) scaleY(1);
+    }
+}

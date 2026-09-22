@@ -515,6 +515,117 @@
     }
 
 
+
+    function setupCompanyPageMotion() {
+        const page = document.querySelector('.spek-company-page');
+
+        if (!page) {
+            return;
+        }
+
+        const sections = Array.from(page.children).filter((element) => element.tagName === 'SECTION');
+        const heroVisual = page.querySelector('.company-hero__visual');
+        const timeline = page.querySelector('.company-timeline');
+        const depthTargets = page.querySelectorAll(
+            '.company-intro__media img, .company-facility__visual--photo > img, .company-production__mosaic img, .company-global__map'
+        );
+
+        page.classList.add('has-company-motion');
+
+        sections.forEach((section, index) => {
+            section.setAttribute('data-company-section', '');
+
+            if (index === 0 || prefersReducedMotion) {
+                section.classList.add('is-company-visible');
+            }
+        });
+
+        if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+                    entry.target.classList.add('is-company-visible');
+                    observer.unobserve(entry.target);
+                });
+            }, {
+                threshold: 0.08,
+                rootMargin: '0px 0px -8% 0px',
+            });
+
+            sections.slice(1).forEach((section) => sectionObserver.observe(section));
+        } else {
+            sections.forEach((section) => section.classList.add('is-company-visible'));
+        }
+
+        if (!prefersReducedMotion && heroVisual && window.matchMedia('(pointer: fine)').matches) {
+            const hero = page.querySelector('.company-hero');
+
+            if (hero) {
+                hero.addEventListener('pointermove', (event) => {
+                    const rect = hero.getBoundingClientRect();
+                    const x = ((event.clientX - rect.left) / rect.width) - 0.5;
+                    const y = ((event.clientY - rect.top) / rect.height) - 0.5;
+
+                    heroVisual.style.setProperty('--company-hero-x', (x * -10) + 'px');
+                    heroVisual.style.setProperty('--company-hero-y', (y * -8) + 'px');
+                });
+
+                hero.addEventListener('pointerleave', () => {
+                    heroVisual.style.setProperty('--company-hero-x', '0px');
+                    heroVisual.style.setProperty('--company-hero-y', '0px');
+                });
+            }
+        }
+
+        if (prefersReducedMotion) {
+            if (timeline) {
+                timeline.style.setProperty('--company-timeline-progress', '1');
+            }
+            return;
+        }
+
+        let ticking = false;
+
+        const updateCompanyMotion = () => {
+            const viewportHeight = window.innerHeight || 1;
+
+            depthTargets.forEach((target) => {
+                const rect = target.getBoundingClientRect();
+                const center = rect.top + (rect.height / 2);
+                const normalized = Math.max(-1, Math.min(1, (center - (viewportHeight / 2)) / viewportHeight));
+                target.style.setProperty('--company-depth-y', (normalized * -14) + 'px');
+            });
+
+            if (timeline) {
+                const rect = timeline.getBoundingClientRect();
+                const start = viewportHeight * 0.78;
+                const total = Math.max(1, rect.height + (start - viewportHeight * 0.18));
+                const travelled = start - rect.top;
+                const progress = Math.max(0, Math.min(1, travelled / total));
+                timeline.style.setProperty('--company-timeline-progress', progress.toFixed(3));
+            }
+
+            ticking = false;
+        };
+
+        const requestCompanyMotion = () => {
+            if (ticking) {
+                return;
+            }
+
+            ticking = true;
+            window.requestAnimationFrame(updateCompanyMotion);
+        };
+
+        window.addEventListener('scroll', requestCompanyMotion, { passive: true });
+        window.addEventListener('resize', requestCompanyMotion);
+        updateCompanyMotion();
+    }
+
+
     function setupCompanyDetailsCopy() {
         const copyButtons = document.querySelectorAll('[data-copy-value]');
 
@@ -594,5 +705,6 @@
     setupMediaSliders();
     setupHeroBackgroundSlider();
     setupHomeMotion();
+    setupCompanyPageMotion();
     setupCompanyDetailsCopy();
 })();
