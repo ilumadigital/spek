@@ -9400,3 +9400,332 @@ body .site-header.spek-smart-header .container {
         padding-inline: 14px;
     }
 }
+
+
+/* =========================================================
+   SPEK homepage luxury panel system
+   Wider content / architectural radii / premium rhythm
+   ========================================================= */
+
+:root {
+    --spek-home-container: 1640px;
+    --spek-home-gutter: 48px;
+    --spek-home-panel-max: 1880px;
+    --spek-home-panel-gap: 24px;
+    --spek-home-panel-border: rgba(15, 76, 129, 0.075);
+    --spek-home-panel-shadow: 0 24px 70px rgba(22, 43, 61, 0.065);
+}
+
+/* Wider homepage canvas */
+.front-page .container,
+body .front-page .container {
+    width: min(calc(100% - 72px), var(--spek-home-container));
+    max-width: var(--spek-home-container);
+    margin-inline: auto;
+}
+
+/* Every homepage section becomes a refined architectural panel */
+.front-page > .section {
+    width: min(calc(100% - 32px), var(--spek-home-panel-max));
+    margin: var(--spek-home-panel-gap) auto 0;
+    overflow: clip;
+    border: 1px solid var(--spek-home-panel-border);
+    box-shadow: var(--spek-home-panel-shadow);
+}
+
+/* Alternating corner language keeps it premium without changing structure */
+.front-page > .product-categories {
+    border-radius: 42px 42px 92px 42px;
+    background:
+        radial-gradient(circle at 92% 8%, rgba(15, 76, 129, 0.045), transparent 25%),
+        linear-gradient(180deg, #ffffff 0%, #fbfaf7 100%);
+}
+
+.front-page > .finder-preview {
+    border-radius: 92px 42px 42px 42px;
+}
+
+.front-page > .why-spek {
+    border-radius: 42px 92px 42px 42px;
+}
+
+.front-page > .catalogue-preview {
+    border-radius: 42px 42px 92px 42px;
+    background:
+        radial-gradient(circle at 8% 14%, rgba(200, 169, 106, 0.07), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafb 100%);
+}
+
+.front-page > .store-preview {
+    border-radius: 92px 42px 42px 42px;
+    background:
+        radial-gradient(circle at 88% 14%, rgba(15, 76, 129, 0.05), transparent 24%),
+        linear-gradient(180deg, #fbfcfd 0%, #ffffff 100%);
+}
+
+.front-page > .b2b-cta {
+    margin-bottom: 28px;
+    border-radius: 42px 92px 42px 42px;
+    background:
+        radial-gradient(circle at 12% 82%, rgba(200, 169, 106, 0.07), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #fbfaf7 100%);
+}
+
+/* More generous vertical rhythm */
+.front-page > .product-categories {
+    padding-top: 118px;
+    padding-bottom: 126px;
+}
+
+.front-page > .finder-preview,
+.front-page > .why-spek,
+.front-page > .store-preview {
+    padding-top: 126px;
+    padding-bottom: 126px;
+}
+
+.front-page > .catalogue-preview,
+.front-page > .b2b-cta {
+    padding-top: 104px;
+    padding-bottom: 104px;
+}
+
+/* Headings get a little more editorial scale and width */
+.front-page .section-heading {
+    max-width: 960px;
+    margin-bottom: 58px;
+}
+
+.front-page .section-heading h2,
+.front-page .finder-preview__content h2,
+.front-page .catalogue-preview__content h2,
+.front-page .store-preview__content h2,
+.front-page .b2b-cta__inner h2 {
+    letter-spacing: -0.052em;
+}
+
+.front-page .section-heading h2 {
+    max-width: 920px;
+    font-size: clamp(40px, 3.6vw, 62px);
+}
+
+.front-page .section-heading p {
+    max-width: 800px;
+    font-size: 18px;
+}
+
+/* Cards: larger, calmer and more architectural */
+.front-page .category-grid,
+.front-page .product-categories .category-grid {
+    gap: 20px;
+}
+
+.front-page .category-card,
+.front-page .product-categories .category-card {
+    min-height: 270px;
+    padding: 30px;
+    border-radius: 28px 28px 58px 28px;
+    box-shadow:
+        0 14px 34px rgba(17, 35, 49, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.front-page .category-card:hover,
+.front-page .product-categories .category-card:hover {
+    box-shadow: 0 26px 64px rgba(17, 35, 49, 0.10);
+}
+
+/* Finder layout gets more horizontal presence */
+.front-page .finder-preview__grid {
+    grid-template-columns: minmax(0, 0.88fr) minmax(560px, 1.12fr);
+    gap: clamp(70px, 6vw, 112px);
+}
+
+.front-page .finder-preview__content {
+    max-width: 650px;
+}
+
+.front-page .finder-preview__spotlight {
+    border-radius: 34px 34px 72px 34px;
+    box-shadow: 0 24px 58px rgba(18, 42, 61, 0.10);
+}
+
+.front-page .finder-preview__spotlight img {
+    aspect-ratio: 16 / 9.3;
+}
+
+.front-page .finder-step {
+    border-radius: 24px 24px 46px 24px;
+}
+
+/* Why SPEK cards keep the existing personality but gain stronger materiality */
+.front-page .why-spek .feature-card {
+    border-width: 1px;
+    box-shadow:
+        0 18px 46px rgba(18, 39, 56, 0.065),
+        inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+/* Catalogue becomes more cinematic and uses the extra width */
+.front-page .catalogue-preview__box,
+.front-page .premium-catalogue-box {
+    grid-template-columns: minmax(0, 1fr) minmax(390px, 450px);
+    gap: clamp(50px, 5vw, 86px);
+    min-height: 430px;
+    padding: clamp(48px, 4vw, 68px);
+    border-radius: 36px 36px 76px 36px;
+}
+
+.front-page .catalogue-preview__visual {
+    max-width: 450px;
+    min-height: 320px;
+}
+
+/* Partner section balances copy and visual more confidently */
+.front-page .store-preview__grid {
+    grid-template-columns: minmax(0, 1.08fr) minmax(440px, 0.92fr);
+    gap: clamp(72px, 6vw, 112px);
+}
+
+.front-page .map-placeholder,
+.front-page .premium-map {
+    min-height: 440px;
+    border-radius: 36px 36px 76px 36px;
+    box-shadow: 0 24px 58px rgba(18, 42, 61, 0.085);
+}
+
+/* Final B2B block gets a stronger premium closing composition */
+.front-page .b2b-cta__inner {
+    grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.8fr) auto;
+    gap: clamp(28px, 3vw, 52px);
+    padding: clamp(48px, 4vw, 68px);
+    border-radius: 36px 36px 76px 36px;
+}
+
+/* More tailored controls on the homepage only */
+.front-page .button {
+    border-radius: 10px;
+}
+
+.front-page .support-pill {
+    border-radius: 10px;
+}
+
+/* Slightly more visible section separation on the page background */
+.front-page {
+    padding-bottom: 2px;
+    background:
+        radial-gradient(circle at 8% 18%, rgba(15, 76, 129, 0.035), transparent 24%),
+        radial-gradient(circle at 94% 68%, rgba(200, 169, 106, 0.055), transparent 24%),
+        #f3f5f6;
+}
+
+@media (max-width: 1180px) {
+    .front-page .finder-preview__grid,
+    .front-page .store-preview__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 54px;
+    }
+
+    .front-page .catalogue-preview__box,
+    .front-page .premium-catalogue-box {
+        grid-template-columns: minmax(0, 1fr) 360px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .front-page .container,
+    body .front-page .container {
+        width: min(calc(100% - 44px), 100%);
+    }
+
+    .front-page > .section {
+        width: calc(100% - 20px);
+        margin-top: 18px;
+        border-radius: 34px 34px 58px 34px;
+    }
+
+    .front-page > .finder-preview,
+    .front-page > .store-preview {
+        border-radius: 58px 34px 34px 34px;
+    }
+
+    .front-page > .why-spek,
+    .front-page > .b2b-cta {
+        border-radius: 34px 58px 34px 34px;
+    }
+
+    .front-page .finder-preview__grid,
+    .front-page .store-preview__grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+    }
+
+    .front-page .finder-preview__content,
+    .front-page .store-preview__content {
+        max-width: 760px;
+    }
+
+    .front-page .catalogue-preview__box,
+    .front-page .premium-catalogue-box,
+    .front-page .b2b-cta__inner {
+        grid-template-columns: 1fr;
+    }
+
+    .front-page .catalogue-preview__visual {
+        max-width: 520px;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 680px) {
+    .front-page .container,
+    body .front-page .container {
+        width: min(calc(100% - 28px), 100%);
+    }
+
+    .front-page > .section {
+        width: calc(100% - 10px);
+        margin-top: 10px;
+        border-radius: 24px 24px 38px 24px;
+        box-shadow: 0 14px 36px rgba(22, 43, 61, 0.05);
+    }
+
+    .front-page > .finder-preview,
+    .front-page > .store-preview,
+    .front-page > .why-spek,
+    .front-page > .b2b-cta {
+        border-radius: 24px 24px 38px 24px;
+    }
+
+    .front-page > .product-categories,
+    .front-page > .finder-preview,
+    .front-page > .why-spek,
+    .front-page > .catalogue-preview,
+    .front-page > .store-preview,
+    .front-page > .b2b-cta {
+        padding-top: 78px;
+        padding-bottom: 82px;
+    }
+
+    .front-page .section-heading {
+        margin-bottom: 38px;
+    }
+
+    .front-page .section-heading p {
+        font-size: 16px;
+    }
+
+    .front-page .catalogue-preview__box,
+    .front-page .premium-catalogue-box,
+    .front-page .b2b-cta__inner {
+        padding: 28px;
+        border-radius: 26px 26px 44px 26px;
+    }
+
+    .front-page .map-placeholder,
+    .front-page .premium-map,
+    .front-page .finder-preview__spotlight {
+        border-radius: 26px 26px 48px 26px;
+    }
+}
