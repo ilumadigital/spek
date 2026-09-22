@@ -435,7 +435,6 @@
         );
         const heroStage = frontPage.querySelector('[data-home-hero-stage]');
         const hero = frontPage.querySelector('[data-home-hero]');
-        const viewMore = frontPage.querySelector('[data-hero-view-more]');
 
         sections.forEach((section) => {
             section.setAttribute('data-home-section', '');
@@ -479,25 +478,6 @@
             heroStage.addEventListener('pointerleave', () => {
                 hero.style.setProperty('--hero-pan-x', '0px');
                 hero.style.setProperty('--hero-pan-y', '0px');
-            });
-        }
-
-        if (viewMore) {
-            viewMore.addEventListener('click', (event) => {
-                const href = viewMore.getAttribute('href');
-
-                if (!href || !href.startsWith('#')) {
-                    return;
-                }
-
-                const target = document.querySelector(href);
-
-                if (!target) {
-                    return;
-                }
-
-                event.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         }
 
