@@ -10584,3 +10584,21 @@ body .front-page .container {
 .site-footer__column > ul li:first-child {
     margin-top: 0;
 }
+
+
+/* =========================================================
+   SPEK footer logo center only
+   Keep every other footer column exactly as positioned
+   ========================================================= */
+
+.site-footer__brand {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+}
+
+.site-footer__brand .site-footer__logo {
+    margin-left: auto;
+    margin-right: auto;
+}
