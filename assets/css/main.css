@@ -13292,3 +13292,440 @@ body .front-page .container {
         font-size: 33px;
     }
 }
+
+/* =========================================================
+   SPEK Catalogue A4 Library
+   First-page PDF previews in premium A4 cards
+   ========================================================= */
+
+.catalogues-library {
+    overflow: clip;
+    background:
+        radial-gradient(circle at 88% 4%, rgba(15, 76, 129, 0.06), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #f9f7f2 100%);
+}
+
+.catalogues-library__hero {
+    padding: clamp(70px, 8vw, 118px) 0 clamp(52px, 6vw, 84px);
+    border-bottom: 1px solid rgba(15, 76, 129, 0.07);
+}
+
+.catalogues-library__hero h1 {
+    max-width: 850px;
+    margin-bottom: 18px;
+    font-size: clamp(48px, 5.4vw, 82px);
+    line-height: 0.94;
+    letter-spacing: -0.06em;
+}
+
+.catalogues-library__hero p {
+    max-width: 700px;
+    margin-bottom: 0;
+    font-size: 18px;
+    line-height: 1.65;
+}
+
+.catalogues-library__section {
+    padding: clamp(62px, 7vw, 108px) 0 clamp(96px, 9vw, 142px);
+}
+
+.catalogues-library__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 34px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(15, 76, 129, 0.10);
+}
+
+.catalogues-library__top span {
+    color: var(--color-accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.catalogues-library__top strong {
+    color: var(--color-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.catalogue-grid--covers {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(34px, 4vw, 58px) clamp(26px, 3vw, 42px);
+    align-items: start;
+}
+
+.catalogue-book-card {
+    min-width: 0;
+}
+
+.catalogue-book-card__link {
+    display: block;
+}
+
+.catalogue-book-card__preview {
+    position: relative;
+    max-width: 430px;
+    margin-inline: auto;
+    padding: 22px 22px 26px;
+    perspective: 1200px;
+}
+
+.catalogue-paper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 210 / 297;
+    overflow: hidden;
+    border: 1px solid rgba(20, 27, 34, 0.09);
+    border-radius: 4px;
+    background: #ffffff;
+    box-shadow:
+        0 2px 3px rgba(18, 29, 40, 0.05),
+        0 16px 32px rgba(18, 29, 40, 0.10),
+        0 34px 72px rgba(18, 29, 40, 0.10);
+    transform: rotateY(-1.4deg) rotateX(0.8deg);
+    transform-origin: 50% 100%;
+    transition:
+        transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.55s ease;
+}
+
+.catalogue-paper::before {
+    content: "";
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+    pointer-events: none;
+    box-shadow:
+        inset 1px 0 rgba(255, 255, 255, 0.8),
+        inset -1px 0 rgba(15, 76, 129, 0.04);
+}
+
+.catalogue-paper::after {
+    content: "";
+    position: absolute;
+    z-index: 5;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(12, 30, 46, 0.09), rgba(255, 255, 255, 0));
+    opacity: 0.6;
+}
+
+.catalogue-book-card__link:hover .catalogue-paper {
+    transform: translateY(-9px) rotateY(0deg) rotateX(0deg) scale(1.015);
+    box-shadow:
+        0 2px 4px rgba(18, 29, 40, 0.04),
+        0 24px 44px rgba(18, 29, 40, 0.13),
+        0 48px 90px rgba(18, 29, 40, 0.12);
+}
+
+.catalogue-paper__fallback,
+.catalogue-paper__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.catalogue-paper__fallback {
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: #ffffff;
+    transition: opacity 0.35s ease;
+}
+
+.catalogue-paper__fallback img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.catalogue-paper__fallback--empty {
+    padding: 20%;
+    background:
+        radial-gradient(circle at 50% 20%, rgba(15, 76, 129, 0.08), transparent 30%),
+        #ffffff;
+}
+
+.catalogue-paper__fallback--empty img {
+    width: min(74%, 220px);
+    height: auto;
+    object-fit: contain;
+}
+
+.catalogue-paper__canvas {
+    z-index: 2;
+    display: block;
+    height: auto;
+    min-height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    background: #ffffff;
+    transition: opacity 0.4s ease;
+}
+
+.catalogue-paper.is-rendered .catalogue-paper__canvas {
+    opacity: 1;
+}
+
+.catalogue-paper.is-rendered .catalogue-paper__fallback {
+    opacity: 0;
+}
+
+.catalogue-paper__loading {
+    position: absolute;
+    z-index: 6;
+    inset: auto 16px 16px 16px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 11px;
+    border: 1px solid rgba(15, 76, 129, 0.08);
+    border-radius: 999px;
+    color: var(--color-muted);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 6px 20px rgba(17, 24, 32, 0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.catalogue-paper__loading[hidden] {
+    display: none;
+}
+
+.catalogue-paper__loading span {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    border: 2px solid rgba(15, 76, 129, 0.16);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spekCatalogueCoverSpin 0.8s linear infinite;
+}
+
+.catalogue-paper__loading small {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.catalogue-book-card__corner {
+    position: absolute;
+    z-index: -1;
+    left: 36px;
+    right: 6px;
+    bottom: 8px;
+    height: 60%;
+    border-radius: 10px;
+    background: rgba(15, 76, 129, 0.055);
+    filter: blur(18px);
+    transform: rotate(2deg);
+    transition: transform 0.4s ease;
+}
+
+.catalogue-book-card__link:hover .catalogue-book-card__corner {
+    transform: translateY(4px) rotate(3deg) scale(0.98);
+}
+
+.catalogue-book-card__view {
+    position: absolute;
+    z-index: 8;
+    right: 34px;
+    bottom: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 13px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    color: #ffffff;
+    background: rgba(8, 42, 70, 0.76);
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0;
+    transform: translateY(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition:
+        opacity 0.3s ease,
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.catalogue-book-card__link:hover .catalogue-book-card__view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.catalogue-book-card__view i {
+    font-style: normal;
+}
+
+.catalogue-book-card__content {
+    max-width: 430px;
+    margin: 4px auto 0;
+    padding: 0 22px;
+}
+
+.catalogue-book-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 10px;
+    color: var(--color-muted-soft);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.catalogue-book-card__meta i {
+    width: 18px;
+    height: 1px;
+    background: rgba(15, 76, 129, 0.22);
+}
+
+.catalogue-book-card__content h2 {
+    margin-bottom: 10px;
+    font-size: clamp(24px, 2vw, 32px);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+}
+
+.catalogue-book-card__content p {
+    display: -webkit-box;
+    max-width: 390px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    color: var(--color-muted);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.catalogue-book-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-accent);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.catalogue-book-card__cta > span {
+    transition: transform 0.3s ease;
+}
+
+.catalogue-book-card__link:hover .catalogue-book-card__cta > span {
+    transform: translateX(4px);
+}
+
+.catalogues-library__empty {
+    padding: 60px;
+    border: 1px solid var(--color-border);
+    border-radius: 28px;
+    background: #ffffff;
+    text-align: center;
+}
+
+@keyframes spekCatalogueCoverSpin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1100px) {
+    .catalogue-grid--covers {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .catalogue-book-card__view {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (max-width: 680px) {
+    .catalogues-library__hero {
+        padding: 48px 0 42px;
+    }
+
+    .catalogues-library__hero h1 {
+        font-size: clamp(42px, 12vw, 58px);
+    }
+
+    .catalogues-library__hero p {
+        font-size: 16px;
+    }
+
+    .catalogues-library__section {
+        padding: 48px 0 88px;
+    }
+
+    .catalogues-library__top {
+        margin-bottom: 24px;
+    }
+
+    .catalogue-grid--covers {
+        grid-template-columns: 1fr;
+        gap: 52px;
+    }
+
+    .catalogue-book-card__preview {
+        width: min(100%, 390px);
+        padding: 14px 14px 20px;
+    }
+
+    .catalogue-paper {
+        transform: none;
+        box-shadow:
+            0 2px 3px rgba(18, 29, 40, 0.04),
+            0 14px 34px rgba(18, 29, 40, 0.11);
+    }
+
+    .catalogue-book-card__link:hover .catalogue-paper {
+        transform: translateY(-4px);
+    }
+
+    .catalogue-book-card__view {
+        right: 26px;
+        bottom: 30px;
+        padding: 9px 11px;
+        font-size: 10px;
+    }
+
+    .catalogue-book-card__content {
+        width: min(100%, 390px);
+        padding: 0 14px;
+    }
+
+    .catalogue-book-card__content h2 {
+        font-size: 25px;
+    }
+
+    .catalogue-book-card__meta {
+        font-size: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .catalogue-paper,
+    .catalogue-book-card__corner,
+    .catalogue-book-card__view,
+    .catalogue-book-card__cta > span {
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .catalogue-paper__loading span {
+        animation: none;
+    }
+}

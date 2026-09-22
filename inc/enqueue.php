@@ -67,6 +67,16 @@ function spek_enqueue_assets(): void
         );
     }
 
+    if (is_page_template('templates/template-catalogues.php')) {
+        wp_enqueue_script(
+            'spek-catalogue-covers',
+            SPEK_THEME_URI . '/assets/js/catalogue-covers.js',
+            [],
+            filemtime(SPEK_THEME_DIR . '/assets/js/catalogue-covers.js'),
+            true
+        );
+    }
+
     if (is_page_template('templates/template-product-finder.php')) {
         wp_enqueue_script(
             'spek-product-finder',

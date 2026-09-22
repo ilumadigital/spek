@@ -141,6 +141,16 @@ return [
     'Η SPEK στο Σχηματάρι.' => 'SPEK in Schimatari.',
     'Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στο Σχηματάρι.' => 'SPEK\'s production base and corporate operations are located in privately owned facilities in Schimatari.',
 
+    // Catalogue A4 library.
+    'Οι επίσημοι κατάλογοι SPEK, διαθέσιμοι για online προβολή και λήψη PDF.' => 'Official SPEK catalogues, available for online viewing and PDF download.',
+    'SPEK Catalogues' => 'SPEK Catalogues',
+    '%d κατάλογος' => '%d catalogue',
+    '%d κατάλογοι' => '%d catalogues',
+    'Προεπισκόπηση PDF' => 'PDF preview',
+    'Άνοιγμα καταλόγου' => 'Open catalogue',
+    'PDF Catalogue' => 'PDF Catalogue',
+    'A4 Preview' => 'A4 Preview',
+
     'Αρχική' => 'Home',
     'Σημεία Πώλησης' => 'Points of Sale',
     'Εταιρεία' => 'Company',
