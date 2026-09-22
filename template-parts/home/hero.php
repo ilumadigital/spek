@@ -173,7 +173,8 @@ $hero_slides = [
     top: 6px;
     width: 3px;
     height: 54px;
-    background: rgba(255, 255, 255, 0.82);
+    background: #d7233f;
+    box-shadow: 0 0 0 1px rgba(215, 35, 63, 0.08);
 }
 
 .spek-hero-v2--minimal .spek-hero-v2__content h1 {
@@ -212,13 +213,13 @@ $hero_slides = [
 }
 
 .spek-hero-v2--minimal .spek-hero-v2__actions .button-primary {
-    border-color: #0f5d97;
-    background: #0f5d97;
+    border-color: #174f8a;
+    background: #174f8a;
 }
 
 .spek-hero-v2--minimal .spek-hero-v2__actions .button-primary:hover {
-    background: #0b4c7d;
-    border-color: #0b4c7d;
+    background: #0c3764;
+    border-color: #0c3764;
 }
 
 .spek-hero-v2--minimal .spek-hero-v2__actions .button-light {
