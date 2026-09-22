@@ -123,6 +123,10 @@ $footer_columns = [
                 >
             </a>
 
+            <p class="site-footer__brand-id">
+                <?php esc_html_e('Επίσημη εταιρική ιστοσελίδα της SPEK για επαγγελματίες, συνεργάτες και σημεία πώλησης.', 'spek-theme'); ?>
+            </p>
+
 
             <!--<div class="site-footer__badges">-->
             <!--    <span><?php esc_html_e('Technical precision', 'spek-theme'); ?></span>-->
@@ -152,14 +156,14 @@ $footer_columns = [
         <?php endforeach; ?>
 
         <div class="site-footer__contact">
-            <h3><?php esc_html_e('Επικοινωνία', 'spek-theme'); ?></h3>
+            <h3><?php esc_html_e('Επαγγελματική επικοινωνία', 'spek-theme'); ?></h3>
 
             <p>
-                <?php esc_html_e('Για διαθεσιμότητα, συνεργασίες και τεχνικές πληροφορίες προϊόντων.', 'spek-theme'); ?>
+                <?php esc_html_e('Για προϊόντα, διαθεσιμότητα, τεχνική πληροφόρηση και εμπορική συνεργασία.', 'spek-theme'); ?>
             </p>
 
             <a href="<?php echo esc_url(spek_page_url('contact/')); ?>" class="site-footer__contact-link">
-                <?php esc_html_e('Στείλτε μήνυμα', 'spek-theme'); ?>
+                <?php esc_html_e('Επικοινωνήστε μαζί μας', 'spek-theme'); ?>
                 <span aria-hidden="true">→</span>
             </a>
         </div>
