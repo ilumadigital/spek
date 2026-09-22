@@ -123,9 +123,9 @@ $footer_columns = [
                 >
             </a>
 
-            <!--<p>-->
-            <!--    <?php esc_html_e('Λύσεις υδραυλικών και μπάνιου, σχεδιασμένες για διάρκεια, λειτουργικότητα και τεχνική ακρίβεια.', 'spek-theme'); ?>-->
-            <!--</p>-->
+            <p class="site-footer__brand-copy">
+                <?php esc_html_e('Λύσεις υδραυλικών και μπάνιου, σχεδιασμένες για διάρκεια, λειτουργικότητα και τεχνική ακρίβεια.', 'spek-theme'); ?>
+            </p>
 
             <!--<div class="site-footer__badges">-->
             <!--    <span><?php esc_html_e('Technical precision', 'spek-theme'); ?></span>-->
@@ -181,6 +181,15 @@ $footer_columns = [
 
             <a href="#page">
                 <?php esc_html_e('Πάνω', 'spek-theme'); ?>
+            </a>
+
+            <a
+                href="https://iluma.gr"
+                class="site-footer__credit"
+                target="_blank"
+                rel="noopener"
+            >
+                Handcrafted by <strong>ILUMA Digital Agency</strong>
             </a>
         </div>
     </div>
