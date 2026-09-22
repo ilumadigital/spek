@@ -123,9 +123,6 @@ $footer_columns = [
                 >
             </a>
 
-            <p class="site-footer__brand-copy">
-                <?php esc_html_e('Λύσεις υδραυλικών και μπάνιου, σχεδιασμένες για διάρκεια, λειτουργικότητα και τεχνική ακρίβεια.', 'spek-theme'); ?>
-            </p>
 
             <!--<div class="site-footer__badges">-->
             <!--    <span><?php esc_html_e('Technical precision', 'spek-theme'); ?></span>-->
