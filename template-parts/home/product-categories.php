@@ -70,7 +70,7 @@ unset($category);
 $categories = array_values($categories);
 ?>
 
-<section class="section product-categories">
+<section id="home-product-range" class="section product-categories">
     <div class="container">
 
         <div class="section-heading" data-reveal>
