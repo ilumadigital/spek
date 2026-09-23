@@ -1864,10 +1864,11 @@ input[type="submit"]:hover {
     height: 100%;
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain;
-    object-position: center;
+    object-fit: contain !important;
+    object-position: center !important;
     padding: 0;
-    transform: none;
+    margin: 0 auto;
+    transform: none !important;
 }
 
 .product-card__placeholder,
@@ -2042,6 +2043,7 @@ input[type="submit"]:hover {
     place-items: center;
     aspect-ratio: 1 / 1;
     overflow: hidden;
+    padding: 36px;
     border: 1px solid var(--color-border);
     border-radius: 34px;
     background: var(--color-surface);
@@ -2049,10 +2051,16 @@ input[type="submit"]:hover {
 }
 
 .product-gallery__main img {
+    display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 44px;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain !important;
+    object-position: center !important;
+    padding: 0;
+    margin: 0 auto;
+    transform: none !important;
 }
 
 .product-gallery__thumbs {
