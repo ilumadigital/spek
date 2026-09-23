@@ -110,6 +110,77 @@ function spek_product_image_gd_auto_orient($image, string $source_path)
 }
 
 /**
+ * Replace a near-black edge-connected studio background with white.
+ *
+ * This is intentionally conservative: cleanup only runs when at least three
+ * corners are near-black, and it uses flood fill from the corners so dark
+ * details inside the product are not globally removed.
+ */
+function spek_product_image_imagick_cleanup_dark_background(Imagick $image): void
+{
+    if (!method_exists($image, 'floodFillPaintImage')) {
+        return;
+    }
+
+    $width = (int) $image->getImageWidth();
+    $height = (int) $image->getImageHeight();
+
+    if ($width < 2 || $height < 2) {
+        return;
+    }
+
+    $corners = [
+        [0, 0],
+        [$width - 1, 0],
+        [0, $height - 1],
+        [$width - 1, $height - 1],
+    ];
+
+    $dark_corners = [];
+
+    foreach ($corners as [$x, $y]) {
+        try {
+            $pixel = $image->getImagePixelColor($x, $y);
+            $rgb = $pixel->getColor();
+
+            if (
+                (int) ($rgb['r'] ?? 255) <= 42
+                && (int) ($rgb['g'] ?? 255) <= 42
+                && (int) ($rgb['b'] ?? 255) <= 42
+            ) {
+                $dark_corners[] = [$x, $y, $pixel];
+            }
+        } catch (Throwable $e) {
+            return;
+        }
+    }
+
+    if (count($dark_corners) < 3) {
+        return;
+    }
+
+    try {
+        $range = Imagick::getQuantumRange();
+        $quantum = (float) ($range['quantumRangeLong'] ?? 65535);
+        $fuzz = $quantum * 0.085;
+        $white = new ImagickPixel('white');
+
+        foreach ($dark_corners as [$x, $y, $target]) {
+            $image->floodFillPaintImage(
+                $white,
+                $fuzz,
+                $target,
+                $x,
+                $y,
+                false
+            );
+        }
+    } catch (Throwable $e) {
+        // Background cleanup is optional; normalization must still succeed.
+    }
+}
+
+/**
  * Normalize a source image to a 1600x1600 JPEG on white.
  *
  * The complete source remains visible. Nothing is cropped. The image is scaled
@@ -202,6 +273,11 @@ function spek_product_image_normalize_file(
                 1,
                 true
             );
+
+            // Many legacy SPEK JPGs use a baked-in black studio background.
+            // Clean only edge-connected near-black backgrounds; product details
+            // are preserved because this is not a global color replacement.
+            spek_product_image_imagick_cleanup_dark_background($source);
 
             $canvas = new Imagick();
             $canvas->newImage(
