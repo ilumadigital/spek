@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (!defined('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION')) {
-    define('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION', '4');
+    define('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION', '5');
 }
 if (!defined('SPEK_PRODUCT_IMAGE_CANVAS')) {
     define('SPEK_PRODUCT_IMAGE_CANVAS', 1600);
@@ -324,7 +324,7 @@ function spek_product_image_normalize_file(
     $source_height = (int) $info[1];
 
     // Avoid pathological decompression memory use from extremely large sources.
-    if (($source_width * $source_height) > 80000000) {
+    if (($source_width * $source_height) > 30000000) {
         return new WP_Error(
             'spek_image_too_large',
             __('Η εικόνα έχει υπερβολικά μεγάλες διαστάσεις για ασφαλή επεξεργασία.', 'spek-theme')
@@ -354,6 +354,13 @@ function spek_product_image_normalize_file(
     if (class_exists('Imagick')) {
         try {
             $source = new Imagick();
+
+            // Ask ImageMagick/libjpeg to decode large JPEGs close to the target
+            // size instead of fully expanding them in memory first.
+            if (strtolower((string) ($info['mime'] ?? '')) === 'image/jpeg') {
+                $source->setOption('jpeg:size', '1800x1800');
+            }
+
             $source->readImage($source_path);
 
             if ($source->getNumberImages() > 1) {
@@ -563,4 +570,109 @@ function spek_product_image_normalize_file(
         'width' => $canvas_size,
         'height' => $canvas_size,
     ];
+}
+
+/**
+ * Store an already-normalized image as a WordPress attachment without asking
+ * WordPress to generate every registered intermediate image size.
+ *
+ * This is intentionally lightweight for shared hosting: the frontend uses the
+ * normalized 1600x1600 original directly, so extra thumbnails are unnecessary.
+ *
+ * @param array{path:string,name:string,width?:int,height?:int} $normalized
+ * @return int|WP_Error
+ */
+function spek_product_image_insert_normalized_attachment(
+    array $normalized,
+    int $parent_id,
+    string $title,
+    string $alt = ''
+) {
+    $source = (string) ($normalized['path'] ?? '');
+
+    if ($source === '' || !is_file($source)) {
+        return new WP_Error(
+            'spek_normalized_file_missing',
+            __('Λείπει το κανονικοποιημένο αρχείο εικόνας.', 'spek-theme')
+        );
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+
+    $upload = wp_upload_dir();
+
+    if (!empty($upload['error'])) {
+        return new WP_Error(
+            'spek_upload_dir_error',
+            (string) $upload['error']
+        );
+    }
+
+    if (!wp_mkdir_p($upload['path'])) {
+        return new WP_Error(
+            'spek_upload_dir_failed',
+            __('Δεν ήταν δυνατή η δημιουργία φακέλου uploads.', 'spek-theme')
+        );
+    }
+
+    $name = sanitize_file_name((string) ($normalized['name'] ?? 'product-image-spek-1600.jpg'));
+    if ($name === '') {
+        $name = 'product-image-spek-1600.jpg';
+    }
+
+    $name = wp_unique_filename($upload['path'], $name);
+    $target = trailingslashit($upload['path']) . $name;
+
+    if (!@copy($source, $target)) {
+        return new WP_Error(
+            'spek_attachment_copy_failed',
+            __('Αποτυχία αποθήκευσης εικόνας στο Media Library.', 'spek-theme')
+        );
+    }
+
+    @chmod($target, fileperms(ABSPATH . 'wp-admin') & 0666);
+
+    $filetype = wp_check_filetype($name, null);
+    $mime = !empty($filetype['type']) ? (string) $filetype['type'] : 'image/jpeg';
+    $url = trailingslashit($upload['url']) . rawurlencode($name);
+
+    $attachment = [
+        'post_mime_type' => $mime,
+        'post_title' => sanitize_text_field($title !== '' ? $title : pathinfo($name, PATHINFO_FILENAME)),
+        'post_content' => '',
+        'post_status' => 'inherit',
+        'guid' => $url,
+    ];
+
+    $attachment_id = wp_insert_attachment($attachment, $target, $parent_id, true);
+
+    if (is_wp_error($attachment_id)) {
+        @unlink($target);
+        return $attachment_id;
+    }
+
+    update_attached_file((int) $attachment_id, $target);
+
+    $metadata = [
+        'width' => (int) ($normalized['width'] ?? SPEK_PRODUCT_IMAGE_CANVAS),
+        'height' => (int) ($normalized['height'] ?? SPEK_PRODUCT_IMAGE_CANVAS),
+        'file' => _wp_relative_upload_path($target),
+        'sizes' => [],
+        'image_meta' => [],
+    ];
+
+    wp_update_attachment_metadata((int) $attachment_id, $metadata);
+
+    if ($alt !== '') {
+        update_post_meta(
+            (int) $attachment_id,
+            '_wp_attachment_image_alt',
+            sanitize_text_field($alt)
+        );
+    }
+
+    @unlink($source);
+
+    return (int) $attachment_id;
 }
