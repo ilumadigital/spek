@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (!defined('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION')) {
-    define('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION', '3');
+    define('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION', '4');
 }
 if (!defined('SPEK_PRODUCT_IMAGE_CANVAS')) {
     define('SPEK_PRODUCT_IMAGE_CANVAS', 1600);
@@ -531,8 +531,8 @@ function spek_product_image_normalize_file(
         );
     }
 
-    spek_product_image_gd_cleanup_dark_background($resized);
-
+    // Keep the GD fallback intentionally lightweight. Background cleanup is
+    // performed only by Imagick; GD still normalizes size/aspect ratio safely.
     $white = imagecolorallocate($canvas, 255, 255, 255);
     imagefilledrectangle($canvas, 0, 0, $canvas_size, $canvas_size, $white);
     imagealphablending($canvas, true);
