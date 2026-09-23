@@ -732,6 +732,16 @@ function spek_ajax_image_import_commit_batch(): void
 {
     spek_image_import_guard();
 
+    // Image normalization + WordPress thumbnail generation can be expensive on
+    // shared hosting. Process one image per AJAX request and raise the image
+    // memory/time budget so the response always remains a valid JSON payload.
+    if (function_exists('wp_raise_memory_limit')) {
+        wp_raise_memory_limit('image');
+    }
+    if (function_exists('set_time_limit')) {
+        @set_time_limit(120);
+    }
+
     $token = sanitize_text_field(wp_unslash($_POST['token'] ?? ''));
     $offset = absint($_POST['offset'] ?? 0);
     $replace_featured = !empty($_POST['replace_featured']);
@@ -756,7 +766,7 @@ function spek_ajax_image_import_commit_batch(): void
         )
     );
 
-    $batch = array_slice($matched, $offset, 4);
+    $batch = array_slice($matched, $offset, 1);
     $stats = [
         'imported' => 0,
         'reused' => 0,
@@ -1013,13 +1023,31 @@ function spek_render_product_image_importer_page(): void
                 }
             );
 
-            const json = await response.json();
+            const raw = await response.text();
+            let json = null;
 
-            if (!json.success) {
+            try {
+                json = JSON.parse(raw);
+            } catch (error) {
+                const plain = String(raw || '')
+                    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+                    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+                    .replace(/<[^>]+>/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
                 throw new Error(
-                    json.data && json.data.message
+                    plain
+                        ? 'Server error (' + response.status + '): ' + plain.slice(0, 500)
+                        : 'Server error (' + response.status + '). Η απάντηση δεν ήταν έγκυρο JSON.'
+                );
+            }
+
+            if (!response.ok || !json.success) {
+                throw new Error(
+                    json && json.data && json.data.message
                         ? json.data.message
-                        : 'Import error'
+                        : 'Import error (' + response.status + ')'
                 );
             }
 
