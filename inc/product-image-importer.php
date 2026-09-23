@@ -684,21 +684,14 @@ function spek_image_import_media_file(array $entry, string $dir)
         return $normalized;
     }
 
-    $tmp = (string) $normalized['path'];
-
-    $file_array = [
-        'name' => sanitize_file_name((string) $normalized['name']),
-        'tmp_name' => $tmp,
-    ];
-
-    $attachment_id = media_handle_sideload(
-        $file_array,
+    $attachment_id = spek_product_image_insert_normalized_attachment(
+        $normalized,
         (int) $entry['product_id'],
-        (string) $entry['product_title']
+        (string) $entry['product_title'],
+        (string) $entry['product_title'] . ' – SPEK'
     );
 
     if (is_wp_error($attachment_id)) {
-        @unlink($tmp);
         return $attachment_id;
     }
 
@@ -717,12 +710,6 @@ function spek_image_import_media_file(array $entry, string $dir)
         '_spek_image_import_sku',
         sanitize_text_field((string) $entry['sku'])
     );
-    update_post_meta(
-        (int) $attachment_id,
-        '_wp_attachment_image_alt',
-        sanitize_text_field((string) $entry['product_title'] . ' – SPEK')
-    );
-
     spek_product_image_mark_normalized_attachment((int) $attachment_id);
 
     return (int) $attachment_id;
@@ -1286,6 +1273,9 @@ function spek_render_product_image_importer_page(): void
                     if (response.done) {
                         break;
                     }
+
+                    // Let the shared-hosting PHP worker breathe between images.
+                    await new Promise(resolve => setTimeout(resolve, 900));
                 }
 
                 results.insertAdjacentHTML(
