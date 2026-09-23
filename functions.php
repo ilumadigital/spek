@@ -23,6 +23,7 @@ $required_files = [
     '/inc/taxonomies.php',
     '/inc/product-metaboxes.php',
     '/inc/catalogue-metaboxes.php',
+    '/inc/product-image-processing.php',
     '/inc/product-importer.php',
     '/inc/product-image-importer.php',
     '/inc/partner-metaboxes.php',
