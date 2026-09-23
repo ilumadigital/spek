@@ -46,7 +46,10 @@ function spek_product_admin_image_filter(string $post_type): void
 add_action('restrict_manage_posts', 'spek_product_admin_image_filter', 20, 1);
 
 /**
- * Apply the selected image-status filter to the main Products admin query.
+ * Mark the main Products query with the requested image status.
+ *
+ * We intentionally do not rely only on the _thumbnail_id meta value: a product
+ * can still have stale thumbnail metadata pointing to a deleted attachment.
  */
 function spek_product_admin_apply_image_filter(WP_Query $query): void
 {
@@ -62,88 +65,54 @@ function spek_product_admin_apply_image_filter(WP_Query $query): void
         ? sanitize_key(wp_unslash((string) $_GET['spek_image_status']))
         : '';
 
-    if (!in_array($status, ['missing', 'has_image'], true)) {
-        return;
+    if (in_array($status, ['missing', 'has_image'], true)) {
+        $query->set('spek_image_status', $status);
     }
-
-    $existing_meta_query = $query->get('meta_query');
-    $existing_meta_query = is_array($existing_meta_query)
-        ? $existing_meta_query
-        : [];
-
-    if ($status === 'missing') {
-        $image_meta_query = [
-            'relation' => 'OR',
-            [
-                'key' => '_thumbnail_id',
-                'compare' => 'NOT EXISTS',
-            ],
-            [
-                'key' => '_thumbnail_id',
-                'value' => '',
-                'compare' => '=',
-            ],
-            [
-                'key' => '_thumbnail_id',
-                'value' => '0',
-                'compare' => '=',
-            ],
-        ];
-    } else {
-        $image_meta_query = [
-            'relation' => 'AND',
-            [
-                'key' => '_thumbnail_id',
-                'compare' => 'EXISTS',
-            ],
-            [
-                'key' => '_thumbnail_id',
-                'value' => '',
-                'compare' => '!=',
-            ],
-            [
-                'key' => '_thumbnail_id',
-                'value' => '0',
-                'compare' => '!=',
-            ],
-        ];
-    }
-
-    if ($existing_meta_query) {
-        $query->set('meta_query', [
-            'relation' => 'AND',
-            $existing_meta_query,
-            $image_meta_query,
-        ]);
-        return;
-    }
-
-    $query->set('meta_query', $image_meta_query);
 }
 add_action('pre_get_posts', 'spek_product_admin_apply_image_filter');
 
 /**
- * Keep the custom image filter when changing pagination/order/search URLs.
+ * Filter against a real attachment, not just the presence of _thumbnail_id.
+ *
+ * "Χωρίς εικόνα" therefore also catches products whose old featured attachment
+ * was deleted from the Media Library.
  */
-function spek_product_admin_preserve_image_filter(array $query_args): array
+function spek_product_admin_image_filter_where(string $where, WP_Query $query): string
 {
     if (
         !is_admin()
-        || !isset($_GET['post_type'])
-        || sanitize_key(wp_unslash((string) $_GET['post_type'])) !== 'spek_product'
-        || empty($_GET['spek_image_status'])
+        || !$query->is_main_query()
+        || $query->get('post_type') !== 'spek_product'
     ) {
-        return $query_args;
+        return $where;
     }
 
-    $status = sanitize_key(wp_unslash((string) $_GET['spek_image_status']));
+    $status = (string) $query->get('spek_image_status');
 
-    if (in_array($status, ['missing', 'has_image'], true)) {
-        $query_args['spek_image_status'] = $status;
+    if (!in_array($status, ['missing', 'has_image'], true)) {
+        return $where;
     }
 
-    return $query_args;
+    global $wpdb;
+
+    $exists_sql = "
+        SELECT 1
+        FROM {$wpdb->postmeta} AS spek_thumb_meta
+        INNER JOIN {$wpdb->posts} AS spek_thumb_attachment
+            ON spek_thumb_attachment.ID = CAST(spek_thumb_meta.meta_value AS UNSIGNED)
+            AND spek_thumb_attachment.post_type = 'attachment'
+            AND spek_thumb_attachment.post_status = 'inherit'
+        WHERE spek_thumb_meta.post_id = {$wpdb->posts}.ID
+            AND spek_thumb_meta.meta_key = '_thumbnail_id'
+            AND CAST(spek_thumb_meta.meta_value AS UNSIGNED) > 0
+    ";
+
+    if ($status === 'missing') {
+        $where .= " AND NOT EXISTS ({$exists_sql})";
+    } else {
+        $where .= " AND EXISTS ({$exists_sql})";
+    }
+
+    return $where;
 }
-add_filter('removable_query_args', static function (array $args): array {
-    return array_values(array_diff($args, ['spek_image_status']));
-});
+add_filter('posts_where', 'spek_product_admin_image_filter_where', 20, 2);
