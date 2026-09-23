@@ -998,26 +998,19 @@ function spek_import_product_image(int $post_id, string $url, string $alt = '')
         return $normalized;
     }
 
-    $normalized_tmp = (string) $normalized['path'];
-
-    $file_array = [
-        'name' => sanitize_file_name((string) $normalized['name']),
-        'tmp_name' => $normalized_tmp,
-    ];
-
-    $attachment_id = media_handle_sideload($file_array, $post_id, get_the_title($post_id));
+    $attachment_id = spek_product_image_insert_normalized_attachment(
+        $normalized,
+        $post_id,
+        get_the_title($post_id),
+        $alt
+    );
 
     if (is_wp_error($attachment_id)) {
-        @unlink($normalized_tmp);
         return $attachment_id;
     }
 
     update_post_meta($attachment_id, '_spek_import_source_url', $url);
     spek_product_image_mark_normalized_attachment((int) $attachment_id);
-
-    if ($alt !== '') {
-        update_post_meta($attachment_id, '_wp_attachment_image_alt', $alt);
-    }
 
     set_post_thumbnail($post_id, $attachment_id);
 
