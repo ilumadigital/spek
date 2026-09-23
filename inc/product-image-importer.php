@@ -121,7 +121,16 @@ function spek_ajax_image_import_upload_file(): void
 
     $original_name = sanitize_text_field(wp_unslash((string) ($_POST['original_name'] ?? $_FILES['image_file']['name'] ?? 'image.jpg')));
     $original_name = wp_basename($original_name);
-    $ext = spek_image_import_allowed_extension($original_name);
+
+    if (spek_image_import_allowed_extension($original_name) === '') {
+        wp_send_json_error(['message' => __('Μη υποστηριζόμενος τύπος εικόνας.', 'spek-theme')], 400);
+    }
+
+    $client_normalized = !empty($_POST['client_normalized']);
+    $upload_name = sanitize_text_field(wp_unslash((string) ($_POST['upload_name'] ?? $_FILES['image_file']['name'] ?? $original_name)));
+    $upload_name = wp_basename($upload_name);
+    $ext = spek_image_import_allowed_extension($upload_name);
+
     if ($ext === '') {
         wp_send_json_error(['message' => __('Μη υποστηριζόμενος τύπος εικόνας.', 'spek-theme')], 400);
     }
@@ -136,9 +145,23 @@ function spek_ajax_image_import_upload_file(): void
         wp_send_json_error(['message' => __('Το αρχείο δεν αναγνωρίστηκε ως εικόνα.', 'spek-theme')], 400);
     }
 
+    if ($client_normalized) {
+        $expected = (int) SPEK_PRODUCT_IMAGE_CANVAS;
+        $width = (int) ($info[0] ?? 0);
+        $height = (int) ($info[1] ?? 0);
+        $mime = strtolower((string) ($info['mime'] ?? ''));
+
+        if ($width !== $expected || $height !== $expected || $mime !== 'image/jpeg') {
+            wp_send_json_error(
+                ['message' => __('Η εικόνα browser normalization δεν είναι έγκυρη 1600×1600 JPEG.', 'spek-theme')],
+                400
+            );
+        }
+    }
+
     $id = wp_generate_password(12, false, false);
     $files_dir = trailingslashit($dir) . 'files';
-    $safe_name = sanitize_file_name($original_name);
+    $safe_name = sanitize_file_name($upload_name);
     if ($safe_name === '') { $safe_name = 'image.' . $ext; }
     $stored_name = $id . '--' . $safe_name;
     $target = trailingslashit($files_dir) . $stored_name;
@@ -150,9 +173,13 @@ function spek_ajax_image_import_upload_file(): void
     $meta = [
         'id' => $id,
         'original_name' => $original_name,
+        'upload_name' => $upload_name,
         'stored_name' => $stored_name,
         'size' => $size,
         'sha256' => hash_file('sha256', $target) ?: '',
+        'client_normalized' => $client_normalized,
+        'normalized_width' => $client_normalized ? (int) ($info[0] ?? 0) : 0,
+        'normalized_height' => $client_normalized ? (int) ($info[1] ?? 0) : 0,
     ];
     file_put_contents(trailingslashit($files_dir) . $id . '.json', wp_json_encode($meta, JSON_UNESCAPED_UNICODE), LOCK_EX);
     wp_send_json_success(['file' => $meta]);
@@ -525,6 +552,9 @@ function spek_ajax_image_import_analyze(): void
             'original_name' => $name,
             'stored_name' => (string) $file['stored_name'],
             'sha256' => (string) ($file['sha256'] ?? ''),
+            'client_normalized' => !empty($file['client_normalized']),
+            'normalized_width' => (int) ($file['normalized_width'] ?? 0),
+            'normalized_height' => (int) ($file['normalized_height'] ?? 0),
             'status' => (string) ($match['status'] ?? 'none'),
             'reason' => (string) ($match['reason'] ?? ''),
         ];
@@ -675,13 +705,26 @@ function spek_image_import_media_file(array $entry, string $dir)
     require_once ABSPATH . 'wp-admin/includes/media.php';
     require_once ABSPATH . 'wp-admin/includes/image.php';
 
-    $normalized = spek_product_image_normalize_file(
-        $path,
-        (string) $entry['original_name']
-    );
+    if (!empty($entry['client_normalized'])) {
+        $normalized = [
+            'path' => $path,
+            'name' => spek_product_image_normalized_filename(
+                (string) $entry['original_name']
+            ),
+            'width' => (int) ($entry['normalized_width'] ?: SPEK_PRODUCT_IMAGE_CANVAS),
+            'height' => (int) ($entry['normalized_height'] ?: SPEK_PRODUCT_IMAGE_CANVAS),
+        ];
+    } else {
+        // Backward-compatible fallback for sessions created before browser-side
+        // normalization was introduced.
+        $normalized = spek_product_image_normalize_file(
+            $path,
+            (string) $entry['original_name']
+        );
 
-    if (is_wp_error($normalized)) {
-        return $normalized;
+        if (is_wp_error($normalized)) {
+            return $normalized;
+        }
     }
 
     $attachment_id = spek_product_image_insert_normalized_attachment(
@@ -885,7 +928,7 @@ function spek_render_product_image_importer_page(): void
             <p>
                 <strong><?php esc_html_e('Κανόνες:', 'spek-theme'); ?></strong>
                 <?php esc_html_e(
-                    'Κωδικός στην αρχή του filename έχει προτεραιότητα. Υποστηρίζονται zero-padded κωδικοί, π.χ. 39 → 00039_set.jpg. Αν δεν υπάρχει κωδικός, γίνεται ασφαλής προσπάθεια αντιστοίχισης από το όνομα/περιγραφή προϊόντος. Αμφίβολες περιπτώσεις δεν εισάγονται. Πριν από το WordPress Media Library κάθε εικόνα κανονικοποιείται αυτόματα σε 1600×1600 px, με λευκό καμβά, ασφαλές περιθώριο και χωρίς crop ή παραμόρφωση.',
+                    'Κωδικός στην αρχή του filename έχει προτεραιότητα. Υποστηρίζονται zero-padded κωδικοί, π.χ. 39 → 00039_set.jpg. Αν δεν υπάρχει κωδικός, γίνεται ασφαλής προσπάθεια αντιστοίχισης από το όνομα/περιγραφή προϊόντος. Αμφίβολες περιπτώσεις δεν εισάγονται. Η κανονικοποίηση γίνεται πλέον τοπικά στον browser πριν το upload: 1600×1600 px, λευκός καμβάς, ασφαλές περιθώριο, χωρίς crop ή παραμόρφωση. Έτσι ο server δεν επεξεργάζεται βαριές αρχικές εικόνες.',
                     'spek-theme'
                 ); ?>
             </p>
@@ -1064,6 +1107,213 @@ function spek_render_product_image_importer_page(): void
             progressText.textContent = label + ' ' + done + '/' + total;
         }
 
+        function normalizedFilename(name) {
+            const base = String(name || 'product-image')
+                .replace(/\.[^.]+$/, '')
+                .replace(/[^a-zA-Z0-9._-]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'product-image';
+
+            return base + '-spek-1600.jpg';
+        }
+
+        async function decodeImage(file) {
+            if ('createImageBitmap' in window) {
+                try {
+                    return await createImageBitmap(
+                        file,
+                        { imageOrientation: 'from-image' }
+                    );
+                } catch (error) {
+                    // Fall through to HTMLImageElement decoding.
+                }
+            }
+
+            return await new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const image = new Image();
+
+                image.onload = function() {
+                    URL.revokeObjectURL(url);
+                    resolve(image);
+                };
+
+                image.onerror = function() {
+                    URL.revokeObjectURL(url);
+                    reject(new Error('Δεν ήταν δυνατή η ανάγνωση της εικόνας ' + file.name));
+                };
+
+                image.src = url;
+            });
+        }
+
+        function isDarkPixel(data, index) {
+            return (
+                data[index] <= 50
+                && data[index + 1] <= 50
+                && data[index + 2] <= 50
+                && data[index + 3] >= 180
+            );
+        }
+
+        function cleanEdgeConnectedDarkBackground(ctx, width, height) {
+            if (width < 2 || height < 2) {
+                return;
+            }
+
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            const pixels = width * height;
+            const corners = [
+                0,
+                width - 1,
+                (height - 1) * width,
+                pixels - 1
+            ];
+
+            const darkCorners = corners.filter(pixel => {
+                return isDarkPixel(data, pixel * 4);
+            });
+
+            // Conservative safety gate: only treat black as background when
+            // at least three corners agree.
+            if (darkCorners.length < 3) {
+                return;
+            }
+
+            const visited = new Uint8Array(pixels);
+            const queue = new Int32Array(pixels);
+            let head = 0;
+            let tail = 0;
+
+            function enqueue(pixel) {
+                if (
+                    pixel < 0
+                    || pixel >= pixels
+                    || visited[pixel]
+                    || !isDarkPixel(data, pixel * 4)
+                ) {
+                    return;
+                }
+
+                visited[pixel] = 1;
+                queue[tail++] = pixel;
+            }
+
+            darkCorners.forEach(enqueue);
+
+            while (head < tail) {
+                const pixel = queue[head++];
+                const index = pixel * 4;
+
+                data[index] = 255;
+                data[index + 1] = 255;
+                data[index + 2] = 255;
+                data[index + 3] = 255;
+
+                const x = pixel % width;
+                const y = Math.floor(pixel / width);
+
+                if (x > 0) {
+                    enqueue(pixel - 1);
+                }
+                if (x < width - 1) {
+                    enqueue(pixel + 1);
+                }
+                if (y > 0) {
+                    enqueue(pixel - width);
+                }
+                if (y < height - 1) {
+                    enqueue(pixel + width);
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        async function normalizeImageInBrowser(file) {
+            const canvasSize = <?php echo (int) SPEK_PRODUCT_IMAGE_CANVAS; ?>;
+            const padding = <?php echo (int) SPEK_PRODUCT_IMAGE_PADDING; ?>;
+            const inner = canvasSize - (padding * 2);
+            const image = await decodeImage(file);
+
+            const width = Number(image.width || image.naturalWidth || 0);
+            const height = Number(image.height || image.naturalHeight || 0);
+
+            if (!width || !height) {
+                if (typeof image.close === 'function') {
+                    image.close();
+                }
+                throw new Error('Μη έγκυρες διαστάσεις εικόνας: ' + file.name);
+            }
+
+            const scale = Math.min(inner / width, inner / height);
+            const targetWidth = Math.max(1, Math.round(width * scale));
+            const targetHeight = Math.max(1, Math.round(height * scale));
+
+            // Work only at the final display size. This keeps browser memory
+            // predictable even when the original image is very large.
+            const productCanvas = document.createElement('canvas');
+            productCanvas.width = targetWidth;
+            productCanvas.height = targetHeight;
+
+            const productCtx = productCanvas.getContext('2d', {
+                alpha: false,
+                willReadFrequently: true
+            });
+
+            productCtx.fillStyle = '#ffffff';
+            productCtx.fillRect(0, 0, targetWidth, targetHeight);
+            productCtx.imageSmoothingEnabled = true;
+            productCtx.imageSmoothingQuality = 'high';
+            productCtx.drawImage(
+                image,
+                0,
+                0,
+                targetWidth,
+                targetHeight
+            );
+
+            if (typeof image.close === 'function') {
+                image.close();
+            }
+
+            // Legacy SPEK photos often have a baked-in black studio background.
+            // Remove only near-black pixels connected to >=3 outer corners.
+            cleanEdgeConnectedDarkBackground(
+                productCtx,
+                targetWidth,
+                targetHeight
+            );
+
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = canvasSize;
+            finalCanvas.height = canvasSize;
+
+            const finalCtx = finalCanvas.getContext('2d', { alpha: false });
+            finalCtx.fillStyle = '#ffffff';
+            finalCtx.fillRect(0, 0, canvasSize, canvasSize);
+            finalCtx.drawImage(
+                productCanvas,
+                Math.floor((canvasSize - targetWidth) / 2),
+                Math.floor((canvasSize - targetHeight) / 2)
+            );
+
+            const blob = await new Promise((resolve, reject) => {
+                finalCanvas.toBlob(
+                    result => result
+                        ? resolve(result)
+                        : reject(new Error('Αποτυχία δημιουργίας JPEG: ' + file.name)),
+                    'image/jpeg',
+                    0.90
+                );
+            });
+
+            return {
+                blob,
+                name: normalizedFilename(file.name)
+            };
+        }
+
         analyzeBtn.addEventListener('click', async function(){
             const files = Array.from(folder.files || [])
                 .filter(file => /\.(jpe?g|png|webp)$/i.test(file.name));
@@ -1097,6 +1347,10 @@ function spek_render_product_image_importer_page(): void
                         ); ?>
                     );
 
+                    const normalized = await normalizeImageInBrowser(
+                        files[i]
+                    );
+
                     const uploadData = formData(
                         'spek_image_import_upload_file'
                     );
@@ -1107,9 +1361,19 @@ function spek_render_product_image_importer_page(): void
                     );
 
                     uploadData.set(
+                        'upload_name',
+                        normalized.name
+                    );
+
+                    uploadData.set(
+                        'client_normalized',
+                        '1'
+                    );
+
+                    uploadData.set(
                         'image_file',
-                        files[i],
-                        files[i].name
+                        normalized.blob,
+                        normalized.name
                     );
 
                     await post(uploadData);
