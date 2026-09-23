@@ -22,6 +22,7 @@ $required_files = [
     '/inc/custom-post-types.php',
     '/inc/taxonomies.php',
     '/inc/product-metaboxes.php',
+    '/inc/product-admin-list.php',
     '/inc/catalogue-metaboxes.php',
     '/inc/product-image-processing.php',
     '/inc/product-importer.php',
