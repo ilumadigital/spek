@@ -631,7 +631,7 @@ function spek_product_image_insert_normalized_attachment(
         );
     }
 
-    @chmod($target, fileperms(ABSPATH . 'wp-admin') & 0666);
+    @chmod($target, defined('FS_CHMOD_FILE') ? FS_CHMOD_FILE : 0644);
 
     $filetype = wp_check_filetype($name, null);
     $mime = !empty($filetype['type']) ? (string) $filetype['type'] : 'image/jpeg';
