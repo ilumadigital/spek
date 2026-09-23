@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (!defined('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION')) {
-    define('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION', '2');
+    define('SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION', '3');
 }
 if (!defined('SPEK_PRODUCT_IMAGE_CANVAS')) {
     define('SPEK_PRODUCT_IMAGE_CANVAS', 1600);
@@ -107,6 +107,119 @@ function spek_product_image_gd_auto_orient($image, string $source_path)
     }
 
     return $image;
+}
+
+/**
+ * Read a GD true-color pixel without allocating temporary color arrays.
+ *
+ * @param resource|GdImage $image
+ */
+function spek_product_image_gd_pixel_is_dark($image, int $x, int $y): bool
+{
+    $pixel = imagecolorat($image, $x, $y);
+
+    if ($pixel === false) {
+        return false;
+    }
+
+    $red = ($pixel >> 16) & 0xFF;
+    $green = ($pixel >> 8) & 0xFF;
+    $blue = $pixel & 0xFF;
+
+    return $red <= 50 && $green <= 50 && $blue <= 50;
+}
+
+/**
+ * GD fallback for removing edge-connected near-black studio backgrounds.
+ *
+ * Uses an iterative scanline flood fill so only dark pixels connected to the
+ * image edges are replaced; dark product details surrounded by the product are
+ * left intact.
+ *
+ * @param resource|GdImage $image
+ */
+function spek_product_image_gd_cleanup_dark_background($image): void
+{
+    $width = imagesx($image);
+    $height = imagesy($image);
+
+    if ($width < 2 || $height < 2) {
+        return;
+    }
+
+    $corners = [
+        [0, 0],
+        [$width - 1, 0],
+        [0, $height - 1],
+        [$width - 1, $height - 1],
+    ];
+
+    $dark_corners = array_values(array_filter(
+        $corners,
+        static fn($point) => spek_product_image_gd_pixel_is_dark(
+            $image,
+            (int) $point[0],
+            (int) $point[1]
+        )
+    ));
+
+    if (count($dark_corners) < 3) {
+        return;
+    }
+
+    $white = imagecolorallocate($image, 255, 255, 255);
+    $queue = new SplQueue();
+
+    foreach ($dark_corners as $point) {
+        $queue->enqueue([(int) $point[0], (int) $point[1]]);
+    }
+
+    while (!$queue->isEmpty()) {
+        [$x, $y] = $queue->dequeue();
+
+        if (
+            $x < 0 || $x >= $width || $y < 0 || $y >= $height
+            || !spek_product_image_gd_pixel_is_dark($image, $x, $y)
+        ) {
+            continue;
+        }
+
+        $left = $x;
+        while (
+            $left >= 0
+            && spek_product_image_gd_pixel_is_dark($image, $left, $y)
+        ) {
+            $left--;
+        }
+        $left++;
+
+        $right = $x;
+        while (
+            $right < $width
+            && spek_product_image_gd_pixel_is_dark($image, $right, $y)
+        ) {
+            $right++;
+        }
+        $right--;
+
+        for ($scan_x = $left; $scan_x <= $right; $scan_x++) {
+            imagesetpixel($image, $scan_x, $y, $white);
+
+            if (
+                $y > 0
+                && spek_product_image_gd_pixel_is_dark($image, $scan_x, $y - 1)
+            ) {
+                $queue->enqueue([$scan_x, $y - 1]);
+            }
+
+            if (
+                $y < ($height - 1)
+                && spek_product_image_gd_pixel_is_dark($image, $scan_x, $y + 1)
+            ) {
+                $queue->enqueue([$scan_x, $y + 1]);
+            }
+        }
+    }
 }
 
 /**
@@ -369,8 +482,12 @@ function spek_product_image_normalize_file(
     $target_width = max(1, (int) round($width * $scale));
     $target_height = max(1, (int) round($height * $scale));
 
+    $resized = imagecreatetruecolor($target_width, $target_height);
     $canvas = imagecreatetruecolor($canvas_size, $canvas_size);
-    if (!$canvas) {
+
+    if (!$resized || !$canvas) {
+        if ($resized) { imagedestroy($resized); }
+        if ($canvas) { imagedestroy($canvas); }
         imagedestroy($source);
         @unlink($tmp);
         return new WP_Error(
@@ -379,18 +496,22 @@ function spek_product_image_normalize_file(
         );
     }
 
-    $white = imagecolorallocate($canvas, 255, 255, 255);
-    imagefilledrectangle($canvas, 0, 0, $canvas_size, $canvas_size, $white);
-    imagealphablending($canvas, true);
-
-    $x = (int) floor(($canvas_size - $target_width) / 2);
-    $y = (int) floor(($canvas_size - $target_height) / 2);
+    $resized_white = imagecolorallocate($resized, 255, 255, 255);
+    imagefilledrectangle(
+        $resized,
+        0,
+        0,
+        $target_width,
+        $target_height,
+        $resized_white
+    );
+    imagealphablending($resized, true);
 
     $copied = imagecopyresampled(
-        $canvas,
+        $resized,
         $source,
-        $x,
-        $y,
+        0,
+        0,
         0,
         0,
         $target_width,
@@ -399,8 +520,31 @@ function spek_product_image_normalize_file(
         $height
     );
 
-    if (!$copied || !imagejpeg($canvas, $tmp, (int) SPEK_PRODUCT_IMAGE_JPEG_QUALITY)) {
+    if (!$copied) {
         imagedestroy($source);
+        imagedestroy($resized);
+        imagedestroy($canvas);
+        @unlink($tmp);
+        return new WP_Error(
+            'spek_image_resize_failed',
+            __('Αποτυχία αλλαγής μεγέθους εικόνας.', 'spek-theme')
+        );
+    }
+
+    spek_product_image_gd_cleanup_dark_background($resized);
+
+    $white = imagecolorallocate($canvas, 255, 255, 255);
+    imagefilledrectangle($canvas, 0, 0, $canvas_size, $canvas_size, $white);
+    imagealphablending($canvas, true);
+
+    $x = (int) floor(($canvas_size - $target_width) / 2);
+    $y = (int) floor(($canvas_size - $target_height) / 2);
+
+    imagecopy($canvas, $resized, $x, $y, 0, 0, $target_width, $target_height);
+
+    if (!imagejpeg($canvas, $tmp, (int) SPEK_PRODUCT_IMAGE_JPEG_QUALITY)) {
+        imagedestroy($source);
+        imagedestroy($resized);
         imagedestroy($canvas);
         @unlink($tmp);
         return new WP_Error(
@@ -410,6 +554,7 @@ function spek_product_image_normalize_file(
     }
 
     imagedestroy($source);
+    imagedestroy($resized);
     imagedestroy($canvas);
 
     return [
