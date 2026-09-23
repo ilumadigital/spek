@@ -948,11 +948,19 @@ function spek_import_product_image(int $post_id, string $url, string $alt = '')
         'fields' => 'ids',
         'no_found_rows' => true,
         'suppress_filters' => true,
-        'meta_query' => [[
-            'key' => '_spek_import_source_url',
-            'value' => $url,
-            'compare' => '=',
-        ]],
+        'meta_query' => [
+            'relation' => 'AND',
+            [
+                'key' => '_spek_import_source_url',
+                'value' => $url,
+                'compare' => '=',
+            ],
+            [
+                'key' => '_spek_product_image_normalized_version',
+                'value' => (string) SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION,
+                'compare' => '=',
+            ],
+        ],
     ]);
 
     if ($existing) {
@@ -983,19 +991,29 @@ function spek_import_product_image(int $post_id, string $url, string $alt = '')
         $filename = 'product-' . $post_id . '.jpg';
     }
 
+    $normalized = spek_product_image_normalize_file($tmp, $filename);
+    @unlink($tmp);
+
+    if (is_wp_error($normalized)) {
+        return $normalized;
+    }
+
+    $normalized_tmp = (string) $normalized['path'];
+
     $file_array = [
-        'name' => $filename,
-        'tmp_name' => $tmp,
+        'name' => sanitize_file_name((string) $normalized['name']),
+        'tmp_name' => $normalized_tmp,
     ];
 
     $attachment_id = media_handle_sideload($file_array, $post_id, get_the_title($post_id));
 
     if (is_wp_error($attachment_id)) {
-        @unlink($tmp);
+        @unlink($normalized_tmp);
         return $attachment_id;
     }
 
     update_post_meta($attachment_id, '_spek_import_source_url', $url);
+    spek_product_image_mark_normalized_attachment((int) $attachment_id);
 
     if ($alt !== '') {
         update_post_meta($attachment_id, '_wp_attachment_image_alt', $alt);
