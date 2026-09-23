@@ -19,7 +19,10 @@ $product_series = get_post_meta($product_id, '_spek_product_series', true);
 <article class="spek-product-card">
     <a class="spek-product-card__image" href="<?php the_permalink(); ?>" aria-label="<?php the_title_attribute(); ?>">
         <?php if (has_post_thumbnail()) : ?>
-            <?php the_post_thumbnail('medium_large'); ?>
+            <?php the_post_thumbnail('full', [
+                'loading' => 'lazy',
+                'decoding' => 'async',
+            ]); ?>
         <?php else : ?>
             <div class="spek-product-card__placeholder">
                 SPEK
