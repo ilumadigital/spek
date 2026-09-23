@@ -618,9 +618,15 @@ function spek_image_import_find_existing_attachment(string $sha256): int
         'no_found_rows' => true,
         'suppress_filters' => true,
         'meta_query' => [
+            'relation' => 'AND',
             [
                 'key' => '_spek_source_sha256',
                 'value' => $sha256,
+                'compare' => '=',
+            ],
+            [
+                'key' => '_spek_product_image_normalized_version',
+                'value' => (string) SPEK_PRODUCT_IMAGE_NORMALIZATION_VERSION,
                 'compare' => '=',
             ],
         ],
@@ -669,17 +675,19 @@ function spek_image_import_media_file(array $entry, string $dir)
     require_once ABSPATH . 'wp-admin/includes/media.php';
     require_once ABSPATH . 'wp-admin/includes/image.php';
 
-    $tmp = wp_tempnam((string) $entry['original_name']);
+    $normalized = spek_product_image_normalize_file(
+        $path,
+        (string) $entry['original_name']
+    );
 
-    if (!$tmp || !@copy($path, $tmp)) {
-        return new WP_Error(
-            'copy_failed',
-            __('Αποτυχία προετοιμασίας εικόνας.', 'spek-theme')
-        );
+    if (is_wp_error($normalized)) {
+        return $normalized;
     }
 
+    $tmp = (string) $normalized['path'];
+
     $file_array = [
-        'name' => sanitize_file_name((string) $entry['original_name']),
+        'name' => sanitize_file_name((string) $normalized['name']),
         'tmp_name' => $tmp,
     ];
 
@@ -714,6 +722,8 @@ function spek_image_import_media_file(array $entry, string $dir)
         '_wp_attachment_image_alt',
         sanitize_text_field((string) $entry['product_title'] . ' – SPEK')
     );
+
+    spek_product_image_mark_normalized_attachment((int) $attachment_id);
 
     return (int) $attachment_id;
 }
@@ -878,7 +888,7 @@ function spek_render_product_image_importer_page(): void
             <p>
                 <strong><?php esc_html_e('Κανόνες:', 'spek-theme'); ?></strong>
                 <?php esc_html_e(
-                    'Κωδικός στην αρχή του filename έχει προτεραιότητα. Υποστηρίζονται zero-padded κωδικοί, π.χ. 39 → 00039_set.jpg. Αν δεν υπάρχει κωδικός, γίνεται ασφαλής προσπάθεια αντιστοίχισης από το όνομα/περιγραφή προϊόντος. Αμφίβολες περιπτώσεις δεν εισάγονται.',
+                    'Κωδικός στην αρχή του filename έχει προτεραιότητα. Υποστηρίζονται zero-padded κωδικοί, π.χ. 39 → 00039_set.jpg. Αν δεν υπάρχει κωδικός, γίνεται ασφαλής προσπάθεια αντιστοίχισης από το όνομα/περιγραφή προϊόντος. Αμφίβολες περιπτώσεις δεν εισάγονται. Πριν από το WordPress Media Library κάθε εικόνα κανονικοποιείται αυτόματα σε 1600×1600 px, με λευκό καμβά, ασφαλές περιθώριο και χωρίς crop ή παραμόρφωση.',
                     'spek-theme'
                 ); ?>
             </p>
@@ -940,7 +950,7 @@ function spek_render_product_image_importer_page(): void
             </h2>
 
             <label style="display:block;margin:8px 0">
-                <input type="checkbox" id="spek_replace_featured">
+                <input type="checkbox" id="spek_replace_featured" checked>
                 <?php esc_html_e(
                     'Αντικατάσταση υπάρχουσας χαρακτηριστικής εικόνας',
                     'spek-theme'
