@@ -22,9 +22,9 @@ $catalogues = new WP_Query(spek_language_args([
 
     <section class="catalogues-library__hero">
         <div class="container">
-            <span class="eyebrow"><?php esc_html_e('Catalogues', 'spek-theme'); ?></span>
-            <h1><?php esc_html_e('Κατάλογοι προϊόντων', 'spek-theme'); ?></h1>
-            <p><?php esc_html_e('Οι επίσημοι κατάλογοι SPEK, διαθέσιμοι για online προβολή και λήψη PDF.', 'spek-theme'); ?></p>
+            <span class="eyebrow"><?php esc_html_e('Κατάλογος', 'spek-theme'); ?></span>
+            <h1><?php esc_html_e('Κατάλογος Προϊόντων', 'spek-theme'); ?></h1>
+            <p><?php esc_html_e('Ο επίσημος κατάλογος SPEK, διαθέσιμος για online προβολή και λήψη PDF.', 'spek-theme'); ?></p>
         </div>
     </section>
 
@@ -33,11 +33,11 @@ $catalogues = new WP_Query(spek_language_args([
 
             <?php if ($catalogues->have_posts()) : ?>
                 <div class="catalogues-library__top" data-reveal>
-                    <span><?php esc_html_e('SPEK Catalogues', 'spek-theme'); ?></span>
+                    <span><?php esc_html_e('Κατάλογος SPEK', 'spek-theme'); ?></span>
                     <strong>
                         <?php
                         printf(
-                            esc_html(_n('%d κατάλογος', '%d κατάλογοι', $catalogues->post_count, 'spek-theme')),
+                            esc_html__('%d κατάλογος', 'spek-theme'),
                             (int) $catalogues->post_count
                         );
                         ?>
@@ -122,7 +122,7 @@ $catalogues = new WP_Query(spek_language_args([
                 </div>
             <?php else : ?>
                 <div class="catalogues-library__empty" data-reveal>
-                    <p><?php esc_html_e('Δεν υπάρχουν διαθέσιμοι κατάλογοι αυτή τη στιγμή.', 'spek-theme'); ?></p>
+                    <p><?php esc_html_e('Δεν υπάρχει διαθέσιμος κατάλογος αυτή τη στιγμή.', 'spek-theme'); ?></p>
                 </div>
             <?php endif; ?>
 
