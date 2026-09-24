@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     <div class="container b2b-cta__inner">
 
         <div data-reveal>
-            <span class="eyebrow"><?php esc_html_e('B2B Support', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('B2B Υποστήριξη', 'spek-theme'); ?></span>
 
             <h2><?php esc_html_e('Επαγγελματική υποστήριξη από τη SPEK.', 'spek-theme'); ?></h2>
 
