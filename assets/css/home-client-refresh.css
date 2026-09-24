@@ -1,0 +1,235 @@
+/*
+ * SPEK homepage client revisions — 2026-09-24
+ * Loaded after main.css only on the homepage.
+ */
+
+/* Product range: clean line icons, no blue icon tile. */
+.product-categories .category-grid {
+    align-items: stretch;
+}
+
+.product-categories .category-card {
+    min-height: 292px;
+    padding: 30px 28px 26px;
+}
+
+.product-categories .category-card:nth-child(even) {
+    transform: none;
+}
+
+.product-categories .category-card:hover,
+.product-categories .category-card:nth-child(even):hover {
+    transform: translateY(-6px);
+}
+
+.product-categories .category-card__icon {
+    width: 78px;
+    height: 78px;
+    margin: 0 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.product-categories .category-card__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.product-categories .category-card h3 {
+    margin-bottom: 12px;
+    font-size: 22px;
+}
+
+.product-categories .category-card p {
+    margin-bottom: 22px;
+    font-size: 14px;
+    line-height: 1.68;
+}
+
+.product-categories .category-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-categories .category-card__link::after {
+    content: "→";
+    font-size: 16px;
+    transition: transform .2s ease;
+}
+
+.product-categories .category-card:hover .category-card__link::after {
+    transform: translateX(4px);
+}
+
+/* Why SPEK: make the company statement the visual anchor of the section. */
+.why-spek .section-heading {
+    margin-bottom: 42px;
+}
+
+.why-spek__manifesto {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
+    gap: 34px;
+    align-items: center;
+    margin: 0 0 64px;
+    padding: 30px 34px;
+    overflow: hidden;
+    border-radius: 30px 30px 66px 30px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 85% 10%, rgba(255,255,255,.16), transparent 30%),
+        linear-gradient(135deg, var(--color-accent-dark), var(--color-accent));
+    box-shadow: 0 28px 70px rgba(15, 76, 129, .20);
+}
+
+.why-spek__manifesto::after {
+    content: "";
+    position: absolute;
+    width: 210px;
+    height: 210px;
+    right: -72px;
+    bottom: -120px;
+    border: 1px solid rgba(255,255,255,.20);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 28px rgba(255,255,255,.035),
+        0 0 0 56px rgba(255,255,255,.025);
+    pointer-events: none;
+}
+
+.why-spek__monogram {
+    position: relative;
+    z-index: 1;
+    font-size: clamp(52px, 6vw, 82px);
+    font-weight: 800;
+    line-height: .9;
+    letter-spacing: -.07em;
+    white-space: nowrap;
+}
+
+.why-spek__monogram::after {
+    content: "";
+    display: block;
+    width: 66px;
+    height: 3px;
+    margin-top: 18px;
+    border-radius: 999px;
+    background: rgba(222, 191, 126, .95);
+}
+
+.why-spek__manifesto-copy {
+    position: relative;
+    z-index: 1;
+}
+
+.why-spek__manifesto-label {
+    display: block;
+    margin-bottom: 14px;
+    color: rgba(255,255,255,.72);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.why-spek__pillars {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.why-spek__pillars span {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    padding: 0 16px 0 18px;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 16px;
+    color: #fff;
+    background: rgba(255,255,255,.07);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+    backdrop-filter: blur(10px);
+}
+
+.why-spek__pillars span::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 2px;
+    border-radius: 99px;
+    background: rgba(222, 191, 126, .95);
+}
+
+@media (max-width: 1100px) {
+    .product-categories .category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .why-spek__manifesto {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .why-spek__pillars {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .product-categories {
+        padding-top: 72px;
+        padding-bottom: 78px;
+    }
+
+    .product-categories .category-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .product-categories .category-card {
+        min-height: 0;
+        padding: 24px;
+        border-radius: 22px 22px 42px 22px;
+    }
+
+    .product-categories .category-card__icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 18px;
+    }
+
+    .why-spek__manifesto {
+        margin-bottom: 42px;
+        padding: 26px 22px;
+        border-radius: 24px 24px 48px 24px;
+    }
+
+    .why-spek__monogram {
+        font-size: 54px;
+    }
+
+    .why-spek__pillars {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .why-spek__pillars span {
+        min-height: 48px;
+    }
+}
