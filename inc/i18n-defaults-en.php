@@ -514,4 +514,12 @@ return [
     'Μετατρέπουμε τον σχεδιασμό σε αξιόπιστα προϊόντα, με συνέπεια, έλεγχο και προσοχή στη λεπτομέρεια.' => 'We turn design into reliable products through consistency, control and attention to detail.',
     'Τέσσερις λέξεις που εκφράζουν τον τρόπο με τον οποίο δουλεύουμε.' => 'Four words that express the way we work.',
     'Στην πράξη' => 'In practice',
+
+    // Singular catalogue copy — 2026-09-24.
+    'Τεχνικός Κατάλογος Προϊόντων' => 'Technical Product Catalogue',
+    'Κωδικοί, τεχνικά στοιχεία και ο τεχνικός κατάλογος για γρήγορη αναφορά.' => 'Product codes, technical data and the technical catalogue for quick reference.',
+    'Τεχνικός κατάλογος' => 'Technical catalogue',
+    'Κατάλογος Προϊόντων' => 'Product Catalogue',
+    'Ο επίσημος κατάλογος SPEK, διαθέσιμος για online προβολή και λήψη PDF.' => 'The official SPEK catalogue, available for online viewing and PDF download.',
+    'Δεν υπάρχει διαθέσιμος κατάλογος αυτή τη στιγμή.' => 'No catalogue is available at the moment.',
 ];
