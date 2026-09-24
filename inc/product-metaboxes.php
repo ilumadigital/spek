@@ -410,3 +410,88 @@ function spek_product_title_placeholder($title, $post): string
 }
 
 add_filter('enter_title_here', 'spek_product_title_placeholder', 10, 2);
+
+/**
+ * Extend the Products admin search so it also matches the product SKU/code.
+ *
+ * The SKU is stored in the `product_code` post meta field. These filters are
+ * intentionally limited to the main wp-admin list-table query for
+ * `spek_product`, so searches elsewhere in WordPress remain untouched.
+ */
+function spek_product_admin_search_join(string $join, $query): string
+{
+    global $wpdb;
+
+    if (
+        !is_admin()
+        || !$query->is_main_query()
+        || $query->get('post_type') !== 'spek_product'
+        || trim((string) $query->get('s')) === ''
+    ) {
+        return $join;
+    }
+
+    if (strpos($join, 'spek_admin_product_code_meta') === false) {
+        $join .= " LEFT JOIN {$wpdb->postmeta} AS spek_admin_product_code_meta"
+            . " ON ({$wpdb->posts}.ID = spek_admin_product_code_meta.post_id"
+            . " AND spek_admin_product_code_meta.meta_key = 'product_code') ";
+    }
+
+    return $join;
+}
+add_filter('posts_join', 'spek_product_admin_search_join', 20, 2);
+
+/**
+ * Search the admin Products list by title/content/excerpt or SKU.
+ */
+function spek_product_admin_search_where(string $search, $query): string
+{
+    global $wpdb;
+
+    if (
+        !is_admin()
+        || !$query->is_main_query()
+        || $query->get('post_type') !== 'spek_product'
+    ) {
+        return $search;
+    }
+
+    $term = trim((string) $query->get('s'));
+    if ($term === '') {
+        return $search;
+    }
+
+    $like = '%' . $wpdb->esc_like($term) . '%';
+
+    return $wpdb->prepare(
+        " AND (\n"
+        . "{$wpdb->posts}.post_title LIKE %s\n"
+        . " OR {$wpdb->posts}.post_excerpt LIKE %s\n"
+        . " OR {$wpdb->posts}.post_content LIKE %s\n"
+        . " OR spek_admin_product_code_meta.meta_value LIKE %s\n"
+        . ") ",
+        $like,
+        $like,
+        $like,
+        $like
+    );
+}
+add_filter('posts_search', 'spek_product_admin_search_where', 20, 2);
+
+/**
+ * Avoid duplicate rows caused by the SKU meta join.
+ */
+function spek_product_admin_search_distinct(string $distinct, $query): string
+{
+    if (
+        is_admin()
+        && $query->is_main_query()
+        && $query->get('post_type') === 'spek_product'
+        && trim((string) $query->get('s')) !== ''
+    ) {
+        return 'DISTINCT';
+    }
+
+    return $distinct;
+}
+add_filter('posts_distinct', 'spek_product_admin_search_distinct', 20, 2);
