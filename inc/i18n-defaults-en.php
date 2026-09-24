@@ -522,4 +522,8 @@ return [
     'Κατάλογος Προϊόντων' => 'Product Catalogue',
     'Ο επίσημος κατάλογος SPEK, διαθέσιμος για online προβολή και λήψη PDF.' => 'The official SPEK catalogue, available for online viewing and PDF download.',
     'Δεν υπάρχει διαθέσιμος κατάλογος αυτή τη στιγμή.' => 'No catalogue is available at the moment.',
+
+    // Singular catalogue follow-up — 2026-09-24.
+    'Για πληροφορίες προϊόντων, τεχνικό κατάλογο, διαθεσιμότητα και εμπορική συνεργασία, επικοινωνήστε με την ομάδα μας.' => 'For product information, the technical catalogue, availability and commercial cooperation, contact our team.',
+    'Κατεβάστε διαθέσιμα datasheets, τεχνικά έντυπα και τον κατάλογο για το συγκεκριμένο προϊόν.' => 'Download available datasheets, technical documents and the catalogue for this product.',
 ];
