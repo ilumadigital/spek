@@ -26,7 +26,7 @@ $footer_columns = [
                 'url'   => $products_url,
             ],
             [
-                'label' => __('Κατάλογοι', 'spek-theme'),
+                'label' => __('Κατάλογος', 'spek-theme'),
                 'url'   => spek_page_url('catalogues/'),
             ],
             [
@@ -70,7 +70,7 @@ $footer_columns = [
                 'url'   => spek_page_url('product-finder/'),
             ],
             [
-                'label' => __('Τεχνικοί κατάλογοι', 'spek-theme'),
+                'label' => __('Τεχνικός κατάλογος', 'spek-theme'),
                 'url'   => spek_page_url('catalogues/'),
             ],
             [
