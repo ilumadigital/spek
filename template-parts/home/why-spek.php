@@ -9,6 +9,29 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+$values = [
+    [
+        'letter' => 'Σ',
+        'title'  => __('Σχεδιάζουμε', 'spek-theme'),
+        'text'   => __('Μελετάμε κάθε λύση με βάση την πραγματική ανάγκη της εγκατάστασης και της καθημερινής χρήσης.', 'spek-theme'),
+    ],
+    [
+        'letter' => 'Π',
+        'title'  => __('Πρωτοπορούμε', 'spek-theme'),
+        'text'   => __('Αναζητούμε πρακτικές ιδέες που βελτιώνουν τα προϊόντα, τις εφαρμογές και την εμπειρία του επαγγελματία.', 'spek-theme'),
+    ],
+    [
+        'letter' => 'Ε',
+        'title'  => __('Εξελισσόμαστε', 'spek-theme'),
+        'text'   => __('Επενδύουμε διαρκώς σε τεχνογνωσία, παραγωγή και νέες προϊοντικές δυνατότητες.', 'spek-theme'),
+    ],
+    [
+        'letter' => 'Κ',
+        'title'  => __('Κατασκευάζουμε', 'spek-theme'),
+        'text'   => __('Μετατρέπουμε τον σχεδιασμό σε αξιόπιστα προϊόντα, με συνέπεια, έλεγχο και προσοχή στη λεπτομέρεια.', 'spek-theme'),
+    ],
+];
+
 $items = [
     [
         'title' => __('Αξιόπιστη λειτουργία', 'spek-theme'),
@@ -41,22 +64,33 @@ $items = [
             </p>
         </div>
 
-        <div class="why-spek__manifesto" data-reveal style="--reveal-delay: 80ms;">
-            <div class="why-spek__monogram"><?php esc_html_e('ΣΠΕΚ', 'spek-theme'); ?></div>
-            <div class="why-spek__manifesto-copy">
-                <span class="why-spek__manifesto-label"><?php esc_html_e('Η φιλοσοφία της SPEK', 'spek-theme'); ?></span>
-                <div class="why-spek__pillars">
-                    <span><?php esc_html_e('Σχεδιάζουμε', 'spek-theme'); ?></span>
-                    <span><?php esc_html_e('Πρωτοπορούμε', 'spek-theme'); ?></span>
-                    <span><?php esc_html_e('Εξελισσόμαστε', 'spek-theme'); ?></span>
-                    <span><?php esc_html_e('Κατασκευάζουμε', 'spek-theme'); ?></span>
-                </div>
+        <div class="why-spek__values-wrap" data-reveal style="--reveal-delay: 70ms;">
+            <div class="why-spek__values-heading">
+                <span class="why-spek__wordmark"><?php esc_html_e('ΣΠΕΚ', 'spek-theme'); ?></span>
+                <p><?php esc_html_e('Τέσσερις λέξεις που εκφράζουν τον τρόπο με τον οποίο δουλεύουμε.', 'spek-theme'); ?></p>
             </div>
+
+            <div class="why-spek__values">
+                <?php foreach ($values as $index => $value) : ?>
+                    <article class="why-spek__value" data-reveal style="--reveal-delay: <?php echo esc_attr(($index * 65) + 110); ?>ms;">
+                        <span class="why-spek__value-letter" aria-hidden="true"><?php echo esc_html($value['letter']); ?></span>
+                        <div class="why-spek__value-copy">
+                            <h3><?php echo esc_html($value['title']); ?></h3>
+                            <p><?php echo esc_html($value['text']); ?></p>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <div class="why-spek__benefits-intro" data-reveal style="--reveal-delay: 150ms;">
+            <span><?php esc_html_e('Στην πράξη', 'spek-theme'); ?></span>
         </div>
 
         <div class="features-grid">
             <?php foreach ($items as $index => $item) : ?>
-                <div class="feature-card" data-reveal style="--reveal-delay: <?php echo esc_attr(($index * 80) + 120); ?>ms;">
+                <div class="feature-card" data-reveal style="--reveal-delay: <?php echo esc_attr(($index * 70) + 180); ?>ms;">
+                    <span class="feature-card__index"><?php echo esc_html(sprintf('%02d', $index + 1)); ?></span>
                     <h3><?php echo esc_html($item['title']); ?></h3>
                     <p><?php echo esc_html($item['text']); ?></p>
                 </div>
