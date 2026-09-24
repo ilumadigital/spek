@@ -31,7 +31,7 @@ if (empty($datasheets) && empty($catalogues)) {
             <div>
                 <span class="eyebrow"><?php esc_html_e('Downloads', 'spek-theme'); ?></span>
                 <h2><?php esc_html_e('Αρχεία & κατάλογοι προϊόντος', 'spek-theme'); ?></h2>
-                <p><?php esc_html_e('Κατεβάστε διαθέσιμα datasheets, τεχνικά έντυπα και καταλόγους για το συγκεκριμένο προϊόν.', 'spek-theme'); ?></p>
+                <p><?php esc_html_e('Κατεβάστε διαθέσιμα datasheets, τεχνικά έντυπα και τον κατάλογο για το συγκεκριμένο προϊόν.', 'spek-theme'); ?></p>
             </div>
 
             <div class="product-download-list">
