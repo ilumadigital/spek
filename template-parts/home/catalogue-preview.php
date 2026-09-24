@@ -16,7 +16,7 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
     <div class="container catalogue-preview__box premium-catalogue-box">
 
         <div class="catalogue-preview__content" data-reveal>
-            <span class="eyebrow"><?php esc_html_e('Catalogue', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('Κατάλογοι', 'spek-theme'); ?></span>
 
             <h2><?php esc_html_e('Τεχνικοί κατάλογοι για άμεση αναφορά.', 'spek-theme'); ?></h2>
 
@@ -47,17 +47,17 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
             <div class="catalogue-sheet catalogue-sheet--back"></div>
 
             <div class="catalogue-sheet catalogue-sheet--front">
-                <span><?php esc_html_e('SPEK Catalogue', 'spek-theme'); ?></span>
-                <strong><?php esc_html_e('Products · Codes · Technical Data', 'spek-theme'); ?></strong>
+                <span><?php esc_html_e('Κατάλογος SPEK', 'spek-theme'); ?></span>
+                <strong><?php esc_html_e('Προϊόντα · Κωδικοί · Τεχνικά στοιχεία', 'spek-theme'); ?></strong>
                 <small><?php esc_html_e('Συγκεντρωμένη τεχνική πληροφορία για επαγγελματίες.', 'spek-theme'); ?></small>
             </div>
 
             <div class="catalogue-chip catalogue-chip--one">
-                <?php esc_html_e('Technical data', 'spek-theme'); ?>
+                <?php esc_html_e('Τεχνικά στοιχεία', 'spek-theme'); ?>
             </div>
 
             <div class="catalogue-chip catalogue-chip--two">
-                <?php esc_html_e('Product codes', 'spek-theme'); ?>
+                <?php esc_html_e('Κωδικοί προϊόντων', 'spek-theme'); ?>
             </div>
         </div>
 
