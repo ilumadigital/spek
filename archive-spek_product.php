@@ -19,6 +19,10 @@ $product_categories = get_terms(spek_language_args([
 $products_archive_url = get_post_type_archive_link('spek_product');
 $products_archive_url = $products_archive_url ?: home_url('/products/');
 $selected_category_id = function_exists('spek_product_filter_term_id') ? spek_product_filter_term_id('product_category') : 0;
+$home_category_group = isset($_GET['home_category_group']) ? sanitize_key(wp_unslash((string) $_GET['home_category_group'])) : '';
+$home_category_group_label = ($home_category_group !== '' && function_exists('spek_home_category_group_label'))
+    ? spek_home_category_group_label($home_category_group)
+    : '';
 ?>
 
 <main id="main" class="site-main products-archive">
@@ -27,7 +31,9 @@ $selected_category_id = function_exists('spek_product_filter_term_id') ? spek_pr
         <div class="container">
             <span class="eyebrow"><?php esc_html_e('Product Catalogue', 'spek-theme'); ?></span>
             <h1><?php
-                if (is_tax()) {
+                if ($home_category_group_label !== '') {
+                    echo esc_html($home_category_group_label);
+                } elseif (is_tax()) {
                     $archive_term = get_queried_object();
                     if ($archive_term instanceof WP_Term && function_exists('spek_i18n_translate_term_object')) {
                         $archive_term = spek_i18n_translate_term_object($archive_term);
@@ -46,7 +52,7 @@ $selected_category_id = function_exists('spek_product_filter_term_id') ? spek_pr
     <?php if (!empty($product_categories) && !is_wp_error($product_categories)) : ?>
         <section class="product-category-nav">
             <div class="container product-category-nav__inner">
-                <a href="<?php echo esc_url($products_archive_url); ?>" class="product-category-pill <?php echo is_post_type_archive('spek_product') && !$selected_category_id ? 'is-active' : ''; ?>">
+                <a href="<?php echo esc_url($products_archive_url); ?>" class="product-category-pill <?php echo is_post_type_archive('spek_product') && !$selected_category_id && $home_category_group === '' ? 'is-active' : ''; ?>">
                     <?php esc_html_e('Όλα', 'spek-theme'); ?>
                 </a>
 
@@ -94,7 +100,7 @@ $selected_category_id = function_exists('spek_product_filter_term_id') ? spek_pr
                     <div class="pagination">
                         <?php
                         $pagination_args = [];
-                        foreach (['product_search', 'filter_category', 'filter_application', 'filter_material', 'filter_series'] as $param) {
+                        foreach (['product_search', 'filter_category', 'filter_application', 'filter_material', 'filter_series', 'home_category_group'] as $param) {
                             if (!isset($_GET[$param]) || $_GET[$param] === '') { continue; }
                             $pagination_args[$param] = sanitize_text_field(wp_unslash((string) $_GET[$param]));
                         }
