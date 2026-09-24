@@ -3,67 +3,152 @@
  * Loaded after main.css only on the homepage.
  */
 
-/* Product range: clean line icons, no blue icon tile. */
+/* =========================================================
+   Product range — refined minimal cards
+   ========================================================= */
+
+.product-categories {
+    padding-top: 88px;
+    padding-bottom: 96px;
+}
+
+.product-categories .section-heading {
+    max-width: 760px;
+    margin-bottom: 44px;
+}
+
 .product-categories .category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
     align-items: stretch;
 }
 
 .product-categories .category-card {
-    min-height: 292px;
-    padding: 30px 28px 26px;
+    position: relative;
+    min-height: 278px;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 26px 24px;
+    overflow: hidden;
+    border: 1px solid rgba(15, 76, 129, .10);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .82);
+    box-shadow: 0 12px 30px rgba(17, 39, 61, .045);
+    transform: none !important;
+    transition:
+        transform .24s ease,
+        border-color .24s ease,
+        box-shadow .24s ease,
+        background .24s ease;
 }
 
 .product-categories .category-card:nth-child(even) {
-    transform: none;
+    transform: none !important;
+}
+
+/* Remove the old decorative corner blob for a cleaner catalogue look. */
+.product-categories .category-card::before {
+    content: none !important;
+    display: none !important;
 }
 
 .product-categories .category-card:hover,
 .product-categories .category-card:nth-child(even):hover {
-    transform: translateY(-6px);
+    transform: translateY(-5px) !important;
+    border-color: rgba(15, 76, 129, .20);
+    background: #fff;
+    box-shadow: 0 18px 44px rgba(17, 39, 61, .08);
 }
 
-.product-categories .category-card__icon {
-    width: 78px;
-    height: 78px;
-    margin: 0 0 24px;
+/* Line icons only — explicitly override the legacy blue icon tile. */
+.product-categories .category-card__icon,
+.front-page .product-categories .category-card__icon,
+body .front-page .product-categories .category-card__icon {
+    position: relative;
+    z-index: 1;
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px;
+    margin: 0 0 24px !important;
+    padding: 0 !important;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--color-accent);
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
+.product-categories .category-card__icon::before,
+.product-categories .category-card__icon::after {
+    content: none !important;
+    display: none !important;
 }
 
 .product-categories .category-card__svg {
     display: block;
-    width: 100%;
-    height: 100%;
+    width: 58px !important;
+    height: 58px !important;
     overflow: visible;
+    color: inherit;
+    fill: none;
+    stroke: currentColor;
+    opacity: .92;
+    transition:
+        transform .24s ease,
+        opacity .24s ease,
+        color .24s ease;
+}
+
+.product-categories .category-card:hover .category-card__svg {
+    transform: translateY(-2px);
+    opacity: 1;
+    color: var(--color-accent-dark);
 }
 
 .product-categories .category-card h3 {
-    margin-bottom: 12px;
-    font-size: 22px;
+    position: relative;
+    z-index: 1;
+    margin: 0 0 10px;
+    font-size: 20px;
+    line-height: 1.15;
+    letter-spacing: -.025em;
 }
 
 .product-categories .category-card p {
-    margin-bottom: 22px;
+    position: relative;
+    z-index: 1;
+    margin: 0 0 24px;
+    color: var(--color-muted);
     font-size: 14px;
-    line-height: 1.68;
+    line-height: 1.62;
 }
 
 .product-categories .category-card__link {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    margin-top: auto;
+    color: var(--color-accent);
+    font-size: 13px;
+    font-weight: 700;
+    transition: color .2s ease;
 }
 
 .product-categories .category-card__link::after {
     content: "→";
-    font-size: 16px;
+    font-size: 15px;
     transition: transform .2s ease;
+}
+
+.product-categories .category-card:hover .category-card__link {
+    color: var(--color-accent-dark);
 }
 
 .product-categories .category-card:hover .category-card__link::after {
