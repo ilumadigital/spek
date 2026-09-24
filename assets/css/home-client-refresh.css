@@ -374,14 +374,26 @@ body .front-page .product-categories .category-card__icon {
 
     .product-categories .category-card {
         min-height: 0;
-        padding: 24px;
-        border-radius: 22px 22px 42px 22px;
+        padding: 24px 22px 22px;
+        border-radius: 20px;
     }
 
-    .product-categories .category-card__icon {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 18px;
+    .product-categories .category-card__icon,
+    .front-page .product-categories .category-card__icon,
+    body .front-page .product-categories .category-card__icon {
+        width: 52px !important;
+        height: 52px !important;
+        min-width: 52px;
+        margin-bottom: 20px !important;
+    }
+
+    .product-categories .category-card__svg {
+        width: 52px !important;
+        height: 52px !important;
+    }
+
+    .product-categories .category-card h3 {
+        font-size: 19px;
     }
 
     .why-spek {
