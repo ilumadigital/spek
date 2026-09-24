@@ -35,7 +35,7 @@ if (!function_exists('spek_primary_menu_fallback')) {
                 'url'   => $products_url ? $products_url : spek_page_url('products/'),
             ],
             [
-                'label' => __('Κατάλογοι', 'spek-theme'),
+                'label' => __('Κατάλογος', 'spek-theme'),
                 'url'   => spek_page_url('catalogues/'),
             ],
             [
