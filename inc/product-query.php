@@ -88,6 +88,92 @@ function spek_product_filter_term_id(string $taxonomy): int
     return $term instanceof WP_Term ? (int) $term->term_id : 0;
 }
 
+
+/**
+ * Homepage category groups.
+ *
+ * The homepage intentionally presents a curated eight-card structure that can
+ * combine several native taxonomy terms under one public group. "Διάφορα"
+ * automatically includes every product category that is not one of the seven
+ * primary groups.
+ */
+function spek_home_category_group_definitions(): array
+{
+    return [
+        'mixanismoi' => [
+            'label' => __('Μηχανισμοί', 'spek-theme'),
+            'slugs' => ['mixanismoi', 'mechanisms'],
+            'names' => ['Μηχανισμοί', 'Mechanisms'],
+        ],
+        'floter' => [
+            'label' => __('Φλοτέρ', 'spek-theme'),
+            'slugs' => ['floter', 'float-valves', 'floater'],
+            'names' => ['Φλοτέρ', 'Float valves'],
+        ],
+        'sifonia' => [
+            'label' => __('Σιφόνια', 'spek-theme'),
+            'slugs' => ['sifonia', 'siphons', 'traps'],
+            'names' => ['Σιφόνια', 'Siphons', 'Traps'],
+        ],
+        'kalymmata-lekanis' => [
+            'label' => __('Καλύμματα λεκάνης', 'spek-theme'),
+            'slugs' => ['kalymmata-lekanis', 'kalimmata-lekanis', 'kalymmata', 'kalimmata', 'toilet-seats'],
+            'names' => ['Καλύμματα λεκάνης', 'Καλύμματα Λεκάνης', 'Καπάκια λεκάνης', 'Καπάκια Λεκάνης', 'Toilet seats'],
+        ],
+        'kazanakia' => [
+            'label' => __('Καζανάκια', 'spek-theme'),
+            'slugs' => ['kazanakia', 'cisterns'],
+            'names' => ['Καζανάκια', 'Cisterns'],
+        ],
+        'banio' => [
+            'label' => __('Μπάνιο', 'spek-theme'),
+            'slugs' => ['banio', 'mpanio', 'bathroom'],
+            'names' => ['Μπάνιο', 'Bathroom'],
+        ],
+        'lastixa' => [
+            'label' => __('Λάστιχα', 'spek-theme'),
+            'slugs' => ['lastixa', 'rubber-parts', 'seals'],
+            'names' => ['Λάστιχα', 'Rubber parts', 'Seals'],
+        ],
+        'diafora' => [
+            'label' => __('Διάφορα', 'spek-theme'),
+            'slugs' => [],
+            'names' => [],
+        ],
+    ];
+}
+
+function spek_home_category_group_term_ids(string $group): array
+{
+    $definitions = spek_home_category_group_definitions();
+    if (!isset($definitions[$group])) {
+        return [];
+    }
+
+    $ids = [];
+    foreach ($definitions[$group]['slugs'] as $slug) {
+        $term = get_term_by('slug', $slug, 'product_category');
+        if ($term instanceof WP_Term) {
+            $ids[] = (int) $term->term_id;
+        }
+    }
+
+    foreach ($definitions[$group]['names'] as $name) {
+        $term = get_term_by('name', $name, 'product_category');
+        if ($term instanceof WP_Term) {
+            $ids[] = (int) $term->term_id;
+        }
+    }
+
+    return array_values(array_unique(array_filter($ids)));
+}
+
+function spek_home_category_group_label(string $group): string
+{
+    $definitions = spek_home_category_group_definitions();
+    return isset($definitions[$group]) ? (string) $definitions[$group]['label'] : '';
+}
+
 /**
  * Prevent legacy taxonomy filter GET parameters from hijacking /products/ as a
  * native taxonomy request. The actual filtering is applied later by
@@ -137,6 +223,46 @@ function spek_filter_product_archive_query($query): void
     }
 
     $tax_query = (array) $query->get('tax_query');
+
+    $home_group = isset($_GET['home_category_group'])
+        ? sanitize_key(wp_unslash((string) $_GET['home_category_group']))
+        : '';
+
+    if ($home_group !== '' && function_exists('spek_home_category_group_definitions')) {
+        $definitions = spek_home_category_group_definitions();
+
+        if (isset($definitions[$home_group])) {
+            if ($home_group === 'diafora') {
+                $primary_groups = ['mixanismoi', 'floter', 'sifonia', 'kalymmata-lekanis', 'kazanakia', 'banio', 'lastixa'];
+                $primary_term_ids = [];
+
+                foreach ($primary_groups as $primary_group) {
+                    $primary_term_ids = array_merge(
+                        $primary_term_ids,
+                        spek_home_category_group_term_ids($primary_group)
+                    );
+                }
+
+                $primary_term_ids = array_values(array_unique(array_filter(array_map('intval', $primary_term_ids))));
+                if ($primary_term_ids) {
+                    $tax_query[] = [
+                        'taxonomy' => 'product_category',
+                        'field' => 'term_id',
+                        'terms' => $primary_term_ids,
+                        'operator' => 'NOT IN',
+                    ];
+                }
+            } else {
+                $group_term_ids = spek_home_category_group_term_ids($home_group);
+                $tax_query[] = [
+                    'taxonomy' => 'product_category',
+                    'field' => 'term_id',
+                    'terms' => $group_term_ids ?: [0],
+                    'operator' => 'IN',
+                ];
+            }
+        }
+    }
 
     foreach (array_keys(spek_product_filter_params()) as $taxonomy) {
         $term_id = spek_product_filter_term_id($taxonomy);
