@@ -29,6 +29,9 @@ if (is_tax(['product_category', 'product_application', 'product_material', 'prod
 }
 
 $product_search = isset($_GET['product_search']) ? sanitize_text_field(wp_unslash($_GET['product_search'])) : '';
+$home_category_group = isset($_GET['home_category_group'])
+    ? sanitize_key(wp_unslash((string) $_GET['home_category_group']))
+    : '';
 
 $categories = get_terms(spek_language_args([
     'taxonomy' => 'product_category',
@@ -55,6 +58,9 @@ $archive_url = $archive_url ?: home_url('/products/');
 ?>
 
 <form class="product-filters" method="get" action="<?php echo esc_url($archive_url); ?>">
+    <?php if ($home_category_group !== '') : ?>
+        <input type="hidden" name="home_category_group" value="<?php echo esc_attr($home_category_group); ?>">
+    <?php endif; ?>
     <h2><?php esc_html_e('Φίλτρα', 'spek-theme'); ?></h2>
 
     <div class="filter-group">
@@ -132,7 +138,7 @@ $archive_url = $archive_url ?: home_url('/products/');
         <?php esc_html_e('Εφαρμογή φίλτρων', 'spek-theme'); ?>
     </button>
 
-    <?php if ($selected_category || $selected_application || $selected_material || $selected_series || $product_search) : ?>
+    <?php if ($selected_category || $selected_application || $selected_material || $selected_series || $product_search || $home_category_group) : ?>
         <a href="<?php echo esc_url($archive_url); ?>" class="filters-reset">
             <?php esc_html_e('Καθαρισμός φίλτρων', 'spek-theme'); ?>
         </a>
