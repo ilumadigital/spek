@@ -506,4 +506,12 @@ return [
     'Καλαίσθητες και πρακτικές λύσεις για λεκάνες WC, με έμφαση στην άνεση, την αντοχή και την εύκολη εφαρμογή.' => 'Well-designed, practical toilet-seat solutions focused on comfort, durability and easy fitting.',
     'Επιλεγμένες λύσεις για τον εξοπλισμό μπάνιου, σχεδιασμένες για λειτουργικότητα, άνεση και καθημερινή χρήση.' => 'Selected bathroom solutions designed for functionality, comfort and everyday use.',
     'Συμπληρωματικές λύσεις, ανταλλακτικά και ειδικές σειρές, μαζί με τη Nemo, για ανάγκες πέρα από τις βασικές κατηγορίες.' => 'Complementary solutions, spare parts and special ranges, including Nemo, for needs beyond the core categories.',
+
+    // Why SPEK redesign — 2026-09-24.
+    'Μελετάμε κάθε λύση με βάση την πραγματική ανάγκη της εγκατάστασης και της καθημερινής χρήσης.' => 'We study every solution around the real needs of the installation and everyday use.',
+    'Αναζητούμε πρακτικές ιδέες που βελτιώνουν τα προϊόντα, τις εφαρμογές και την εμπειρία του επαγγελματία.' => 'We pursue practical ideas that improve products, applications and the professional\'s experience.',
+    'Επενδύουμε διαρκώς σε τεχνογνωσία, παραγωγή και νέες προϊοντικές δυνατότητες.' => 'We continuously invest in know-how, production and new product capabilities.',
+    'Μετατρέπουμε τον σχεδιασμό σε αξιόπιστα προϊόντα, με συνέπεια, έλεγχο και προσοχή στη λεπτομέρεια.' => 'We turn design into reliable products through consistency, control and attention to detail.',
+    'Τέσσερις λέξεις που εκφράζουν τον τρόπο με τον οποίο δουλεύουμε.' => 'Four words that express the way we work.',
+    'Στην πράξη' => 'In practice',
 ];
