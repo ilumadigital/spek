@@ -16,7 +16,7 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
     <div class="container finder-preview__grid">
 
         <div class="finder-preview__content" data-reveal>
-            <span class="eyebrow"><?php esc_html_e('Product Finder', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('Εύρεση Προϊόντος', 'spek-theme'); ?></span>
 
             <h2><?php esc_html_e('Βρείτε το κατάλληλο προϊόν σε λίγα βήματα.', 'spek-theme'); ?></h2>
 
