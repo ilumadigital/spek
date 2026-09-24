@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
             <div class="map-placeholder premium-map">
                 <div class="map-grid" aria-hidden="true"></div>
 
-                <span class="store-preview__label"><?php esc_html_e('Partner Network', 'spek-theme'); ?></span>
+                <span class="store-preview__label"><?php esc_html_e('Δίκτυο Συνεργατών', 'spek-theme'); ?></span>
 
                 <i class="store-point store-point--one" aria-hidden="true"></i>
                 <i class="store-point store-point--two" aria-hidden="true"></i>
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
         </div>
 
         <div class="store-preview__content" data-reveal style="--reveal-delay: 120ms;">
-            <span class="eyebrow"><?php esc_html_e('Partners', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('Συνεργάτες', 'spek-theme'); ?></span>
 
             <h2><?php esc_html_e('Βρείτε συνεργάτη ή σημείο πώλησης SPEK.', 'spek-theme'); ?></h2>
 
