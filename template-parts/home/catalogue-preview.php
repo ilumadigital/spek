@@ -16,9 +16,9 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
     <div class="container catalogue-preview__box premium-catalogue-box">
 
         <div class="catalogue-preview__content" data-reveal>
-            <span class="eyebrow"><?php esc_html_e('Κατάλογοι', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('Κατάλογος', 'spek-theme'); ?></span>
 
-            <h2><?php esc_html_e('Τεχνικοί κατάλογοι για άμεση αναφορά.', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Τεχνικός Κατάλογος Προϊόντων', 'spek-theme'); ?></h2>
 
             <p>
                 <?php esc_html_e('Προϊόντα, κωδικοί και τεχνικές πληροφορίες συγκεντρωμένα ανά κατηγορία για εύκολη επαγγελματική χρήση.', 'spek-theme'); ?>
@@ -26,7 +26,7 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
 
             <div class="hero-actions">
                 <a href="<?php echo esc_url(home_url('/catalogues/')); ?>" class="button button-primary">
-                    <?php esc_html_e('Προβολή καταλόγων', 'spek-theme'); ?>
+                    <?php esc_html_e('Προβολή καταλόγου', 'spek-theme'); ?>
                 </a>
 
                 <a href="<?php echo esc_url(home_url('/products/')); ?>" class="button button-secondary">
