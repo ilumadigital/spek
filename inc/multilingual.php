@@ -403,9 +403,17 @@ add_filter('get_terms', static function ($terms) {
 
 /** English menu labels are stored on the same menu item. */
 add_filter('nav_menu_item_title', static function (string $title, $item): string {
+    // The site now exposes one product catalogue, while the existing WP menu
+    // may still contain the historic plural label.
+    if (trim($title) === 'Κατάλογοι') { $title = 'Κατάλογος'; }
+
     if (!spek_is_english() || !$item instanceof WP_Post) { return $title; }
+
     $translated = get_post_meta($item->ID, '_spek_label_en', true);
-    if (is_string($translated) && $translated !== '') { return $translated; }
+    if (is_string($translated) && $translated !== '') {
+        return strcasecmp(trim($translated), 'Catalogues') === 0 ? 'Catalogue' : $translated;
+    }
+
     return function_exists('spek_i18n_translate_string') ? spek_i18n_translate_string($title, $title) : $title;
 }, 20, 2);
 
