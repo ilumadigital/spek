@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) {
         <div class="b2b-cta__meta" data-reveal style="--reveal-delay: 100ms;">
             <span class="support-pill"><?php esc_html_e('Πληροφορίες προϊόντων', 'spek-theme'); ?></span>
             <span class="support-pill"><?php esc_html_e('Υποστήριξη συνεργατών', 'spek-theme'); ?></span>
-            <span class="support-pill"><?php esc_html_e('Τεχνικοί κατάλογοι', 'spek-theme'); ?></span>
+            <span class="support-pill"><?php esc_html_e('Τεχνικός κατάλογος', 'spek-theme'); ?></span>
             <span class="support-pill"><?php esc_html_e('Εμπορικά αιτήματα', 'spek-theme'); ?></span>
         </div>
 
