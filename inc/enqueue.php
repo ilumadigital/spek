@@ -73,6 +73,23 @@ function spek_enqueue_assets(): void
         'Φόρτωση PDF.js…' => __('Φόρτωση PDF.js…', 'spek-theme'),
     ]);
 
+    if (is_page_template('templates/template-contact.php')) {
+        wp_enqueue_style(
+            'spek-contact-form',
+            SPEK_THEME_URI . '/assets/css/contact-form.css',
+            ['spek-main', 'spek-multilingual'],
+            filemtime(SPEK_THEME_DIR . '/assets/css/contact-form.css')
+        );
+
+        wp_enqueue_script(
+            'spek-contact-form',
+            SPEK_THEME_URI . '/assets/js/contact-form.js',
+            ['spek-main'],
+            filemtime(SPEK_THEME_DIR . '/assets/js/contact-form.js'),
+            true
+        );
+    }
+
     if (is_singular('spek_catalogue')) {
         wp_enqueue_script(
             'spek-catalogue-viewer',

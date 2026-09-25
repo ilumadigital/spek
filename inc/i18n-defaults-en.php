@@ -526,4 +526,22 @@ return [
     // Singular catalogue follow-up — 2026-09-24.
     'Για πληροφορίες προϊόντων, τεχνικό κατάλογο, διαθεσιμότητα και εμπορική συνεργασία, επικοινωνήστε με την ομάδα μας.' => 'For product information, the technical catalogue, availability and commercial cooperation, contact our team.',
     'Κατεβάστε διαθέσιμα datasheets, τεχνικά έντυπα και τον κατάλογο για το συγκεκριμένο προϊόν.' => 'Download available datasheets, technical documents and the catalogue for this product.',
+
+    // Dynamic contact form.
+    'Contact Form' => 'Contact Form',
+    'Τύπος αιτήματος' => 'Enquiry type',
+    'Γενικό Αίτημα' => 'General Enquiry',
+    'Είμαι συνεργάτης' => 'I am a partner',
+    'Όνομα' => 'First name',
+    'Επώνυμο' => 'Last name',
+    'Θέμα' => 'Subject',
+    'Έως 3000 χαρακτήρες' => 'Up to 3,000 characters',
+    'Όλα τα πεδία είναι υποχρεωτικά.' => 'All fields are required.',
+    'Αποστολή αιτήματος' => 'Send enquiry',
+    'Επιλέξτε τον τύπο του αιτήματος και συμπληρώστε όλα τα πεδία.' => 'Choose the enquiry type and complete all fields.',
+    'Το μήνυμά σας στάλθηκε επιτυχώς. Η ομάδα της SPEK θα επικοινωνήσει μαζί σας.' => 'Your message was sent successfully. The SPEK team will contact you.',
+    'Δεν ήταν δυνατή η αποστολή. Ελέγξτε ότι όλα τα πεδία είναι σωστά συμπληρωμένα.' => 'The message could not be sent. Please check that all fields are completed correctly.',
+    'Θέση Αχλαδιά Τόλια, Βαθύ Αυλίδος, Ευβοίας 32009, Τ.Θ. 159, Ελλάδα' => 'Thesi Achladia Tolia, Vathy Avlidos, Evia 32009, P.O. Box 159, Greece',
+    'Προβολή στον χάρτη' => 'View on map',
+    'Παραγωγική βάση SPEK στο Σχηματάρι' => 'SPEK production base in Schimatari',
 ];

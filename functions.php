@@ -20,6 +20,7 @@ $required_files = [
     '/inc/setup.php',
     '/inc/enqueue.php',
     '/inc/custom-post-types.php',
+    '/inc/contact-submissions.php',
     '/inc/taxonomies.php',
     '/inc/product-metaboxes.php',
     '/inc/product-admin-list.php',
