@@ -23,7 +23,7 @@ get_header();
                         alt="SPEK"
                         class="spek-brand-logo"
                     >
-                    <span>Product Finder</span>
+                    <span><?php esc_html_e('Εύρεση Προϊόντος', 'spek-theme'); ?></span>
                 </span>
                 <h1><?php esc_html_e('Βρείτε το κατάλληλο προϊόν.', 'spek-theme'); ?></h1>
                 <p><?php esc_html_e('Ένας γρήγορος οδηγός επιλογής για επαγγελματίες. Ορίστε κατηγορία, εφαρμογή και προαιρετικά τεχνικά χαρακτηριστικά.', 'spek-theme'); ?></p>
@@ -52,7 +52,7 @@ get_header();
                             alt="SPEK"
                             class="spek-brand-logo spek-brand-logo--inverse"
                         >
-                        <small><?php esc_html_e('Product Selection', 'spek-theme'); ?></small>
+                        <small><?php esc_html_e('Επιλογή Προϊόντος', 'spek-theme'); ?></small>
                     </div>
 
                     <div class="spek-finder__progress spek-finder__progress--rail">
