@@ -21,6 +21,8 @@ $en_vat     = 'EL084016352';
 $en_tax     = 'CHALKIDOS';
 $en_gemi    = '8056001000';
 
+$is_english = function_exists('spek_is_english') && spek_is_english();
+
 $copy_button = static function (string $value, string $label, string $success_label): void {
     ?>
     <button
@@ -58,11 +60,12 @@ get_header();
                     <h2><?php esc_html_e('Εταιρική ταυτότητα, με σαφήνεια.', 'spek-theme'); ?></h2>
                 </div>
 
-                <p><?php esc_html_e('Τα επίσημα στοιχεία της εταιρείας συγκεντρωμένα σε ελληνικά και αγγλικά, για άμεση αναφορά.', 'spek-theme'); ?></p>
+                <p><?php esc_html_e('Τα επίσημα στοιχεία της εταιρείας συγκεντρωμένα για άμεση αναφορά.', 'spek-theme'); ?></p>
             </div>
 
-            <div class="company-details-grid">
+            <div class="company-details-grid company-details-grid--single">
 
+                <?php if (!$is_english) : ?>
                 <article class="company-details-card company-details-card--gr" data-reveal data-delay="80">
                     <div class="company-details-card__head">
                         <div>
@@ -128,6 +131,7 @@ get_header();
                     </dl>
                 </article>
 
+                <?php else : ?>
                 <article class="company-details-card company-details-card--en" data-reveal data-delay="160">
                     <div class="company-details-card__head">
                         <div>
@@ -192,6 +196,7 @@ get_header();
                         </div>
                     </dl>
                 </article>
+                <?php endif; ?>
 
             </div>
 

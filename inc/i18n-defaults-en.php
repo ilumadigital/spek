@@ -544,4 +544,7 @@ return [
     'Θέση Αχλαδιά Τόλια, Βαθύ Αυλίδος, Ευβοίας 32009, Τ.Θ. 159, Ελλάδα' => 'Thesi Achladia Tolia, Vathy Avlidos, Evia 32009, P.O. Box 159, Greece',
     'Προβολή στον χάρτη' => 'View on map',
     'Παραγωγική βάση SPEK στο Σχηματάρι' => 'SPEK production base in Schimatari',
+
+    // Company details language-specific view.
+    'Τα επίσημα στοιχεία της εταιρείας συγκεντρωμένα για άμεση αναφορά.' => 'The company\'s official details, presented for quick reference.',
 ];

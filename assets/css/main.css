@@ -8108,6 +8108,12 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     gap: 24px;
 }
 
+.company-details-grid--single {
+    grid-template-columns: minmax(0, 1fr);
+    width: min(100%, 980px);
+    margin-inline: auto;
+}
+
 .company-details-card {
     position: relative;
     display: flex;
