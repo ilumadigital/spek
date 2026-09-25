@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
+$iluma_image_base = get_template_directory_uri() . '/assets/images/';
 ?>
 
 <section class="section catalogue-preview">
@@ -38,8 +38,8 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
         <div class="catalogue-preview__visual" data-reveal style="--reveal-delay: 120ms;">
             <img
                 class="catalogue-preview__photo"
-                src="<?php echo esc_url($iluma_image_base . 'spek-ready-website1-1-1.webp'); ?>"
-                alt="<?php esc_attr_e('Η εγκατάσταση της SPEK', 'spek-theme'); ?>"
+                src="<?php echo esc_url($iluma_image_base . 'spek-factory-line-2-blue.png'); ?>"
+                alt="<?php esc_attr_e('Παραγωγική εγκατάσταση SPEK με εταιρική οπτική ταυτότητα', 'spek-theme'); ?>"
                 loading="lazy"
                 decoding="async"
             >

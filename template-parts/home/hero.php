@@ -9,32 +9,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$hero_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
+$hero_image_base = get_template_directory_uri() . '/assets/images/';
 
 $hero_slides = [
     [
-        'image' => 'spek-website-bg-0001.webp',
-        'alt'   => __('Παραγωγή καλουπιού SPEK σε σύγχρονο βιομηχανικό περιβάλλον', 'spek-theme'),
-    ],
-    [
-        'image' => 'spek-website-bg-001.webp',
-        'alt'   => __('Βιομηχανικό καλούπι σε μηχανή παραγωγής SPEK', 'spek-theme'),
-    ],
-    [
-        'image' => 'spek-website-bg-002.webp',
-        'alt'   => __('CNC κατεργασία μεταλλικού εξαρτήματος σε χώρο παραγωγής SPEK', 'spek-theme'),
-    ],
-    [
-        'image' => 'spek-website-bg-003.webp',
-        'alt'   => __('Βιομηχανικό καλούπι με συνδέσεις σε γραμμή παραγωγής SPEK', 'spek-theme'),
-    ],
-    [
-        'image' => 'spek-website-bg-004.webp',
-        'alt'   => __('Σύγχρονη γραμμή παραγωγής με μηχανές injection moulding', 'spek-theme'),
-    ],
-    [
-        'image' => 'spek-website-bg-005.webp',
-        'alt'   => __('Κοντινή άποψη βιομηχανικού καλουπιού της SPEK', 'spek-theme'),
+        'image' => 'spek-website-new-factory-blue.png',
+        'alt'   => __('Παραγωγική εγκατάσταση SPEK με την εταιρική οπτική ταυτότητα', 'spek-theme'),
     ],
 ];
 ?>

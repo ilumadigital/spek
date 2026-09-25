@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
+$iluma_image_base = get_template_directory_uri() . '/assets/images/';
 ?>
 
 <section class="section finder-preview premium-finder">
@@ -38,8 +38,8 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
         <div class="finder-preview__mockup premium-finder__mockup" data-reveal style="--reveal-delay: 120ms;">
             <figure class="finder-preview__spotlight">
                 <img
-                    src="<?php echo esc_url($iluma_image_base . 'spek-ready-website2.webp'); ?>"
-                    alt="<?php esc_attr_e('Γραμμή παραγωγής SPEK', 'spek-theme'); ?>"
+                    src="<?php echo esc_url($iluma_image_base . 'spek-factory-line-blue.png'); ?>"
+                    alt="<?php esc_attr_e('Γραμμή παραγωγής SPEK με εταιρική οπτική ταυτότητα', 'spek-theme'); ?>"
                     loading="lazy"
                     decoding="async"
                 >

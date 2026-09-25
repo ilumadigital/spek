@@ -14,7 +14,7 @@ $phone_href    = '+302262075000';
 $email         = 'info@spek.gr';
 $address       = __('Θέση Αχλαδιά Τόλια, Βαθύ Αυλίδος, Ευβοίας 32009, Τ.Θ. 159, Ελλάδα', 'spek-theme');
 $maps_url      = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($address);
-$contact_image = get_template_directory_uri() . '/assets/images/iluma/webp/spek-ready-website1-16-9.webp';
+$contact_image = get_template_directory_uri() . '/assets/images/spek-website-new-factory.png';
 
 $product_mail    = 'mailto:' . $email . '?subject=' . rawurlencode('SPEK - Product & Technical Support');
 $commercial_mail = 'mailto:' . $email . '?subject=' . rawurlencode('SPEK - Commercial & B2B Cooperation');

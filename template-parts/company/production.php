@@ -9,35 +9,35 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$iluma_image_base = get_template_directory_uri() . '/assets/images/iluma/webp/';
+$iluma_image_base = get_template_directory_uri() . '/assets/images/';
 
 $steps = [
     [
         'number' => '01',
         'title' => __('Σχεδιασμός', 'spek-theme'),
         'text' => __('Μελετάμε την εφαρμογή και μετατρέπουμε μια πραγματική ανάγκη σε λειτουργική, παραγωγικά ώριμη λύση.', 'spek-theme'),
-        'image' => 'spek-website-bg-007.webp',
+        'image' => 'spek-website-factory-line.png',
         'alt' => __('Μεταλλικό καλούπι σε σύγχρονο βιομηχανικό περιβάλλον', 'spek-theme'),
     ],
     [
         'number' => '02',
         'title' => __('Εργαλεία & καλούπια', 'spek-theme'),
         'text' => __('Η τεχνογνωσία στην κατασκευή καλουπιών αποτελεί μέρος της ιστορίας και της παραγωγικής ταυτότητας της SPEK.', 'spek-theme'),
-        'image' => 'spek-ready-website3.webp',
+        'image' => 'spek-website-factory-line2.png',
         'alt' => __('Βιομηχανικό καλούπι τοποθετημένο σε μηχανή παραγωγής', 'spek-theme'),
     ],
     [
         'number' => '03',
         'title' => __('Παραγωγή', 'spek-theme'),
         'text' => __('Σύγχρονος μηχανολογικός εξοπλισμός και οργανωμένες διαδικασίες υποστηρίζουν σταθερότητα και επαναληψιμότητα.', 'spek-theme'),
-        'image' => 'spek-ready-website2.webp',
+        'image' => 'spek-website-factory-line3.png',
         'alt' => __('Σύγχρονη γραμμή παραγωγής με μηχανές injection moulding', 'spek-theme'),
     ],
     [
         'number' => '04',
         'title' => __('Έλεγχος ποιότητας', 'spek-theme'),
         'text' => __('Η ποιότητα αντιμετωπίζεται ως συνεχής διαδικασία, από την πρώτη ύλη και την παραγωγή έως το τελικό προϊόν.', 'spek-theme'),
-        'image' => 'spek-ready-website4.webp',
+        'image' => 'spek-website-factory-line4.png',
         'alt' => __('CNC κατεργασία μεταλλικού εξαρτήματος υψηλής ακρίβειας', 'spek-theme'),
     ],
 ];
@@ -81,7 +81,7 @@ $steps = [
             </div>
             <div class="company-facility__visual company-facility__visual--photo">
                 <img
-                    src="<?php echo esc_url($iluma_image_base . 'spek-ready-website1-16-9.webp'); ?>"
+                    src="<?php echo esc_url($iluma_image_base . 'spek-website-new-factory.png'); ?>"
                     alt="<?php esc_attr_e('Οι ιδιόκτητες εγκαταστάσεις της SPEK στο Σχηματάρι', 'spek-theme'); ?>"
                     loading="lazy"
                     decoding="async"
@@ -96,7 +96,7 @@ $steps = [
         <div class="company-production__mosaic" data-reveal>
             <figure class="company-production__mosaic-main">
                 <img
-                    src="<?php echo esc_url($iluma_image_base . 'spek-website-bg-006.webp'); ?>"
+                    src="<?php echo esc_url($iluma_image_base . 'spek-factory-line.png'); ?>"
                     alt="<?php esc_attr_e('Πανοραμική άποψη της παραγωγής SPEK', 'spek-theme'); ?>"
                     loading="lazy"
                     decoding="async"
@@ -105,7 +105,7 @@ $steps = [
             </figure>
             <figure>
                 <img
-                    src="<?php echo esc_url($iluma_image_base . 'spek-website-bg-005.webp'); ?>"
+                    src="<?php echo esc_url($iluma_image_base . 'spek-factory-line-2.png'); ?>"
                     alt="<?php esc_attr_e('Καλούπι σε μηχανή παραγωγής SPEK', 'spek-theme'); ?>"
                     loading="lazy"
                     decoding="async"
@@ -114,7 +114,7 @@ $steps = [
             </figure>
             <figure>
                 <img
-                    src="<?php echo esc_url($iluma_image_base . 'spek-website-bg-008.webp'); ?>"
+                    src="<?php echo esc_url($iluma_image_base . 'spek-website-main.png'); ?>"
                     alt="<?php esc_attr_e('CNC κατεργασία στη γραμμή παραγωγής SPEK', 'spek-theme'); ?>"
                     loading="lazy"
                     decoding="async"

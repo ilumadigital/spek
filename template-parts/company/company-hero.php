@@ -10,11 +10,11 @@ if (!defined('ABSPATH')) {
 }
 
 $featured_image = get_the_post_thumbnail_url(get_queried_object_id(), 'spek_hero');
-$default_image_path = get_template_directory() . '/assets/images/iluma/webp/spek-ready-website1-16-9.webp';
-$default_image_url  = get_template_directory_uri() . '/assets/images/iluma/webp/spek-ready-website1-16-9.webp';
-$hero_image = $featured_image ?: (file_exists($default_image_path) ? $default_image_url : '');
-$intro_image_path = get_template_directory() . '/assets/images/iluma/webp/spek-ready-website1.webp';
-$intro_image_url  = get_template_directory_uri() . '/assets/images/iluma/webp/spek-ready-website1.webp';
+$default_image_path = get_template_directory() . '/assets/images/spek-website-new-factory-blue.png';
+$default_image_url  = get_template_directory_uri() . '/assets/images/spek-website-new-factory-blue.png';
+$hero_image = file_exists($default_image_path) ? $default_image_url : $featured_image;
+$intro_image_path = get_template_directory() . '/assets/images/spek-website-new-factory.png';
+$intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-new-factory.png';
 ?>
 
 <section class="company-hero">
