@@ -66,7 +66,7 @@ $series = get_terms(spek_language_args([
                 <label for="finder-installation"><?php esc_html_e('Τύπος εγκατάστασης', 'spek-theme'); ?></label>
                 <span><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></span>
             </div>
-            <input id="finder-installation" type="text" name="product_installation_type" placeholder="<?php esc_attr_e('π.χ. εσωτερική, επιτοίχια, universal', 'spek-theme'); ?>">
+            <input id="finder-installation" type="text" name="product_installation_type" placeholder="<?php esc_attr_e('π.χ. εσωτερική, επιτοίχια, γενικής χρήσης', 'spek-theme'); ?>">
         </div>
 
         <div class="spek-finder-field">
@@ -80,7 +80,7 @@ $series = get_terms(spek_language_args([
 
     <div class="spek-finder-specs-note">
         <span aria-hidden="true">i</span>
-        <p><?php esc_html_e('Αν δεν γνωρίζετε κάποια προδιαγραφή, αφήστε το πεδίο κενό. Ο Finder θα χρησιμοποιήσει τις προηγούμενες επιλογές.', 'spek-theme'); ?></p>
+        <p><?php esc_html_e('Αν δεν γνωρίζετε κάποια προδιαγραφή, αφήστε το πεδίο κενό. Το εργαλείο εύρεσης προϊόντος θα χρησιμοποιήσει τις προηγούμενες επιλογές.', 'spek-theme'); ?></p>
     </div>
 
     <div class="spek-finder-actions">
