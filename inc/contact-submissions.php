@@ -101,8 +101,8 @@ function spek_contact_email_shell(
         : home_url('/');
 
     $footer_copy = $lang === 'en'
-        ? 'SPEK · Plumbing & sanitary solutions · Since 1990'
-        : 'SPEK · Λύσεις υδραυλικών & ειδών υγιεινής · Από το 1990';
+        ? 'Plumbing & sanitary solutions · Since 1990'
+        : 'Λύσεις υδραυλικών & ειδών υγιεινής · Από το 1990';
 
     return '<!doctype html>
 <html lang="' . esc_attr($lang === 'en' ? 'en' : 'el') . '">
@@ -148,8 +148,10 @@ function spek_contact_email_shell(
 <td style="padding:22px 34px;background:#0f365b;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
 <tr>
-<td style="color:#ffffff;font-size:12px;line-height:1.55;font-weight:700;">SPEK</td>
-<td align="right" style="color:rgba(255,255,255,.72);font-size:11px;line-height:1.55;">' . esc_html($footer_copy) . '</td>
+<td valign="middle">
+<img src="' . esc_url($logo_url) . '" width="70" alt="SPEK" style="display:block;width:70px;max-width:70px;height:auto;border:0;filter:brightness(0) invert(1);">
+</td>
+<td align="right" valign="middle" style="color:rgba(255,255,255,.72);font-size:11px;line-height:1.55;">' . esc_html($footer_copy) . '</td>
 </tr>
 </table>
 </td>

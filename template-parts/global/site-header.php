@@ -77,7 +77,14 @@ $primary_menu_location = function_exists('spek_menu_location') ? spek_menu_locat
         </nav>
 
         <div class="mobile-menu__featured">
-            <span><?php esc_html_e('SPEK Product System', 'spek-theme'); ?></span>
+            <span class="mobile-menu__featured-brand">
+                <img
+                    src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                    alt="SPEK"
+                    class="spek-brand-logo"
+                >
+                <small>Product System</small>
+            </span>
             <strong><?php esc_html_e('Βρείτε γρήγορα το σωστό προϊόν για την εγκατάσταση.', 'spek-theme'); ?></strong>
         </div>
 

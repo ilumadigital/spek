@@ -43,7 +43,12 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
                     decoding="async"
                 >
             <?php else : ?>
-                <div class="company-hero__visual-mark" aria-hidden="true">SPEK</div>
+                <div class="company-hero__visual-mark" aria-hidden="true">
+                    <img
+                        src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                        alt=""
+                    >
+                </div>
             <?php endif; ?>
 
             <div class="company-hero__visual-card">
@@ -97,7 +102,14 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
                     decoding="async"
                 >
                 <figcaption>
-                    <span><?php esc_html_e('SPEK · Σχηματάρι', 'spek-theme'); ?></span>
+                    <span class="company-intro__brand-lockup">
+                        <img
+                            src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                            alt="SPEK"
+                            class="spek-brand-logo spek-brand-logo--inverse"
+                        >
+                        <small>· <?php esc_html_e('Σχηματάρι', 'spek-theme'); ?></small>
+                    </span>
                     <strong><?php esc_html_e('8.100 m² ιδιόκτητης παραγωγικής βάσης', 'spek-theme'); ?></strong>
                 </figcaption>
             </figure>

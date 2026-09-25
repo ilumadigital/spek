@@ -17,7 +17,14 @@ get_header();
     <section class="finder-hero">
         <div class="container finder-hero__grid">
             <div class="finder-hero__content" data-reveal>
-                <span class="eyebrow"><?php esc_html_e('SPEK Product Finder', 'spek-theme'); ?></span>
+                <span class="eyebrow spek-brand-eyebrow">
+                    <img
+                        src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                        alt="SPEK"
+                        class="spek-brand-logo"
+                    >
+                    <span>Product Finder</span>
+                </span>
                 <h1><?php esc_html_e('Βρείτε το κατάλληλο προϊόν.', 'spek-theme'); ?></h1>
                 <p><?php esc_html_e('Ένας γρήγορος οδηγός επιλογής για επαγγελματίες. Ορίστε κατηγορία, εφαρμογή και προαιρετικά τεχνικά χαρακτηριστικά.', 'spek-theme'); ?></p>
             </div>
@@ -40,7 +47,11 @@ get_header();
 
                 <aside class="spek-finder-nav" aria-label="<?php esc_attr_e('Βήματα Product Finder', 'spek-theme'); ?>">
                     <div class="spek-finder-nav__brand">
-                        <span>SPEK</span>
+                        <img
+                            src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                            alt="SPEK"
+                            class="spek-brand-logo spek-brand-logo--inverse"
+                        >
                         <small><?php esc_html_e('Product Selection', 'spek-theme'); ?></small>
                     </div>
 

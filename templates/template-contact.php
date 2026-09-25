@@ -27,7 +27,14 @@ get_header();
         <div class="container contact-hub-hero__grid contact-hub-hero__grid--contact-form">
 
             <div class="contact-hub-hero__intro" data-reveal>
-                <span class="eyebrow"><?php esc_html_e('SPEK / Contact', 'spek-theme'); ?></span>
+                <span class="eyebrow spek-brand-eyebrow">
+                    <img
+                        src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                        alt="SPEK"
+                        class="spek-brand-logo"
+                    >
+                    <span>/ Contact</span>
+                </span>
 
                 <h1><?php esc_html_e('Επικοινωνία με τη SPEK.', 'spek-theme'); ?></h1>
 
@@ -36,7 +43,11 @@ get_header();
                 </p>
 
                 <div class="contact-hub-hero__signature" aria-hidden="true">
-                    <span>SPEK</span>
+                    <img
+                        src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                        alt=""
+                        class="spek-brand-logo"
+                    >
                     <i></i>
                     <small>Since 1990</small>
                 </div>
@@ -236,7 +247,14 @@ get_header();
         </div>
 
         <div class="contact-hub-location__content" data-reveal style="--reveal-delay: 100ms;">
-            <span class="eyebrow"><?php esc_html_e('SPEK · Schimatari', 'spek-theme'); ?></span>
+            <span class="eyebrow spek-brand-eyebrow spek-brand-eyebrow--inverse">
+                <img
+                    src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                    alt="SPEK"
+                    class="spek-brand-logo spek-brand-logo--inverse"
+                >
+                <span>· Schimatari</span>
+            </span>
             <h2><?php esc_html_e('Η SPEK στο Σχηματάρι.', 'spek-theme'); ?></h2>
             <p><?php esc_html_e('Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στο Σχηματάρι.', 'spek-theme'); ?></p>
             <address><?php echo esc_html($address); ?></address>

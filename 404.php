@@ -62,7 +62,12 @@ if (!$products_url) {
                     <span class="spek-404__plate-line spek-404__plate-line--two"></span>
                     <span class="spek-404__plate-line spek-404__plate-line--three"></span>
                     <span class="spek-404__plate-dot"></span>
-                    <span class="spek-404__plate-label">SPEK</span>
+                    <span class="spek-404__plate-label" aria-hidden="true">
+                        <img
+                            src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                            alt=""
+                        >
+                    </span>
                 </div>
             </div>
         </div>
