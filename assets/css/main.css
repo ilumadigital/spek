@@ -15199,3 +15199,130 @@ body .front-page .container {
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
+
+/* =========================================================
+   Contact / Careers CTA
+   ========================================================= */
+
+.contact-careers-section {
+    padding: 0 0 88px;
+    background: var(--color-page);
+}
+
+.contact-careers-card {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 48px;
+    overflow: hidden;
+    padding: 50px 54px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 34px;
+    background:
+        radial-gradient(circle at 88% 10%, rgba(200, 169, 106, 0.24), transparent 28%),
+        linear-gradient(135deg, var(--color-accent-dark), var(--color-accent));
+    box-shadow: 0 26px 70px rgba(10, 53, 91, 0.18);
+}
+
+.contact-careers-card::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    right: -76px;
+    bottom: -122px;
+    width: 286px;
+    height: 286px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+}
+
+.contact-careers-card__content {
+    max-width: 780px;
+}
+
+.contact-careers-card .eyebrow {
+    margin-bottom: 14px;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.contact-careers-card .eyebrow::before {
+    background: currentColor;
+}
+
+.contact-careers-card h2 {
+    max-width: 740px;
+    margin-bottom: 14px;
+    color: #ffffff;
+    font-size: clamp(32px, 3.5vw, 50px);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+}
+
+.contact-careers-card p {
+    max-width: 710px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.76);
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.contact-careers-card__action {
+    position: relative;
+    z-index: 1;
+}
+
+.contact-careers-card__action .button {
+    gap: 10px;
+    min-width: 228px;
+    white-space: nowrap;
+}
+
+.contact-careers-card__action .button span {
+    font-size: 19px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.contact-careers-card__action .button:hover span {
+    transform: translateX(3px);
+}
+
+@media (max-width: 900px) {
+    .contact-careers-card {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 42px;
+    }
+
+    .contact-careers-card__action .button {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .contact-careers-section {
+        padding-bottom: 64px;
+    }
+
+    .contact-careers-card {
+        gap: 24px;
+        padding: 30px 24px;
+        border-radius: 26px;
+    }
+
+    .contact-careers-card h2 {
+        font-size: clamp(29px, 9vw, 39px);
+    }
+
+    .contact-careers-card p {
+        font-size: 16px;
+    }
+
+    .contact-careers-card__action,
+    .contact-careers-card__action .button {
+        width: 100%;
+    }
+}
+
