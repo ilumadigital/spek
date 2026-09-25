@@ -45,7 +45,7 @@ get_header();
         <div class="container">
             <div class="spek-finder spek-finder--v2" data-current-step="start">
 
-                <aside class="spek-finder-nav" aria-label="<?php esc_attr_e('Βήματα Product Finder', 'spek-theme'); ?>">
+                <aside class="spek-finder-nav" aria-label="<?php esc_attr_e('Βήματα εύρεσης προϊόντος', 'spek-theme'); ?>">
                     <div class="spek-finder-nav__brand">
                         <img
                             src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
