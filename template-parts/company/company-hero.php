@@ -24,14 +24,6 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
             <h1><?php esc_html_e('Ελληνική τεχνογνωσία. Σύγχρονη παραγωγή.', 'spek-theme'); ?></h1>
             <p class="company-hero__lead"><?php esc_html_e('Από το 1990, η SPEK σχεδιάζει και παράγει αξιόπιστες λύσεις για υδραυλικές εφαρμογές και είδη υγιεινής, συνδυάζοντας εμπειρία, παραγωγική γνώση και διαρκή εξέλιξη.', 'spek-theme'); ?></p>
 
-            <div class="company-hero__actions">
-                <a class="button button-primary" href="<?php echo esc_url(home_url('/products/')); ?>">
-                    <?php esc_html_e('Ανακαλύψτε τα προϊόντα', 'spek-theme'); ?>
-                </a>
-                <a class="button button-secondary" href="<?php echo esc_url(home_url('/contact/')); ?>">
-                    <?php esc_html_e('Επικοινωνήστε μαζί μας', 'spek-theme'); ?>
-                </a>
-            </div>
         </div>
 
         <div class="company-hero__visual<?php echo $hero_image ? ' has-image' : ''; ?>" data-reveal>
