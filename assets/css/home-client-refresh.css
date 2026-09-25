@@ -462,3 +462,89 @@ body .front-page .product-categories .category-card__icon {
         margin-bottom: 20px;
     }
 }
+
+/* =========================================================
+   Company / About — Why SPEK homepage parity
+   Keep the shared Why SPEK component visually identical to home.
+   ========================================================= */
+
+.company-why-spek-group {
+    --color-accent: var(--spek-blue, #174f8a);
+    --color-accent-dark: var(--spek-blue-deep, #0c3764);
+    --color-accent-soft: var(--spek-blue-soft, #eef4f9);
+    --color-gold: var(--spek-red, #d7233f);
+    --color-gold-soft: #fceef1;
+    --color-page: #ffffff;
+    --color-surface-soft: var(--spek-grey-50, #f7f9fb);
+    --color-border: var(--spek-grey-200, #e2e8ed);
+    color: var(--spek-navy, #10283d);
+}
+
+.company-why-spek-group .container,
+body .company-why-spek-group .container {
+    width: min(calc(100% - 72px), var(--spek-home-container, 1640px));
+    max-width: var(--spek-home-container, 1640px);
+    margin-inline: auto;
+}
+
+.company-why-spek-group .eyebrow {
+    color: var(--spek-blue, #174f8a);
+    font-weight: 700;
+}
+
+.company-why-spek-group .eyebrow::before {
+    width: 38px;
+    height: 2px;
+    background: var(--spek-red, #d7233f);
+}
+
+.company-why-spek-group h2,
+.company-why-spek-group h3,
+.company-why-spek-group strong {
+    color: var(--spek-navy, #10283d);
+}
+
+.company-why-spek-group .section-heading {
+    max-width: 960px;
+    margin-bottom: 58px;
+}
+
+.company-why-spek-group .section-heading h2 {
+    max-width: 920px;
+    font-size: clamp(40px, 3.6vw, 62px);
+    font-weight: 700;
+    letter-spacing: -0.052em;
+}
+
+.company-why-spek-group .section-heading p {
+    max-width: 800px;
+    font-size: 18px;
+}
+
+.company-why-spek-group .why-spek .feature-card {
+    border-color: rgba(16, 40, 61, 0.08);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafb 100%);
+}
+
+@media (max-width: 1100px) {
+    .company-why-spek-group .container,
+    body .company-why-spek-group .container {
+        width: min(calc(100% - 44px), 100%);
+    }
+}
+
+@media (max-width: 680px) {
+    .company-why-spek-group .container,
+    body .company-why-spek-group .container {
+        width: min(calc(100% - 28px), 100%);
+    }
+
+    .company-why-spek-group .section-heading {
+        margin-bottom: 38px;
+    }
+
+    .company-why-spek-group .section-heading p {
+        font-size: 16px;
+    }
+}
+
