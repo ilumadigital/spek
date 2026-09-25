@@ -156,6 +156,9 @@ return [
     'A4 Preview' => 'A4 Preview',
 
     // Product Finder flagship UI.
+    '%d προϊόντα' => '%d products',
+    '%d προϊόν' => '%d product',
+    'Βρείτε το κατάλληλο προϊόν.' => 'Find the right product.',
     'Σειρά προϊόντος' => 'Product series',
     'ΕΥΡΕΣΗ' => 'FINDER',
     'Βήματα εύρεσης προϊόντος' => 'Product Finder steps',
