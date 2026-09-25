@@ -140,6 +140,10 @@ return [
     'Οδηγίες πρόσβασης' => 'Directions',
     'Η SPEK στο Σχηματάρι.' => 'SPEK in Schimatari.',
     'Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στο Σχηματάρι.' => 'SPEK\'s production base and corporate operations are located in privately owned facilities in Schimatari.',
+    'Καριέρα' => 'Careers',
+    'Θέλετε να γίνετε μέλος της ομάδας μας;' => 'Would you like to join our team?',
+    'Αναζητούμε ανθρώπους με συνέπεια, διάθεση για εξέλιξη και αγάπη για τη σωστή δουλειά. Δείτε τις διαθέσιμες θέσεις και γνωρίστε τις ευκαιρίες καριέρας στη SPEK.' => 'We are looking for people who value consistency, growth and doing things properly. Explore the available roles and career opportunities at SPEK.',
+    'Δείτε τις ανοιχτές θέσεις' => 'View open positions',
 
     // Catalogue A4 library.
     'Οι επίσημοι κατάλογοι SPEK, διαθέσιμοι για online προβολή και λήψη PDF.' => 'Official SPEK catalogues, available for online viewing and PDF download.',
