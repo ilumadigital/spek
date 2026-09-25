@@ -12,9 +12,9 @@ if (!defined('ABSPATH')) {
 
 <div class="spek-finder__intro spek-finder-panel is-active" data-step="start">
     <div class="spek-finder-start__content">
-        <span class="eyebrow"><?php esc_html_e('Product Selection Tool', 'spek-theme'); ?></span>
+        <span class="eyebrow"><?php esc_html_e('Εργαλείο Επιλογής Προϊόντος', 'spek-theme'); ?></span>
         <h2><?php esc_html_e('Από την ανάγκη, στο σωστό προϊόν.', 'spek-theme'); ?></h2>
-        <p><?php esc_html_e('Ο Product Finder οργανώνει την αναζήτηση σε τρία απλά βήματα και εμφανίζει τις πιο σχετικές επιλογές της γκάμας SPEK.', 'spek-theme'); ?></p>
+        <p><?php esc_html_e('Το εργαλείο εύρεσης προϊόντος οργανώνει την αναζήτηση σε τρία απλά βήματα και εμφανίζει τις πιο σχετικές επιλογές της γκάμας SPEK.', 'spek-theme'); ?></p>
 
         <div class="spek-finder-start__features">
             <div><span>01</span><strong><?php esc_html_e('Γρήγορη επιλογή', 'spek-theme'); ?></strong><small><?php esc_html_e('Χωρίς περιττά φίλτρα.', 'spek-theme'); ?></small></div>
@@ -39,7 +39,7 @@ if (!defined('ABSPATH')) {
                 alt=""
                 class="spek-brand-logo"
             >
-            <small>FINDER</small>
+            <small><?php esc_html_e('ΕΥΡΕΣΗ', 'spek-theme'); ?></small>
         </div>
         <div class="spek-finder-start__node spek-finder-start__node--one">01</div>
         <div class="spek-finder-start__node spek-finder-start__node--two">02</div>
