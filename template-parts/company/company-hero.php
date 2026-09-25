@@ -10,8 +10,8 @@ if (!defined('ABSPATH')) {
 }
 
 $featured_image = get_the_post_thumbnail_url(get_queried_object_id(), 'spek_hero');
-$default_image_path = get_template_directory() . '/assets/images/spek-website-new-factory-blue.png';
-$default_image_url  = get_template_directory_uri() . '/assets/images/spek-website-new-factory-blue.png';
+$default_image_path = get_template_directory() . '/assets/images/spek-factory-line-blue.png';
+$default_image_url  = get_template_directory_uri() . '/assets/images/spek-factory-line-blue.png';
 $hero_image = file_exists($default_image_path) ? $default_image_url : $featured_image;
 $intro_image_path = get_template_directory() . '/assets/images/spek-website-new-factory.png';
 $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-new-factory.png';
