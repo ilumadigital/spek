@@ -20,7 +20,11 @@ function spek_enqueue_assets(): void
 
     wp_enqueue_style('spek-multilingual', SPEK_THEME_URI . '/assets/css/multilingual.css', ['spek-main'], filemtime(SPEK_THEME_DIR . '/assets/css/multilingual.css'));
 
-    if (is_front_page() || (function_exists('spek_is_english_home_request') && spek_is_english_home_request())) {
+    if (
+        is_front_page()
+        || (function_exists('spek_is_english_home_request') && spek_is_english_home_request())
+        || is_page_template('templates/template-company.php')
+    ) {
         wp_enqueue_style(
             'spek-home-client-refresh',
             SPEK_THEME_URI . '/assets/css/home-client-refresh.css',
