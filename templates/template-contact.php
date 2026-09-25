@@ -236,6 +236,31 @@ get_header();
         </div>
     </section>
 
+    <section class="contact-careers-section" aria-labelledby="contact-careers-title">
+        <div class="container">
+            <div class="contact-careers-card" data-reveal>
+                <div class="contact-careers-card__content">
+                    <span class="eyebrow"><?php esc_html_e('Καριέρα', 'spek-theme'); ?></span>
+
+                    <h2 id="contact-careers-title">
+                        <?php esc_html_e('Θέλετε να γίνετε μέλος της ομάδας μας;', 'spek-theme'); ?>
+                    </h2>
+
+                    <p>
+                        <?php esc_html_e('Αναζητούμε ανθρώπους με συνέπεια, διάθεση για εξέλιξη και αγάπη για τη σωστή δουλειά. Δείτε τις διαθέσιμες θέσεις και γνωρίστε τις ευκαιρίες καριέρας στη SPEK.', 'spek-theme'); ?>
+                    </p>
+                </div>
+
+                <div class="contact-careers-card__action">
+                    <a class="button button-light" href="<?php echo esc_url(spek_page_url('careers/')); ?>">
+                        <?php esc_html_e('Δείτε τις ανοιχτές θέσεις', 'spek-theme'); ?>
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="contact-hub-location">
         <div class="contact-hub-location__media" data-reveal>
             <img
