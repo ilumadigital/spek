@@ -48,7 +48,7 @@ $series = get_terms(spek_language_args([
 
         <div class="spek-finder-field">
             <div class="spek-finder-field__label">
-                <label for="finder-series"><?php esc_html_e('Σειρά / Brand', 'spek-theme'); ?></label>
+                <label for="finder-series"><?php esc_html_e('Σειρά προϊόντος', 'spek-theme'); ?></label>
                 <span><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></span>
             </div>
             <select id="finder-series" name="product_series">
