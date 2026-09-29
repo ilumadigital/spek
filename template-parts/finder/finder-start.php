@@ -30,19 +30,4 @@ if (!defined('ABSPATH')) {
         </div>
     </div>
 
-    <div class="spek-finder-start__visual" aria-hidden="true">
-        <div class="spek-finder-orbit spek-finder-orbit--one"></div>
-        <div class="spek-finder-orbit spek-finder-orbit--two"></div>
-        <div class="spek-finder-start__mark">
-            <img
-                src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
-                alt=""
-                class="spek-brand-logo"
-            >
-            <small><?php esc_html_e('ΕΥΡΕΣΗ', 'spek-theme'); ?></small>
-        </div>
-        <div class="spek-finder-start__node spek-finder-start__node--one">01</div>
-        <div class="spek-finder-start__node spek-finder-start__node--two">02</div>
-        <div class="spek-finder-start__node spek-finder-start__node--three">03</div>
-    </div>
 </div>
