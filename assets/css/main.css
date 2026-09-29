@@ -14078,8 +14078,8 @@ body .front-page .container {
 }
 
 .spek-finder__intro {
-    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
-    gap: clamp(44px, 6vw, 88px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
     align-items: center;
 }
 
