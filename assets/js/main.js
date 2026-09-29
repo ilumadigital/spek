@@ -63,6 +63,64 @@
         });
     }
 
+    function setupProductsMegaMenu() {
+        const productsTrigger = document.querySelector('[data-products-menu-trigger]');
+        const productsMegaMenu = document.querySelector('[data-products-mega-menu]');
+
+        if (!productsTrigger || !productsMegaMenu) {
+            return;
+        }
+
+        const productsNav = productsTrigger.closest('.spek-primary-nav');
+
+        if (!productsNav) {
+            return;
+        }
+
+        function setProductsMenuState(isOpen) {
+            productsNav.classList.toggle('is-products-open', isOpen);
+            productsTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+
+        productsTrigger.addEventListener('click', function (event) {
+            if (window.innerWidth <= 1100) {
+                return;
+            }
+
+            event.preventDefault();
+            setProductsMenuState(!productsNav.classList.contains('is-products-open'));
+        });
+
+        productsMegaMenu.addEventListener('click', function (event) {
+            if (event.target.closest('a')) {
+                setProductsMenuState(false);
+            }
+        });
+
+        document.addEventListener('click', function (event) {
+            if (window.innerWidth <= 1100 || !productsNav.classList.contains('is-products-open')) {
+                return;
+            }
+
+            if (!productsNav.contains(event.target)) {
+                setProductsMenuState(false);
+            }
+        });
+
+        document.addEventListener('keyup', function (event) {
+            if (event.key === 'Escape' && productsNav.classList.contains('is-products-open')) {
+                setProductsMenuState(false);
+                productsTrigger.focus();
+            }
+        });
+
+        window.addEventListener('resize', function () {
+            if (window.innerWidth <= 1100) {
+                setProductsMenuState(false);
+            }
+        });
+    }
+
     function setupRevealAnimations() {
         const autoTargets = document.querySelectorAll(
             '.category-card, .feature-card, .finder-step'
@@ -700,6 +758,7 @@
 
     handleHeaderScroll();
     setupMobileMenu();
+    setupProductsMegaMenu();
     setupRevealAnimations();
     setupParallax();
     setupMediaSliders();
