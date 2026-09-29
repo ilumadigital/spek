@@ -15372,8 +15372,7 @@ body .front-page .container {
     transition: transform 0.2s ease;
 }
 
-.site-header.spek-smart-header .spek-products-menu-item:hover .spek-products-menu-trigger > svg,
-.site-header.spek-smart-header .spek-products-menu-item:focus-within .spek-products-menu-trigger > svg {
+.site-header.spek-smart-header .spek-primary-nav.is-products-open .spek-products-menu-trigger > svg {
     transform: rotate(180deg);
 }
 
@@ -15400,14 +15399,16 @@ body .front-page .container {
         transform 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.site-header.spek-smart-header .spek-primary-nav:has(.spek-products-menu-item:hover) .spek-mega-menu,
-.site-header.spek-smart-header .spek-primary-nav:has(.spek-products-menu-item:focus-within) .spek-mega-menu,
-.site-header.spek-smart-header .spek-mega-menu:hover,
-.site-header.spek-smart-header .spek-mega-menu:focus-within {
+.site-header.spek-smart-header .spek-primary-nav.is-products-open .spek-mega-menu {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
     transform: translateY(0);
+}
+
+.site-header.spek-smart-header .spek-primary-nav.is-products-open .spek-products-menu-trigger {
+    color: var(--color-accent);
+    background: rgba(15, 76, 129, 0.085);
 }
 
 .site-header.spek-smart-header .spek-mega-menu__head {
