@@ -14305,20 +14305,29 @@ body .front-page .container {
     letter-spacing: 0.1em;
 }
 
-.spek-finder-option__check {
+.spek-finder--v2 .spek-finder-option > span .spek-finder-option__check {
     position: absolute;
     top: 18px;
     right: 18px;
     display: grid;
     place-items: center;
+    flex: 0 0 28px;
     width: 28px;
     height: 28px;
+    min-height: 28px;
+    padding: 0;
     border: 1px solid rgba(23, 79, 138, 0.15);
     border-radius: 50%;
     color: transparent;
-    background: #ffffff;
-    font-size: 12px;
-    transition: all 0.2s ease;
+    background: #f8fafb;
+    box-sizing: border-box;
+    font-size: 10px;
+    line-height: 1;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .spek-finder--v2 .spek-finder-option strong {
@@ -14360,6 +14369,7 @@ body .front-page .container {
     color: #ffffff;
     border-color: var(--finder-blue);
     background: var(--finder-blue);
+    transform: scale(1.04);
 }
 
 .spek-finder-options--applications {
