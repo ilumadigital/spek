@@ -65,7 +65,7 @@ $product_menu_categories = [
 if (!function_exists('spek_header_product_icon')) {
     function spek_header_product_icon(string $icon): void
     {
-        echo '<svg class="spek-menu-category__svg" viewBox="0 0 64 64" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round">';
+        echo '<svg class="category-card__svg spek-menu-category__svg" viewBox="0 0 64 64" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round">';
 
         switch ($icon) {
             case 'mechanisms':
@@ -136,30 +136,6 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
                         <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
                     </a>
 
-                    <div class="spek-mega-menu" aria-label="<?php esc_attr_e('Κατηγορίες προϊόντων', 'spek-theme'); ?>">
-                        <div class="spek-mega-menu__head">
-                            <div>
-                                <span><?php esc_html_e('Προϊόντα', 'spek-theme'); ?></span>
-                                <strong><?php esc_html_e('Κατηγορίες προϊόντων', 'spek-theme'); ?></strong>
-                            </div>
-                            <a href="<?php echo esc_url($products_url); ?>" class="spek-mega-menu__all">
-                                <?php esc_html_e('Όλα τα προϊόντα', 'spek-theme'); ?><span aria-hidden="true">→</span>
-                            </a>
-                        </div>
-
-                        <div class="spek-mega-menu__grid">
-                            <?php foreach ($product_menu_categories as $category) : ?>
-                                <?php $category_url = add_query_arg('home_category_group', $category['group'], $products_url); ?>
-                                <a href="<?php echo esc_url($category_url); ?>" class="spek-mega-menu__card">
-                                    <span class="spek-menu-category__icon">
-                                        <?php spek_header_product_icon($category['icon']); ?>
-                                    </span>
-                                    <strong><?php echo esc_html($category['title']); ?></strong>
-                                    <p><?php echo esc_html($category['text']); ?></p>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
                 </li>
 
                 <li class="menu-item <?php echo $is_finder ? 'is-current' : ''; ?>">
@@ -180,6 +156,33 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
                     </a>
                 </li>
             </ul>
+
+
+            <div class="spek-mega-menu" aria-label="<?php esc_attr_e('Κατηγορίες προϊόντων', 'spek-theme'); ?>">
+                <div class="spek-mega-menu__head">
+                    <div>
+                        <span><?php esc_html_e('Προϊόντα', 'spek-theme'); ?></span>
+                        <strong><?php esc_html_e('Κατηγορίες προϊόντων', 'spek-theme'); ?></strong>
+                    </div>
+                    <a href="<?php echo esc_url($products_url); ?>" class="spek-mega-menu__all">
+                        <?php esc_html_e('Όλα τα προϊόντα', 'spek-theme'); ?><span aria-hidden="true">→</span>
+                    </a>
+                </div>
+
+                <div class="category-grid spek-mega-menu__grid">
+                    <?php foreach ($product_menu_categories as $category) : ?>
+                        <?php $category_url = add_query_arg('home_category_group', $category['group'], $products_url); ?>
+                        <a href="<?php echo esc_url($category_url); ?>" class="category-card spek-mega-menu__card">
+                            <span class="category-card__icon spek-menu-category__icon" aria-hidden="true">
+                                <?php spek_header_product_icon($category['icon']); ?>
+                            </span>
+                            <h3><?php echo esc_html($category['title']); ?></h3>
+                            <p><?php echo esc_html($category['text']); ?></p>
+                            <span class="category-card__link"><?php esc_html_e('Δείτε κατηγορία', 'spek-theme'); ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </nav>
 
         <div class="site-header__actions">
