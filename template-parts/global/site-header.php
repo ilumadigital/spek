@@ -131,6 +131,9 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
                         href="<?php echo esc_url($products_url); ?>"
                         class="spek-products-menu-trigger"
                         aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-controls="spek-products-mega-menu"
+                        data-products-menu-trigger
                     >
                         <span><?php esc_html_e('Προϊόντα', 'spek-theme'); ?></span>
                         <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
@@ -158,7 +161,12 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
             </ul>
 
 
-            <div class="spek-mega-menu" aria-label="<?php esc_attr_e('Κατηγορίες προϊόντων', 'spek-theme'); ?>">
+            <div
+                class="spek-mega-menu"
+                id="spek-products-mega-menu"
+                aria-label="<?php esc_attr_e('Κατηγορίες προϊόντων', 'spek-theme'); ?>"
+                data-products-mega-menu
+            >
                 <div class="spek-mega-menu__head">
                     <div>
                         <span><?php esc_html_e('Προϊόντα', 'spek-theme'); ?></span>
