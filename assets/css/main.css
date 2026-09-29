@@ -15490,17 +15490,18 @@ body .front-page .container {
 }
 
 .site-header.spek-smart-header .spek-mega-menu .category-card__icon {
-    width: 42px;
-    height: 42px;
-    margin-bottom: 18px;
-    color: #ffffff;
-    background: linear-gradient(145deg, #174f8a 0%, #2e6eaa 100%);
-    box-shadow: 0 10px 22px rgba(23, 79, 138, 0.15);
+    width: 56px;
+    height: 56px;
+    margin-bottom: 20px;
+    color: #245d99;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
 }
 
 .site-header.spek-smart-header .spek-mega-menu .category-card__svg {
-    width: 31px;
-    height: 31px;
+    width: 48px;
+    height: 48px;
 }
 
 .site-header.spek-smart-header .spek-mega-menu .category-card h3 {
