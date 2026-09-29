@@ -121,7 +121,7 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
         <nav class="site-nav spek-primary-nav" aria-label="<?php esc_attr_e('Κύρια πλοήγηση', 'spek-theme'); ?>">
             <ul class="site-nav__menu" id="primary-menu">
                 <li class="menu-item <?php echo $is_company ? 'is-current' : ''; ?>">
-                    <a href="<?php echo esc_url(spek_page_url('company-details/')); ?>">
+                    <a href="<?php echo esc_url(spek_page_url('company/')); ?>">
                         <?php esc_html_e('Η Εταιρεία', 'spek-theme'); ?>
                     </a>
                 </li>
@@ -235,7 +235,7 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
         <nav class="mobile-menu__nav-wrap" aria-label="<?php esc_attr_e('Mobile πλοήγηση', 'spek-theme'); ?>">
             <ul class="mobile-menu__nav" id="mobile-primary-menu">
                 <li class="<?php echo $is_company ? 'is-current' : ''; ?>">
-                    <a href="<?php echo esc_url(spek_page_url('company-details/')); ?>">
+                    <a href="<?php echo esc_url(spek_page_url('company/')); ?>">
                         <?php esc_html_e('Η Εταιρεία', 'spek-theme'); ?>
                     </a>
                 </li>
