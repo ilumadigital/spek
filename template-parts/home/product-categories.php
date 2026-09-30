@@ -62,16 +62,6 @@ $categories = [
     ],
 ];
 
-if (!function_exists('spek_home_category_icon')) {
-    function spek_home_category_icon(string $icon): void
-    {
-        spek_render_product_category_icon(
-            $icon,
-            'category-card__svg spek-category-icon'
-        );
-    }
-}
-
 ?>
 
 <section id="home-product-range" class="section product-categories">
@@ -90,7 +80,7 @@ if (!function_exists('spek_home_category_icon')) {
                 <?php $category_url = add_query_arg('home_category_group', $category['group'], $products_url); ?>
                 <a href="<?php echo esc_url($category_url); ?>" class="category-card" data-reveal style="--reveal-delay: <?php echo esc_attr($index * 60); ?>ms;">
                     <span class="category-card__icon" aria-hidden="true">
-                        <?php spek_home_category_icon($category['icon']); ?>
+                        <?php spek_render_product_category_icon($category['icon'], 'category-card__svg spek-category-icon'); ?>
                     </span>
                     <h3><?php echo esc_html($category['title']); ?></h3>
                     <p><?php echo esc_html($category['text']); ?></p>
