@@ -30,46 +30,65 @@ function spek_product_filter_params(): array
 }
 
 /**
- * Resolve one product filter to a validated term ID.
+ * Resolve a product filter to validated term IDs.
  *
- * New filter URLs use numeric term IDs. Legacy taxonomy-name parameters are
- * still accepted so old bookmarked/filter URLs do not break.
+ * Current URLs may submit arrays (filter_category[]=1&filter_category[]=2).
+ * Scalar numeric values and the old taxonomy-name parameters remain supported
+ * so existing bookmarks keep working.
  */
-function spek_product_filter_term_id(string $taxonomy): int
+function spek_product_filter_term_ids(string $taxonomy): array
 {
     $params = spek_product_filter_params();
     if (!isset($params[$taxonomy]) || !taxonomy_exists($taxonomy)) {
-        return 0;
+        return [];
     }
 
     $param = $params[$taxonomy];
+    $ids = [];
+
     if (isset($_GET[$param]) && $_GET[$param] !== '') {
-        $term_id = absint(wp_unslash($_GET[$param]));
-        if ($term_id > 0) {
-            $term = get_term($term_id, $taxonomy);
-            if ($term instanceof WP_Term && !is_wp_error($term)) {
-                return $term_id;
+        $raw = wp_unslash($_GET[$param]);
+        $values = is_array($raw) ? $raw : [$raw];
+
+        foreach ($values as $value) {
+            if (is_array($value)) {
+                continue;
+            }
+
+            foreach (preg_split('/[,\\s]+/', (string) $value) ?: [] as $candidate) {
+                $term_id = absint($candidate);
+                if ($term_id <= 0) {
+                    continue;
+                }
+
+                $term = get_term($term_id, $taxonomy);
+                if ($term instanceof WP_Term && !is_wp_error($term)) {
+                    $ids[] = $term_id;
+                }
             }
         }
     }
 
+    $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+    if ($ids) {
+        return $ids;
+    }
+
     // Backwards compatibility for older URLs such as ?product_application=...
-    if (!isset($_GET[$taxonomy]) || $_GET[$taxonomy] === '') {
-        return 0;
+    if (!isset($_GET[$taxonomy]) || $_GET[$taxonomy] === '' || is_array($_GET[$taxonomy])) {
+        return [];
     }
 
     $legacy = sanitize_text_field(wp_unslash((string) $_GET[$taxonomy]));
     if ($legacy === '') {
-        return 0;
+        return [];
     }
 
     if (ctype_digit($legacy)) {
         $term = get_term((int) $legacy, $taxonomy);
-        return ($term instanceof WP_Term && !is_wp_error($term)) ? (int) $term->term_id : 0;
+        return ($term instanceof WP_Term && !is_wp_error($term)) ? [(int) $term->term_id] : [];
     }
 
-    // WordPress can store non-Latin slugs as percent-encoded strings. Try the
-    // literal value first, then a decoded/name-normalised representation.
     $candidates = array_values(array_unique(array_filter([
         $legacy,
         rawurldecode($legacy),
@@ -79,15 +98,22 @@ function spek_product_filter_term_id(string $taxonomy): int
     foreach ($candidates as $candidate) {
         $term = get_term_by('slug', $candidate, $taxonomy);
         if ($term instanceof WP_Term) {
-            return (int) $term->term_id;
+            return [(int) $term->term_id];
         }
     }
 
     $decoded = rawurldecode($legacy);
     $term = get_term_by('name', $decoded, $taxonomy);
-    return $term instanceof WP_Term ? (int) $term->term_id : 0;
+
+    return $term instanceof WP_Term ? [(int) $term->term_id] : [];
 }
 
+/** Backwards-compatible single-value helper. */
+function spek_product_filter_term_id(string $taxonomy): int
+{
+    $ids = spek_product_filter_term_ids($taxonomy);
+    return $ids ? (int) reset($ids) : 0;
+}
 
 /**
  * Homepage category groups.
@@ -228,7 +254,11 @@ function spek_filter_product_archive_query($query): void
         ? sanitize_key(wp_unslash((string) $_GET['home_category_group']))
         : '';
 
-    if ($home_group !== '' && function_exists('spek_home_category_group_definitions')) {
+    $selected_category_ids = spek_product_filter_term_ids('product_category');
+
+    // A manually selected category set takes precedence over a curated homepage
+    // group. The filter form itself does not re-submit home_category_group.
+    if ($home_group !== '' && !$selected_category_ids && function_exists('spek_home_category_group_definitions')) {
         $definitions = spek_home_category_group_definitions();
 
         if (isset($definitions[$home_group])) {
@@ -265,12 +295,14 @@ function spek_filter_product_archive_query($query): void
     }
 
     foreach (array_keys(spek_product_filter_params()) as $taxonomy) {
-        $term_id = spek_product_filter_term_id($taxonomy);
-        if ($term_id > 0) {
+        $term_ids = spek_product_filter_term_ids($taxonomy);
+
+        if ($term_ids) {
             $tax_query[] = [
                 'taxonomy' => $taxonomy,
                 'field' => 'term_id',
-                'terms' => [$term_id],
+                'terms' => $term_ids,
+                'operator' => 'IN',
             ];
         }
     }
