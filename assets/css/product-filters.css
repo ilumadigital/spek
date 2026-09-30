@@ -1,0 +1,546 @@
+/* SPEK product archive filters — isolated final layer */
+
+.products-archive .products-layout {
+    display: grid !important;
+    grid-template-columns: 330px minmax(0, 1fr) !important;
+    gap: 26px !important;
+    align-items: start !important;
+}
+
+.products-archive .products-sidebar {
+    position: sticky !important;
+    top: 94px !important;
+    align-self: start !important;
+    height: fit-content !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.admin-bar .products-archive .products-sidebar {
+    top: 126px !important;
+}
+
+.products-archive .product-filters-panel {
+    display: block !important;
+    width: 100% !important;
+    max-height: calc(100vh - 112px) !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    border: 0 !important;
+    background: transparent !important;
+    scrollbar-width: none;
+}
+
+.products-archive .product-filters-panel::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.admin-bar .products-archive .product-filters-panel {
+    max-height: calc(100vh - 144px) !important;
+}
+
+.products-archive .product-filters-toggle {
+    display: none !important;
+}
+
+@media (min-width: 781px) {
+    .products-archive .product-filters-panel:not([open]) > .product-filters {
+        display: block !important;
+    }
+}
+
+.products-archive .product-filters {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 18px 18px !important;
+    overflow: hidden;
+    border: 1px solid rgba(16, 40, 61, .08) !important;
+    border-radius: 18px !important;
+    background: #fff !important;
+    box-shadow: 0 8px 24px rgba(20, 44, 64, .04) !important;
+}
+
+.products-archive .product-filters__head {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    min-height: 62px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid rgba(16, 40, 61, .065) !important;
+}
+
+.products-archive .product-filters__head h2 {
+    margin: 0 !important;
+    font-size: 21px !important;
+    line-height: 1 !important;
+}
+
+.products-archive .product-filters__clear {
+    color: var(--color-accent) !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+}
+
+.products-archive .filter-search-group {
+    display: grid !important;
+    gap: 6px !important;
+    padding: 14px 0 12px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid rgba(16, 40, 61, .065) !important;
+}
+
+.products-archive .filter-search-group > label {
+    margin: 0 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+.products-archive .filter-search-group input[type="search"] {
+    width: 100% !important;
+    min-height: 40px !important;
+    padding: 0 11px !important;
+    border: 1px solid rgba(16, 40, 61, .14) !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+    font-size: 12.5px !important;
+}
+
+.products-archive .filter-check-group {
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 13px 0 11px !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(16, 40, 61, .065) !important;
+}
+
+.products-archive .filter-check-group legend {
+    width: 100% !important;
+    margin: 0 0 8px !important;
+    padding: 0 !important;
+    color: var(--color-ink) !important;
+    font-size: 12.5px !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+}
+
+/* Hide browser-native checkbox boxes regardless of older theme rules. */
+.products-archive .filter-checkbox input[type="checkbox"],
+.products-archive .filter-brand-item input[type="checkbox"],
+.products-archive .filter-category-card input[type="checkbox"] {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    appearance: none !important;
+}
+
+/* Round custom checks. */
+.products-archive .filter-checkbox__control,
+.products-archive .filter-brand-item__check,
+.products-archive .filter-category-card__check {
+    box-sizing: border-box !important;
+    position: relative !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 16px !important;
+    min-width: 16px !important;
+    max-width: 16px !important;
+    height: 16px !important;
+    min-height: 16px !important;
+    max-height: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1.4px solid rgba(16, 40, 61, .28) !important;
+    border-radius: 50% !important;
+    background: #fff !important;
+}
+
+.products-archive .filter-checkbox__control::after,
+.products-archive .filter-brand-item__check::after,
+.products-archive .filter-category-card__check::after {
+    content: "" !important;
+    width: 5px !important;
+    height: 5px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: #fff !important;
+    opacity: 0 !important;
+    transform: scale(.5) !important;
+}
+
+.products-archive .filter-checkbox input:checked + .filter-checkbox__control,
+.products-archive .filter-brand-item input:checked + .filter-brand-item__check,
+.products-archive .filter-category-card input:checked + .filter-category-card__check {
+    border-color: var(--color-accent) !important;
+    background: var(--color-accent) !important;
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, .08) !important;
+}
+
+.products-archive .filter-checkbox input:checked + .filter-checkbox__control::after,
+.products-archive .filter-brand-item input:checked + .filter-brand-item__check::after,
+.products-archive .filter-category-card input:checked + .filter-category-card__check::after {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Compact text filters. */
+.products-archive .filter-checkbox-list,
+.products-archive .filter-brand-list {
+    display: grid !important;
+    gap: 0 !important;
+}
+
+.products-archive .filter-checkbox {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 18px minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 7px !important;
+    min-height: 26px !important;
+    margin: 0 !important;
+    padding: 1px 0 !important;
+    color: #394b59 !important;
+    cursor: pointer !important;
+}
+
+.products-archive .filter-checkbox__label {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    font-size: 11.7px !important;
+    font-weight: 500 !important;
+    line-height: 1.18 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.products-archive .filter-checkbox__count,
+.products-archive .filter-brand-item__count {
+    color: #98a5ad !important;
+    font-size: 9.2px !important;
+    font-weight: 500 !important;
+}
+
+.products-archive .filter-checkbox.is-extra,
+.products-archive .filter-brand-item.is-extra {
+    display: none !important;
+}
+
+.products-archive .filter-check-group.is-expanded .filter-checkbox.is-extra,
+.products-archive .filter-check-group.is-expanded .filter-brand-item.is-extra {
+    display: grid !important;
+}
+
+/* Category cards: 2 columns, fixed icon box, no giant SVGs. */
+.products-archive .filter-category-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+}
+
+.products-archive .filter-category-card {
+    box-sizing: border-box !important;
+    position: relative !important;
+    display: grid !important;
+    grid-template-rows: 40px auto !important;
+    align-content: start !important;
+    gap: 7px !important;
+    min-width: 0 !important;
+    min-height: 98px !important;
+    margin: 0 !important;
+    padding: 10px 9px 8px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(16, 40, 61, .17) !important;
+    border-radius: 13px !important;
+    background: #fff !important;
+    color: var(--color-ink) !important;
+    cursor: pointer !important;
+}
+
+.products-archive .filter-category-card:has(input:checked) {
+    border-color: var(--color-accent) !important;
+    background: rgba(15, 76, 129, .025) !important;
+}
+
+.products-archive .filter-category-card__check {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    z-index: 3 !important;
+}
+
+.products-archive .filter-category-card__icon {
+    display: grid !important;
+    place-items: center !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    overflow: hidden !important;
+    color: #173a58 !important;
+}
+
+.products-archive .filter-category-card__icon svg {
+    display: block !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    margin: 0 !important;
+}
+
+.products-archive .filter-category-card__body {
+    display: grid !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+}
+
+.products-archive .filter-category-card__body strong {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    color: var(--color-ink) !important;
+    font-size: 11px !important;
+    line-height: 1.18 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.products-archive .filter-category-card__body small {
+    color: #8d9aa3 !important;
+    font-size: 9.3px !important;
+    line-height: 1.1 !important;
+}
+
+/* Brands: one compact row each. */
+.products-archive .filter-brand-item {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 18px minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-height: 32px !important;
+    margin: 0 !important;
+    padding: 1px 0 !important;
+    cursor: pointer !important;
+}
+
+.products-archive .filter-brand-item__logo {
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    min-height: 24px !important;
+    max-height: 26px !important;
+    overflow: hidden !important;
+}
+
+.products-archive .filter-brand-item__logo img {
+    display: block !important;
+    width: auto !important;
+    max-width: 118px !important;
+    height: auto !important;
+    max-height: 24px !important;
+    margin: 0 !important;
+    object-fit: contain !important;
+    object-position: left center !important;
+}
+
+.products-archive .filter-brand-item__logo strong {
+    overflow: hidden !important;
+    font-size: 11.7px !important;
+    line-height: 1.15 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* "Περισσότερα / Υπόλοιπες" as the same blue pill language as product CTAs. */
+.products-archive .filter-more {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 34px !important;
+    margin: 8px 0 0 !important;
+    padding: 0 14px !important;
+    overflow: hidden !important;
+    border: 1px solid var(--color-accent) !important;
+    border-radius: 999px !important;
+    color: #fff !important;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark)) !important;
+    box-shadow: 0 8px 18px rgba(15, 76, 129, .14) !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+}
+
+.products-archive .filter-more:hover {
+    color: #fff !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Sticky action at the bottom of the filter panel. */
+.products-archive .product-filters__actions {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 5 !important;
+    margin: 0 -18px -18px !important;
+    padding: 12px 18px 16px !important;
+    background: linear-gradient(180deg, rgba(255,255,255,.72), #fff 25%) !important;
+}
+
+.products-archive .product-filters__actions .button {
+    min-height: 42px !important;
+    margin: 0 !important;
+    font-size: 12px !important;
+}
+
+@media (max-width: 1380px) {
+    .products-archive .products-layout {
+        grid-template-columns: 300px minmax(0, 1fr) !important;
+        gap: 20px !important;
+    }
+}
+
+@media (max-width: 920px) {
+    .products-archive .products-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    .products-archive .products-sidebar {
+        position: static !important;
+        top: auto !important;
+        height: auto !important;
+    }
+
+    .products-archive .product-filters-panel {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .products-archive .product-filters {
+        display: block !important;
+    }
+}
+
+@media (max-width: 780px) {
+    .products-archive .product-filters-panel {
+        overflow: hidden !important;
+        border: 1px solid rgba(16, 40, 61, .075) !important;
+        border-radius: 14px !important;
+        background: #fff !important;
+        box-shadow: 0 8px 20px rgba(20, 44, 64, .035) !important;
+    }
+
+    .products-archive .product-filters-toggle {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 16px !important;
+        min-height: 56px !important;
+        padding: 0 15px !important;
+        cursor: pointer !important;
+        list-style: none !important;
+        color: var(--color-ink) !important;
+        background: #fff !important;
+    }
+
+    .products-archive .product-filters-toggle::-webkit-details-marker {
+        display: none !important;
+    }
+
+    .products-archive .product-filters-toggle__title {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+    }
+
+    .products-archive .product-filters-toggle__title small {
+        display: grid !important;
+        place-items: center !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        padding: 0 6px !important;
+        border-radius: 999px !important;
+        color: #fff !important;
+        background: var(--color-accent) !important;
+        font-size: 9px !important;
+    }
+
+    .products-archive .product-filters-toggle__action {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+        color: #71818c !important;
+        font-size: 10.5px !important;
+        font-weight: 700 !important;
+    }
+
+    .products-archive .product-filters-toggle__action svg {
+        width: 10px !important;
+        height: 7px !important;
+        fill: none !important;
+        stroke: currentColor !important;
+        stroke-width: 1.6 !important;
+    }
+
+    .products-archive .product-filters-panel[open] .product-filters-toggle__action svg {
+        transform: rotate(180deg) !important;
+    }
+
+    .products-archive .product-filters-panel:not([open]) > .product-filters {
+        display: none !important;
+    }
+
+    .products-archive .product-filters-panel[open] > .product-filters {
+        display: block !important;
+    }
+
+    .products-archive .product-filters {
+        padding: 0 14px 14px !important;
+        border: 0 !important;
+        border-top: 1px solid rgba(16, 40, 61, .06) !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .products-archive .product-filters__head {
+        display: none !important;
+    }
+
+    .products-archive .filter-search-group {
+        padding-top: 14px !important;
+    }
+
+    .products-archive .filter-check-group {
+        padding: 13px 0 11px !important;
+    }
+
+    .products-archive .filter-category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 7px !important;
+    }
+
+    .products-archive .product-filters__actions {
+        position: static !important;
+        margin: 0 !important;
+        padding: 12px 0 0 !important;
+        background: transparent !important;
+    }
+}
