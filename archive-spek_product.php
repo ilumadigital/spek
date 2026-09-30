@@ -18,6 +18,10 @@ $home_category_group_label = ($home_category_group !== '' && function_exists('sp
     ? spek_home_category_group_label($home_category_group)
     : '';
 
+$product_search = isset($_GET['product_search']) && !is_array($_GET['product_search'])
+    ? sanitize_text_field(wp_unslash((string) $_GET['product_search']))
+    : '';
+
 ?>
 
 <main id="main" class="site-main products-archive">
@@ -64,6 +68,25 @@ $home_category_group_label = ($home_category_group !== '' && function_exists('sp
                             ?>
                         </strong>
                     </div>
+
+                    <label class="products-toolbar__search" for="product_search">
+                        <span class="products-toolbar__search-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="6.5"></circle>
+                                <path d="m16 16 4 4"></path>
+                            </svg>
+                        </span>
+                        <input
+                            id="product_search"
+                            type="search"
+                            name="product_search"
+                            form="product-filters-form"
+                            value="<?php echo esc_attr($product_search); ?>"
+                            placeholder="<?php esc_attr_e('Αναζήτηση προϊόντος ή κωδικού', 'spek-theme'); ?>"
+                            autocomplete="off"
+                            enterkeyhint="search"
+                        >
+                    </label>
                 </div>
 
                 <?php if (have_posts()) : ?>
