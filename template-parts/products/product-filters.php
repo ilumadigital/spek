@@ -220,7 +220,7 @@ $brand_specs = [
     ],
     'nemo' => [
         'patterns' => ['nemo'],
-        'logo' => get_template_directory_uri() . '/assets/images/brand/nemo_logo.svg',
+        'logo' => get_template_directory_uri() . '/assets/images/brand/nemo_logo.png',
     ],
     'idrospania' => [
         'patterns' => ['idrospania', 'idro spania', 'υδροσπανια', 'υδροσπάνια'],
@@ -289,21 +289,17 @@ $render_compact_checkbox_group = static function (
     if (!$terms) {
         return;
     }
-
-    $visible_limit = 6;
-    $has_extra = count($terms) > $visible_limit;
     ?>
-    <fieldset class="filter-check-group" data-filter-group>
+    <fieldset class="filter-check-group">
         <legend><?php echo esc_html($legend); ?></legend>
 
         <div class="filter-checkbox-list">
-            <?php foreach ($terms as $index => $term) : ?>
+            <?php foreach ($terms as $term) : ?>
                 <?php
                 $term_id = (int) $term->term_id;
                 $is_selected = in_array($term_id, $selected_ids, true);
-                $is_extra = $index >= $visible_limit && !$is_selected;
                 ?>
-                <label class="filter-checkbox<?php echo $is_extra ? ' is-extra' : ''; ?>">
+                <label class="filter-checkbox">
                     <input
                         type="checkbox" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
                         name="<?php echo esc_attr($name); ?>[]"
@@ -316,12 +312,6 @@ $render_compact_checkbox_group = static function (
                 </label>
             <?php endforeach; ?>
         </div>
-
-        <?php if ($has_extra) : ?>
-            <button class="filter-more" type="button" data-filter-more aria-expanded="false">
-                <span data-filter-more-label><?php esc_html_e('Περισσότερα', 'spek-theme'); ?></span>
-            </button>
-        <?php endif; ?>
     </fieldset>
     <?php
 };
@@ -405,16 +395,7 @@ $render_compact_checkbox_group = static function (
         <?php endif; ?>
 
         <?php if ($series) : ?>
-            <?php
-            $has_other_brands = false;
-            foreach ($series as $brand_term) {
-                if ($brand_key_for_term($brand_term) === 'other') {
-                    $has_other_brands = true;
-                    break;
-                }
-            }
-            ?>
-            <fieldset class="filter-check-group filter-check-group--brands" data-filter-group>
+            <fieldset class="filter-check-group filter-check-group--brands">
                 <legend><?php esc_html_e('Εταιρεία', 'spek-theme'); ?></legend>
 
                 <div class="filter-brand-list">
@@ -422,10 +403,9 @@ $render_compact_checkbox_group = static function (
                         <?php
                         $brand_key = $brand_key_for_term($item);
                         $is_selected = in_array((int) $item->term_id, $selected_series, true);
-                        $is_extra = $brand_key === 'other' && !$is_selected;
                         $logo = $brand_key !== 'other' ? ($brand_specs[$brand_key]['logo'] ?? '') : '';
                         ?>
-                        <label class="filter-brand-item<?php echo $is_extra ? ' is-extra' : ''; ?>">
+                        <label class="filter-brand-item">
                             <input
                                 type="checkbox" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
                                 name="filter_series[]"
@@ -442,8 +422,8 @@ $render_compact_checkbox_group = static function (
                                         alt="<?php echo esc_attr($item->name); ?>"
                                         loading="lazy"
                                         width="118"
-                                        height="24"
-                                        style="display:block;width:auto;max-width:118px;height:auto;max-height:24px;object-fit:contain;object-position:left center"
+                                        height="28"
+                                        style="display:block;width:auto;max-width:118px;height:auto;max-height:28px;object-fit:contain;object-position:left center"
                                     >
                                 <?php else : ?>
                                     <strong><?php echo esc_html($item->name); ?></strong>
@@ -454,12 +434,6 @@ $render_compact_checkbox_group = static function (
                         </label>
                     <?php endforeach; ?>
                 </div>
-
-                <?php if ($has_other_brands) : ?>
-                    <button class="filter-more" type="button" data-filter-more aria-expanded="false">
-                        <span data-filter-more-label><?php esc_html_e('Υπόλοιπες', 'spek-theme'); ?></span>
-                    </button>
-                <?php endif; ?>
             </fieldset>
         <?php endif; ?>
 
