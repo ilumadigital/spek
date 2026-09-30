@@ -41,6 +41,20 @@ function spek_enqueue_assets(): void
         true
     );
 
+
+    if (
+        is_post_type_archive('spek_product')
+        || is_tax(['product_category', 'product_application', 'product_material', 'product_series'])
+    ) {
+        wp_enqueue_script(
+            'spek-product-filters',
+            SPEK_THEME_URI . '/assets/js/product-filters.js',
+            ['spek-main'],
+            filemtime(SPEK_THEME_DIR . '/assets/js/product-filters.js'),
+            true
+        );
+    }
+
     wp_localize_script('spek-main', 'spekI18n', [
         ' · σελ. ' => __(' · σελ. ', 'spek-theme'),
         '%s δεν έχουν συντεταγμένες και δεν φαίνονται στον χάρτη.' => __('%s δεν έχουν συντεταγμένες και δεν φαίνονται στον χάρτη.', 'spek-theme'),
