@@ -39,13 +39,55 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
                     }
                     echo esc_html($archive_term instanceof WP_Term ? $archive_term->name : single_term_title('', false));
                 } else {
-                    esc_html_e('Προϊόντα SPEK', 'spek-theme');
+                    echo esc_html(function_exists('spek_is_english') && spek_is_english() ? 'Products' : 'Προϊόντα');
                 }
             ?></h1>
             <p>
-                <?php esc_html_e('Ανακαλύψτε τη γκάμα προϊόντων SPEK μέσα από κατηγορίες, τεχνικά χαρακτηριστικά και εύκολη αναζήτηση.', 'spek-theme'); ?>
+                <?php
+                echo esc_html(
+                    function_exists('spek_is_english') && spek_is_english()
+                        ? 'Explore the product range through categories, technical characteristics and easy search.'
+                        : 'Ανακαλύψτε τη γκάμα προϊόντων μέσα από κατηγορίες, τεχνικά χαρακτηριστικά και εύκολη αναζήτηση.'
+                );
+                ?>
             </p>
         </div>
+
+        <?php
+        $finder_is_english = function_exists('spek_is_english') && spek_is_english();
+        $finder_url = spek_page_url('product-finder/');
+        ?>
+        <a class="products-hero-finder" href="<?php echo esc_url($finder_url); ?>">
+            <span class="products-hero-finder__eyebrow">
+                <?php echo esc_html($finder_is_english ? 'Find the right product' : 'Βρείτε το σωστό προϊόν'); ?>
+            </span>
+
+            <span class="products-hero-finder__icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                    <circle cx="21" cy="21" r="11"></circle>
+                    <path d="m29 29 9 9"></path>
+                    <path d="M17 21h8M21 17v8"></path>
+                </svg>
+            </span>
+
+            <span class="products-hero-finder__content">
+                <strong><?php echo esc_html($finder_is_english ? 'Product Finder' : 'Εύρεση Προϊόντος'); ?></strong>
+                <small>
+                    <?php
+                    echo esc_html(
+                        $finder_is_english
+                            ? 'Answer a few quick questions and discover the products that fit your application.'
+                            : 'Απαντήστε σε λίγες σύντομες ερωτήσεις και βρείτε τα προϊόντα που ταιριάζουν στην εφαρμογή σας.'
+                    );
+                    ?>
+                </small>
+            </span>
+
+            <span class="products-hero-finder__cta">
+                <?php echo esc_html($finder_is_english ? 'Start finder' : 'Έναρξη εύρεσης'); ?>
+                <span aria-hidden="true">→</span>
+            </span>
+        </a>
     </section>
 
     <section class="section products-listing">
