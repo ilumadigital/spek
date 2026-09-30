@@ -684,6 +684,110 @@
     }
 
 
+    function setupProductImageMagnifier() {
+        const zoomTargets = document.querySelectorAll('[data-product-zoom]');
+        const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+        if (!zoomTargets.length || !finePointer) {
+            return;
+        }
+
+        zoomTargets.forEach((target) => {
+            const image = target.querySelector('[data-product-zoom-image]');
+            const lens = target.querySelector('[data-product-zoom-lens]');
+
+            if (!image || !lens) {
+                return;
+            }
+
+            const zoom = 2.35;
+
+            function getRenderedImageMetrics() {
+                const rect = target.getBoundingClientRect();
+                const styles = window.getComputedStyle(target);
+                const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
+                const borderTop = parseFloat(styles.borderTopWidth) || 0;
+                const borderRight = parseFloat(styles.borderRightWidth) || 0;
+                const borderBottom = parseFloat(styles.borderBottomWidth) || 0;
+                const paddingLeft = parseFloat(styles.paddingLeft) || 0;
+                const paddingTop = parseFloat(styles.paddingTop) || 0;
+                const paddingRight = parseFloat(styles.paddingRight) || 0;
+                const paddingBottom = parseFloat(styles.paddingBottom) || 0;
+
+                const contentWidth = Math.max(
+                    1,
+                    rect.width - borderLeft - borderRight - paddingLeft - paddingRight
+                );
+                const contentHeight = Math.max(
+                    1,
+                    rect.height - borderTop - borderBottom - paddingTop - paddingBottom
+                );
+
+                const naturalWidth = image.naturalWidth || contentWidth;
+                const naturalHeight = image.naturalHeight || contentHeight;
+                const scale = Math.min(contentWidth / naturalWidth, contentHeight / naturalHeight);
+                const renderedWidth = naturalWidth * scale;
+                const renderedHeight = naturalHeight * scale;
+
+                return {
+                    rect,
+                    left: borderLeft + paddingLeft + ((contentWidth - renderedWidth) / 2),
+                    top: borderTop + paddingTop + ((contentHeight - renderedHeight) / 2),
+                    width: renderedWidth,
+                    height: renderedHeight,
+                };
+            }
+
+            function hideLens() {
+                target.classList.remove('is-zooming');
+            }
+
+            function moveLens(event) {
+                if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
+                    hideLens();
+                    return;
+                }
+
+                const metrics = getRenderedImageMetrics();
+                const x = event.clientX - metrics.rect.left;
+                const y = event.clientY - metrics.rect.top;
+                const imageX = x - metrics.left;
+                const imageY = y - metrics.top;
+
+                if (
+                    imageX < 0 ||
+                    imageY < 0 ||
+                    imageX > metrics.width ||
+                    imageY > metrics.height
+                ) {
+                    hideLens();
+                    return;
+                }
+
+                const lensSize = lens.offsetWidth || 160;
+                const lensRadius = lensSize / 2;
+
+                lens.style.left = (x - lensRadius) + 'px';
+                lens.style.top = (y - lensRadius) + 'px';
+                lens.style.backgroundImage = 'url("' + image.currentSrc.replace(/"/g, '\\"') + '")';
+                lens.style.backgroundSize =
+                    (metrics.width * zoom) + 'px ' + (metrics.height * zoom) + 'px';
+                lens.style.backgroundPosition =
+                    (lensRadius - (imageX * zoom)) + 'px ' +
+                    (lensRadius - (imageY * zoom)) + 'px';
+
+                target.classList.add('is-zooming');
+            }
+
+            target.addEventListener('pointermove', moveLens);
+            target.addEventListener('pointerleave', hideLens);
+            target.addEventListener('pointercancel', hideLens);
+
+            window.addEventListener('resize', hideLens);
+        });
+    }
+
+
     function setupCompanyDetailsCopy() {
         const copyButtons = document.querySelectorAll('[data-copy-value]');
 
@@ -765,5 +869,6 @@
     setupHeroBackgroundSlider();
     setupHomeMotion();
     setupCompanyPageMotion();
+    setupProductImageMagnifier();
     setupCompanyDetailsCopy();
 })();
