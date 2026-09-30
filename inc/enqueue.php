@@ -46,6 +46,13 @@ function spek_enqueue_assets(): void
         is_post_type_archive('spek_product')
         || is_tax(['product_category', 'product_application', 'product_material', 'product_series'])
     ) {
+        wp_enqueue_style(
+            'spek-product-filters',
+            SPEK_THEME_URI . '/assets/css/product-filters.css',
+            ['spek-main', 'spek-multilingual'],
+            filemtime(SPEK_THEME_DIR . '/assets/css/product-filters.css')
+        );
+
         wp_enqueue_script(
             'spek-product-filters',
             SPEK_THEME_URI . '/assets/js/product-filters.js',
