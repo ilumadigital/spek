@@ -381,12 +381,40 @@ function spek_image_package_find_existing_attachment(string $sha256): int
 
 function spek_image_package_product_identity(string $sku)
 {
-    if (function_exists('spek_import_product_identity')) {
-        return spek_import_product_identity($sku);
-    }
-
     $sku = trim($sku);
     if ($sku === '') {
+        return 0;
+    }
+
+    if (function_exists('spek_import_product_identity')) {
+        $exact = spek_import_product_identity($sku);
+
+        if (is_wp_error($exact) || (int) $exact > 0) {
+            return $exact;
+        }
+
+        // Safe compatibility for historical numeric SKUs:
+        // 00052 and 52 are the same code only when exactly one product owns it.
+        if (ctype_digit($sku) && function_exists('spek_image_import_product_index')) {
+            $index = spek_image_import_product_index();
+            $canonical = (string) ((int) $sku);
+            $record = (array) ($index['numeric'][$canonical] ?? []);
+
+            if ($record) {
+                if (!empty($record['ambiguous'])) {
+                    return new WP_Error(
+                        'duplicate_sku',
+                        sprintf(__('SKU %s: υπάρχουν πολλαπλά προϊόντα.', 'spek-theme'), $sku),
+                        ['ids' => array_values(array_map('intval', (array) ($record['ids'] ?? [])))]
+                    );
+                }
+
+                if (!empty($record['id'])) {
+                    return (int) $record['id'];
+                }
+            }
+        }
+
         return 0;
     }
 
