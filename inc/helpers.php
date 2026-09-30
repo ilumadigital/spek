@@ -92,8 +92,18 @@ if (!function_exists('spek_product_category_icon_asset')) {
         ];
 
         $filename = $aliases[$icon] ?? 'misc.svg';
+        $relative_path = '/assets/images/categories/' . $filename;
+        $file_path = get_template_directory() . $relative_path;
+        $asset_url = get_template_directory_uri() . $relative_path;
 
-        return get_template_directory_uri() . '/assets/images/categories/' . $filename;
+        // Category icons are shared by homepage, mega menu and filters.
+        // Version the URL from the actual file mtime so a replaced SVG can
+        // never remain stuck in browser/CDN cache on one surface.
+        if (is_file($file_path)) {
+            $asset_url = add_query_arg('ver', (string) filemtime($file_path), $asset_url);
+        }
+
+        return $asset_url;
     }
 }
 
@@ -108,7 +118,7 @@ if (!function_exists('spek_render_product_category_icon')) {
             . ' class="' . esc_attr($class) . '"'
             . ' alt=""'
             . ' aria-hidden="true"'
-            . ' loading="lazy"'
+            . ' loading="eager"'
             . ' decoding="async"'
             . '>';
     }
