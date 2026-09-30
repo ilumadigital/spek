@@ -137,9 +137,25 @@ $archive_category_icons = [
                     <div class="pagination">
                         <?php
                         $pagination_args = [];
+
                         foreach (['product_search', 'filter_category', 'filter_application', 'filter_material', 'filter_series', 'home_category_group'] as $param) {
-                            if (!isset($_GET[$param]) || $_GET[$param] === '') { continue; }
-                            $pagination_args[$param] = sanitize_text_field(wp_unslash((string) $_GET[$param]));
+                            if (!isset($_GET[$param]) || $_GET[$param] === '') {
+                                continue;
+                            }
+
+                            $raw_value = wp_unslash($_GET[$param]);
+
+                            if (is_array($raw_value)) {
+                                $clean_values = array_values(array_filter(array_map('absint', $raw_value)));
+                                if ($clean_values) {
+                                    $pagination_args[$param] = $clean_values;
+                                }
+                                continue;
+                            }
+
+                            $pagination_args[$param] = $param === 'home_category_group'
+                                ? sanitize_key((string) $raw_value)
+                                : sanitize_text_field((string) $raw_value);
                         }
 
                         the_posts_pagination([
