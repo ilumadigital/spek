@@ -32,7 +32,7 @@
 
         const initialLabel = label.textContent.trim();
         const lessLabel = document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en')
-            ? 'Show less'
+            ? 'Less'
             : 'Λιγότερα';
 
         button.addEventListener('click', () => {
