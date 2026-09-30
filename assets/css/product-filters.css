@@ -28,12 +28,9 @@
     width: 100% !important;
     max-height: calc(100vh - 112px) !important;
     margin: 0 !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    overscroll-behavior: contain;
+    overflow: hidden !important;
     border: 0 !important;
     background: transparent !important;
-    scrollbar-width: none;
 }
 
 .products-archive .product-filters-panel::-webkit-scrollbar {
@@ -56,14 +53,36 @@
 }
 
 .products-archive .product-filters {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
-    padding: 0 18px 18px !important;
-    overflow: hidden;
+    max-height: calc(100vh - 112px) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
     border: 1px solid rgba(16, 40, 61, .08) !important;
     border-radius: 18px !important;
     background: #fff !important;
     box-shadow: 0 8px 24px rgba(20, 44, 64, .04) !important;
+}
+
+.products-archive .product-filters__scroll {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    padding: 0 18px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 76, 129, .16) transparent;
+}
+
+.products-archive .product-filters__scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.products-archive .product-filters__scroll::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(15, 76, 129, .16);
 }
 
 .products-archive .product-filters__head {
@@ -395,12 +414,14 @@
 
 /* Sticky action at the bottom of the filter panel. */
 .products-archive .product-filters__actions {
-    position: sticky !important;
-    bottom: 0 !important;
+    position: relative !important;
     z-index: 5 !important;
-    margin: 0 -18px -18px !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
     padding: 12px 18px 16px !important;
-    background: linear-gradient(180deg, rgba(255,255,255,.72), #fff 25%) !important;
+    border-top: 1px solid rgba(16, 40, 61, .07) !important;
+    background: #fff !important;
+    box-shadow: 0 -12px 24px rgba(20, 44, 64, .035) !important;
 }
 
 .products-archive .product-filters__actions .button {
@@ -434,6 +455,12 @@
 
     .products-archive .product-filters {
         display: block !important;
+        max-height: none !important;
+    }
+
+    .products-archive .product-filters__scroll {
+        padding: 0 18px !important;
+        overflow: visible !important;
     }
 }
 
@@ -513,11 +540,16 @@
     }
 
     .products-archive .product-filters {
-        padding: 0 14px 14px !important;
+        padding: 0 !important;
         border: 0 !important;
         border-top: 1px solid rgba(16, 40, 61, .06) !important;
         border-radius: 0 !important;
         box-shadow: none !important;
+    }
+
+    .products-archive .product-filters__scroll {
+        padding: 0 14px !important;
+        overflow: visible !important;
     }
 
     .products-archive .product-filters__head {
@@ -540,7 +572,20 @@
     .products-archive .product-filters__actions {
         position: static !important;
         margin: 0 !important;
-        padding: 12px 0 0 !important;
-        background: transparent !important;
+        padding: 12px 14px 14px !important;
+        border-top: 1px solid rgba(16, 40, 61, .07) !important;
+        background: #fff !important;
+        box-shadow: none !important;
+    }
+}
+
+
+.admin-bar .products-archive .product-filters {
+    max-height: calc(100vh - 144px) !important;
+}
+
+@media (max-width: 780px) {
+    .admin-bar .products-archive .product-filters {
+        max-height: none !important;
     }
 }
