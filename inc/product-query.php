@@ -232,6 +232,294 @@ function spek_home_category_group_label(string $group): string
     return isset($definitions[$group]) ? (string) $definitions[$group]['label'] : '';
 }
 
+
+/**
+ * Resolve one or more curated category groups to native product_category term IDs.
+ */
+function spek_product_category_group_term_ids(array $groups): array
+{
+    $definitions = spek_home_category_group_definitions();
+    $all_term_ids = get_terms([
+        'taxonomy' => 'product_category',
+        'hide_empty' => false,
+        'fields' => 'ids',
+    ]);
+
+    $all_term_ids = is_wp_error($all_term_ids)
+        ? []
+        : array_values(array_unique(array_filter(array_map('intval', $all_term_ids))));
+
+    $primary_group_keys = array_values(array_filter(
+        array_keys($definitions),
+        static fn ($group_key) => $group_key !== 'diafora'
+    ));
+
+    $primary_term_ids = [];
+    foreach ($primary_group_keys as $group_key) {
+        $primary_term_ids = array_merge(
+            $primary_term_ids,
+            spek_home_category_group_term_ids($group_key)
+        );
+    }
+    $primary_term_ids = array_values(array_unique(array_filter(array_map('intval', $primary_term_ids))));
+
+    $resolved = [];
+    foreach ($groups as $group_key) {
+        $group_key = sanitize_key((string) $group_key);
+
+        if (!isset($definitions[$group_key])) {
+            continue;
+        }
+
+        if ($group_key === 'diafora') {
+            $resolved = array_merge(
+                $resolved,
+                array_values(array_diff($all_term_ids, $primary_term_ids))
+            );
+            continue;
+        }
+
+        $resolved = array_merge(
+            $resolved,
+            spek_home_category_group_term_ids($group_key)
+        );
+    }
+
+    return array_values(array_unique(array_filter(array_map('intval', $resolved))));
+}
+
+/**
+ * Current curated category group selection, including the legacy homepage group.
+ */
+function spek_product_current_category_group_keys(): array
+{
+    $groups = spek_product_filter_category_group_keys();
+    if ($groups) {
+        return $groups;
+    }
+
+    $definitions = spek_home_category_group_definitions();
+
+    if (isset($_GET['home_category_group']) && !is_array($_GET['home_category_group'])) {
+        $group = sanitize_key(wp_unslash((string) $_GET['home_category_group']));
+        if ($group !== '' && isset($definitions[$group])) {
+            return [$group];
+        }
+    }
+
+    if (is_tax('product_category')) {
+        $term = get_queried_object();
+
+        if ($term instanceof WP_Term) {
+            foreach (array_keys($definitions) as $group_key) {
+                if ($group_key === 'diafora') {
+                    continue;
+                }
+
+                $term_ids = spek_home_category_group_term_ids($group_key);
+                if (in_array((int) $term->term_id, array_map('intval', $term_ids), true)) {
+                    return [$group_key];
+                }
+            }
+
+            if (isset($definitions['diafora'])) {
+                return ['diafora'];
+            }
+        }
+    }
+
+    return [];
+}
+
+/**
+ * Return product IDs matching the current filters while excluding one facet.
+ *
+ * Excluding the facet itself is what makes faceted counts useful: selecting
+ * SPEK updates category/application/material counts, while the company counts
+ * still show what would be available if another company were selected.
+ */
+function spek_product_filter_context_ids(string $exclude_dimension = ''): array
+{
+    static $cache = [];
+
+    $cache_key = $exclude_dimension . '|' . md5(wp_json_encode($_GET));
+    if (isset($cache[$cache_key])) {
+        return $cache[$cache_key];
+    }
+
+    $tax_query = ['relation' => 'AND'];
+
+    if ($exclude_dimension !== 'product_category') {
+        $category_groups = spek_product_current_category_group_keys();
+        $category_ids = spek_product_filter_term_ids('product_category');
+
+        if ($category_groups) {
+            $group_term_ids = spek_product_category_group_term_ids($category_groups);
+            $tax_query[] = [
+                'taxonomy' => 'product_category',
+                'field' => 'term_id',
+                'terms' => $group_term_ids ?: [0],
+                'operator' => 'IN',
+            ];
+        } elseif ($category_ids) {
+            $tax_query[] = [
+                'taxonomy' => 'product_category',
+                'field' => 'term_id',
+                'terms' => $category_ids,
+                'operator' => 'IN',
+            ];
+        } elseif (is_tax('product_category')) {
+            $term = get_queried_object();
+            if ($term instanceof WP_Term) {
+                $tax_query[] = [
+                    'taxonomy' => 'product_category',
+                    'field' => 'term_id',
+                    'terms' => [(int) $term->term_id],
+                    'operator' => 'IN',
+                ];
+            }
+        }
+    }
+
+    foreach (['product_application', 'product_material', 'product_series'] as $taxonomy) {
+        if ($exclude_dimension === $taxonomy) {
+            continue;
+        }
+
+        $term_ids = spek_product_filter_term_ids($taxonomy);
+
+        if (!$term_ids && is_tax($taxonomy)) {
+            $term = get_queried_object();
+            if ($term instanceof WP_Term) {
+                $term_ids = [(int) $term->term_id];
+            }
+        }
+
+        if ($term_ids) {
+            $tax_query[] = [
+                'taxonomy' => $taxonomy,
+                'field' => 'term_id',
+                'terms' => $term_ids,
+                'operator' => 'IN',
+            ];
+        }
+    }
+
+    $args = [
+        'post_type' => 'spek_product',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+        'no_found_rows' => true,
+        'orderby' => 'ID',
+        'order' => 'ASC',
+        'suppress_filters' => false,
+    ];
+
+    if (count($tax_query) > 1) {
+        $args['tax_query'] = $tax_query;
+    }
+
+    if (isset($_GET['product_search']) && !is_array($_GET['product_search'])) {
+        $product_search = sanitize_text_field(wp_unslash((string) $_GET['product_search']));
+        if ($product_search !== '') {
+            $args['spek_product_search'] = $product_search;
+            $args['s'] = '';
+        }
+    }
+
+    if (function_exists('spek_is_english') && spek_is_english()) {
+        $args['meta_query'] = [
+            ['key' => '_spek_title_en', 'value' => '', 'compare' => '!='],
+        ];
+    }
+
+    $query = new WP_Query($args);
+    $ids = array_values(array_unique(array_filter(array_map('intval', (array) $query->posts))));
+
+    $cache[$cache_key] = $ids;
+    return $ids;
+}
+
+/**
+ * Dynamic counts for a taxonomy facet under all other active filters.
+ */
+function spek_product_filter_term_counts(string $taxonomy, array $term_ids): array
+{
+    $term_ids = array_values(array_unique(array_filter(array_map('intval', $term_ids))));
+    $counts = array_fill_keys($term_ids, 0);
+
+    if (!$term_ids || !taxonomy_exists($taxonomy)) {
+        return $counts;
+    }
+
+    $context_ids = spek_product_filter_context_ids($taxonomy);
+    if (!$context_ids) {
+        return $counts;
+    }
+
+    $context_lookup = array_fill_keys($context_ids, true);
+
+    foreach ($term_ids as $term_id) {
+        $object_ids = get_objects_in_term($term_id, $taxonomy);
+
+        if (is_wp_error($object_ids) || !$object_ids) {
+            continue;
+        }
+
+        $count = 0;
+        foreach ($object_ids as $object_id) {
+            if (isset($context_lookup[(int) $object_id])) {
+                $count++;
+            }
+        }
+
+        $counts[$term_id] = $count;
+    }
+
+    return $counts;
+}
+
+/**
+ * Dynamic counts for the curated category cards under all other active filters.
+ */
+function spek_product_filter_category_group_counts(array $group_keys): array
+{
+    $counts = array_fill_keys($group_keys, 0);
+    $context_ids = spek_product_filter_context_ids('product_category');
+
+    if (!$context_ids) {
+        return $counts;
+    }
+
+    $context_lookup = array_fill_keys($context_ids, true);
+
+    foreach ($group_keys as $group_key) {
+        $term_ids = spek_product_category_group_term_ids([$group_key]);
+
+        if (!$term_ids) {
+            continue;
+        }
+
+        $object_ids = get_objects_in_term($term_ids, 'product_category');
+        if (is_wp_error($object_ids) || !$object_ids) {
+            continue;
+        }
+
+        $matched = [];
+        foreach ($object_ids as $object_id) {
+            $object_id = (int) $object_id;
+            if (isset($context_lookup[$object_id])) {
+                $matched[$object_id] = true;
+            }
+        }
+
+        $counts[$group_key] = count($matched);
+    }
+
+    return $counts;
+}
+
 /**
  * Prevent legacy taxonomy filter GET parameters from hijacking /products/ as a
  * native taxonomy request. The actual filtering is applied later by
