@@ -100,7 +100,6 @@ if (!function_exists('spek_header_product_icon')) {
 
 $is_company = is_page(['company-details', 'company']) || is_page_template('templates/template-company.php');
 $is_products = is_post_type_archive('spek_product') || is_singular('spek_product') || is_tax('product_category');
-$is_finder = is_page('product-finder') || is_page_template('templates/template-product-finder.php');
 $is_catalogue = is_page('catalogues') || is_page_template('templates/template-catalogues.php') || is_singular('spek_catalogue');
 $is_contact = is_page('contact') || is_page_template('templates/template-contact.php');
 ?>
@@ -141,15 +140,9 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
 
                 </li>
 
-                <li class="menu-item <?php echo $is_finder ? 'is-current' : ''; ?>">
-                    <a href="<?php echo esc_url(spek_page_url('product-finder/')); ?>">
-                        <?php esc_html_e('Εύρεση Προϊόντων', 'spek-theme'); ?>
-                    </a>
-                </li>
-
                 <li class="menu-item <?php echo $is_catalogue ? 'is-current' : ''; ?>">
                     <a href="<?php echo esc_url(spek_page_url('catalogues/')); ?>">
-                        <?php esc_html_e('Κατάλογος', 'spek-theme'); ?>
+                        <?php echo esc_html(function_exists('spek_is_english') && spek_is_english() ? 'Product Catalogue' : 'Κατάλογος Προϊόντων'); ?>
                     </a>
                 </li>
 
@@ -258,15 +251,9 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
                     </div>
                 </li>
 
-                <li class="<?php echo $is_finder ? 'is-current' : ''; ?>">
-                    <a href="<?php echo esc_url(spek_page_url('product-finder/')); ?>">
-                        <?php esc_html_e('Εύρεση Προϊόντων', 'spek-theme'); ?>
-                    </a>
-                </li>
-
                 <li class="<?php echo $is_catalogue ? 'is-current' : ''; ?>">
                     <a href="<?php echo esc_url(spek_page_url('catalogues/')); ?>">
-                        <?php esc_html_e('Κατάλογος', 'spek-theme'); ?>
+                        <?php echo esc_html(function_exists('spek_is_english') && spek_is_english() ? 'Product Catalogue' : 'Κατάλογος Προϊόντων'); ?>
                     </a>
                 </li>
 
