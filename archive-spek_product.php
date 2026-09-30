@@ -29,7 +29,7 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
     <section class="page-hero products-archive__hero">
         <div class="container products-archive__container products-archive__hero-inner">
             <div class="products-archive__hero-copy">
-            <span class="eyebrow"><?php esc_html_e('Product Catalogue', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php echo esc_html(function_exists('spek_is_english') && spek_is_english() ? 'Product Catalogue' : 'Κατάλογος Προϊόντων'); ?></span>
             <h1><?php
                 if ($home_category_group_label !== '') {
                     echo esc_html($home_category_group_label);
