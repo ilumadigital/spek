@@ -343,6 +343,7 @@ $render_compact_checkbox_group = static function (
     </summary>
 
     <form class="product-filters" method="get" action="<?php echo esc_url($archive_url); ?>">
+        <div class="product-filters__scroll">
         <div class="product-filters__head">
             <h2><?php esc_html_e('Φίλτρα', 'spek-theme'); ?></h2>
 
@@ -477,6 +478,8 @@ $render_compact_checkbox_group = static function (
             $selected_material
         );
         ?>
+
+        </div>
 
         <div class="product-filters__actions">
             <button type="submit" class="button button-primary button-full">
