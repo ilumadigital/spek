@@ -18466,3 +18466,50 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
         min-height: 39px !important;
     }
 }
+
+
+/* SPEK product image placeholders */
+.spek-product-card__placeholder,
+.product-gallery__placeholder {
+    display: grid !important;
+    place-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 180px !important;
+    padding: 24px !important;
+    background: #ffffff !important;
+}
+
+.spek-product-card__placeholder-logo,
+.product-gallery__placeholder-logo {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: min(62%, 190px) !important;
+    max-height: 90px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    margin: 0 auto !important;
+    opacity: .92 !important;
+}
+
+.product-gallery__placeholder-logo {
+    max-width: min(48%, 260px) !important;
+    max-height: 120px !important;
+}
+
+@media (max-width: 680px) {
+    .spek-product-card__placeholder {
+        padding: 20px !important;
+    }
+
+    .spek-product-card__placeholder-logo {
+        max-width: min(58%, 160px) !important;
+        max-height: 76px !important;
+    }
+
+    .product-gallery__placeholder-logo {
+        max-width: min(56%, 220px) !important;
+        max-height: 100px !important;
+    }
+}
