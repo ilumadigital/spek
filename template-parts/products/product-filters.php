@@ -168,50 +168,30 @@ $category_icon_map = [
     'diafora' => 'diafora',
 ];
 
-$category_counts = [];
-$all_category_terms = get_terms(spek_language_args([
-    'taxonomy' => 'product_category',
-    'hide_empty' => true,
-]));
+$category_counts = function_exists('spek_product_filter_category_group_counts')
+    ? spek_product_filter_category_group_counts(array_keys($category_groups))
+    : [];
 
-$category_term_counts = [];
-$all_category_term_ids = [];
+$application_counts = function_exists('spek_product_filter_term_counts')
+    ? spek_product_filter_term_counts(
+        'product_application',
+        array_map(static fn (WP_Term $term) => (int) $term->term_id, $applications)
+    )
+    : [];
 
-if (!empty($all_category_terms) && !is_wp_error($all_category_terms)) {
-    foreach ($all_category_terms as $term) {
-        $term_id = (int) $term->term_id;
-        $category_term_counts[$term_id] = (int) $term->count;
-        $all_category_term_ids[] = $term_id;
-    }
-}
+$material_counts = function_exists('spek_product_filter_term_counts')
+    ? spek_product_filter_term_counts(
+        'product_material',
+        array_map(static fn (WP_Term $term) => (int) $term->term_id, $materials)
+    )
+    : [];
 
-$primary_category_ids = [];
-
-foreach (array_keys($category_groups) as $group_key) {
-    if ($group_key === 'diafora') {
-        continue;
-    }
-
-    $group_ids = function_exists('spek_home_category_group_term_ids')
-        ? array_map('intval', spek_home_category_group_term_ids($group_key))
-        : [];
-
-    $primary_category_ids = array_merge($primary_category_ids, $group_ids);
-    $category_counts[$group_key] = array_sum(array_map(
-        static fn ($term_id) => $category_term_counts[(int) $term_id] ?? 0,
-        $group_ids
-    ));
-}
-
-$primary_category_ids = array_values(array_unique(array_filter(array_map('intval', $primary_category_ids))));
-
-if (isset($category_groups['diafora'])) {
-    $other_ids = array_values(array_diff($all_category_term_ids, $primary_category_ids));
-    $category_counts['diafora'] = array_sum(array_map(
-        static fn ($term_id) => $category_term_counts[(int) $term_id] ?? 0,
-        $other_ids
-    ));
-}
+$series_counts = function_exists('spek_product_filter_term_counts')
+    ? spek_product_filter_term_counts(
+        'product_series',
+        array_map(static fn (WP_Term $term) => (int) $term->term_id, $series)
+    )
+    : [];
 
 $brand_specs = [
     'spek' => [
@@ -284,7 +264,8 @@ $render_compact_checkbox_group = static function (
     string $legend,
     string $name,
     array $terms,
-    array $selected_ids
+    array $selected_ids,
+    array $facet_counts
 ): void {
     if (!$terms) {
         return;
@@ -308,7 +289,7 @@ $render_compact_checkbox_group = static function (
                     >
                     <span class="filter-checkbox__control" aria-hidden="true"></span>
                     <span class="filter-checkbox__label"><?php echo esc_html($term->name); ?></span>
-                    <span class="filter-checkbox__count"><?php echo esc_html(number_format_i18n((int) $term->count)); ?></span>
+                    <span class="filter-checkbox__count"><?php echo esc_html(number_format_i18n((int) ($facet_counts[$term_id] ?? 0))); ?></span>
                 </label>
             <?php endforeach; ?>
         </div>
@@ -332,7 +313,7 @@ $render_compact_checkbox_group = static function (
         </span>
     </summary>
 
-    <form class="product-filters" method="get" action="<?php echo esc_url($archive_url); ?>">
+    <form id="product-filters-form" class="product-filters" method="get" action="<?php echo esc_url($archive_url); ?>" data-auto-filters>
         <div class="product-filters__scroll">
         <div class="product-filters__head">
             <h2><?php esc_html_e('Φίλτρα', 'spek-theme'); ?></h2>
@@ -342,17 +323,6 @@ $render_compact_checkbox_group = static function (
                     <?php esc_html_e('Καθαρισμός', 'spek-theme'); ?>
                 </a>
             <?php endif; ?>
-        </div>
-
-        <div class="filter-search-group">
-            <label for="product_search"><?php esc_html_e('Αναζήτηση', 'spek-theme'); ?></label>
-            <input
-                id="product_search"
-                type="search"
-                name="product_search"
-                value="<?php echo esc_attr($product_search); ?>"
-                placeholder="<?php esc_attr_e('Προϊόν ή κωδικός', 'spek-theme'); ?>"
-            >
         </div>
 
         <?php if ($category_groups) : ?>
@@ -430,7 +400,7 @@ $render_compact_checkbox_group = static function (
                                 <?php endif; ?>
                             </span>
 
-                            <span class="filter-brand-item__count"><?php echo esc_html(number_format_i18n((int) $item->count)); ?></span>
+                            <span class="filter-brand-item__count"><?php echo esc_html(number_format_i18n((int) ($series_counts[(int) $item->term_id] ?? 0))); ?></span>
                         </label>
                     <?php endforeach; ?>
                 </div>
@@ -442,23 +412,20 @@ $render_compact_checkbox_group = static function (
             __('Εφαρμογή', 'spek-theme'),
             'filter_application',
             $applications,
-            $selected_application
+            $selected_application,
+            $application_counts
         );
 
         $render_compact_checkbox_group(
             __('Υλικό', 'spek-theme'),
             'filter_material',
             $materials,
-            $selected_material
+            $selected_material,
+            $material_counts
         );
         ?>
 
         </div>
 
-        <div class="product-filters__actions">
-            <button type="submit" class="button button-primary button-full">
-                <?php esc_html_e('Εφαρμογή φίλτρων', 'spek-theme'); ?>
-            </button>
-        </div>
     </form>
 </details>
