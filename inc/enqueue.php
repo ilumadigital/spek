@@ -21,18 +21,6 @@ function spek_enqueue_assets(): void
     wp_enqueue_style('spek-multilingual', SPEK_THEME_URI . '/assets/css/multilingual.css', ['spek-main'], filemtime(SPEK_THEME_DIR . '/assets/css/multilingual.css'));
 
     if (
-        is_post_type_archive('spek_product')
-        || is_tax(['product_category', 'product_application', 'product_material', 'product_series'])
-    ) {
-        wp_enqueue_style(
-            'spek-products-archive',
-            SPEK_THEME_URI . '/assets/css/products-archive.css',
-            ['spek-main', 'spek-multilingual'],
-            filemtime(SPEK_THEME_DIR . '/assets/css/products-archive.css')
-        );
-    }
-
-    if (
         is_front_page()
         || (function_exists('spek_is_english_home_request') && spek_is_english_home_request())
         || is_page_template('templates/template-company.php')
