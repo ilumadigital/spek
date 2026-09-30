@@ -32,8 +32,14 @@ $product_series = get_post_meta($product_id, '_spek_product_series', true);
                 decoding="async"
             >
         <?php else : ?>
-            <div class="spek-product-card__placeholder">
-                SPEK
+            <div class="spek-product-card__placeholder" aria-hidden="true">
+                <img
+                    class="spek-product-card__placeholder-logo"
+                    src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                >
             </div>
         <?php endif; ?>
     </a>
