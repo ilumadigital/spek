@@ -16203,13 +16203,13 @@ body .front-page .container {
 }
 
 /* =========================================================
-   SPEK Product filters v3
-   Stable sticky desktop rail / checkbox facets / mobile accordion
+   SPEK Product filters v4
+   Compact marketplace-style facet rail
    ========================================================= */
 
 .products-archive .products-layout {
-    grid-template-columns: 320px minmax(0, 1fr) !important;
-    gap: 26px;
+    grid-template-columns: 316px minmax(0, 1fr) !important;
+    gap: 30px;
     align-items: stretch;
 }
 
@@ -16235,8 +16235,9 @@ body .front-page .container {
     overflow-y: auto;
     overscroll-behavior: contain;
     border: 0;
+    background: transparent;
     scrollbar-width: thin;
-    scrollbar-color: rgba(15, 76, 129, 0.20) transparent;
+    scrollbar-color: rgba(15, 76, 129, 0.18) transparent;
 }
 
 .admin-bar .products-archive .product-filters-panel {
@@ -16244,7 +16245,7 @@ body .front-page .container {
 }
 
 .products-archive .product-filters-panel::-webkit-scrollbar {
-    width: 5px;
+    width: 4px;
 }
 
 .products-archive .product-filters-panel::-webkit-scrollbar-track {
@@ -16253,14 +16254,13 @@ body .front-page .container {
 
 .products-archive .product-filters-panel::-webkit-scrollbar-thumb {
     border-radius: 999px;
-    background: rgba(15, 76, 129, 0.18);
+    background: rgba(15, 76, 129, 0.16);
 }
 
 .products-archive .product-filters-toggle {
     display: none;
 }
 
-/* Desktop fallback even before the small responsive helper runs. */
 @media (min-width: 781px) {
     .products-archive .product-filters-panel:not([open]) > .product-filters {
         display: block !important;
@@ -16270,136 +16270,126 @@ body .front-page .container {
 .products-archive .product-filters {
     display: block;
     width: 100%;
-    padding: 24px 22px 20px;
-    border: 1px solid rgba(16, 40, 61, 0.085);
-    border-radius: 22px 22px 36px 22px;
+    padding: 0 20px 20px;
+    border: 1px solid rgba(16, 40, 61, 0.075);
+    border-radius: 18px;
     background: #ffffff;
-    box-shadow: 0 14px 34px rgba(20, 44, 64, 0.055);
+    box-shadow: 0 8px 24px rgba(20, 44, 64, 0.035);
 }
 
 .products-archive .product-filters__head {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 20px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid rgba(16, 40, 61, 0.075);
-}
-
-.products-archive .product-filters__head > div {
-    min-width: 0;
-}
-
-.products-archive .product-filters__head > div > span {
-    display: block;
-    margin-bottom: 4px;
-    color: #8996a0;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    gap: 12px;
+    min-height: 68px;
+    margin: 0;
+    border-bottom: 1px solid rgba(16, 40, 61, 0.065);
 }
 
 .products-archive .product-filters__head h2 {
     margin: 0;
-    font-size: 28px;
+    color: var(--color-ink);
+    font-size: 22px;
+    font-weight: 700;
     line-height: 1;
-    letter-spacing: -0.045em;
+    letter-spacing: -0.035em;
 }
 
-.products-archive .product-filters__selected {
-    flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    min-height: 28px;
-    padding: 0 9px;
-    border-radius: 999px;
+.products-archive .product-filters__clear {
     color: var(--color-accent);
-    background: rgba(15, 76, 129, 0.075);
-    font-size: 10px;
-    font-weight: 800;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 .products-archive .filter-search-group {
     display: grid;
     gap: 7px;
-    margin-bottom: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(16, 40, 61, 0.065);
 }
 
 .products-archive .filter-search-group > label {
     margin: 0;
     color: var(--color-ink);
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .products-archive .filter-search-group input[type="search"] {
     width: 100%;
-    min-height: 46px;
-    padding: 0 13px;
-    border: 1px solid rgba(16, 40, 61, 0.11);
-    border-radius: 12px;
+    min-height: 42px;
+    padding: 0 12px;
+    border: 1px solid rgba(16, 40, 61, 0.13);
+    border-radius: 9px;
     color: var(--color-ink);
     background: #ffffff;
     font: inherit;
-    font-size: 13px;
+    font-size: 12.5px;
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .products-archive .filter-search-group input[type="search"]:focus {
     border-color: rgba(15, 76, 129, 0.36);
-    box-shadow: 0 0 0 4px rgba(15, 76, 129, 0.075);
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.07);
 }
 
 .products-archive .filter-check-group {
     min-width: 0;
     margin: 0;
-    padding: 17px 0;
+    padding: 19px 0 17px;
     border: 0;
-    border-top: 1px solid rgba(16, 40, 61, 0.07);
+    border-bottom: 1px solid rgba(16, 40, 61, 0.065);
 }
 
 .products-archive .filter-check-group legend {
     width: 100%;
-    margin: 0 0 10px;
+    margin: 0 0 11px;
     padding: 0;
     color: var(--color-ink);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 800;
-    letter-spacing: -0.01em;
+    line-height: 1.2;
+    letter-spacing: -0.012em;
 }
 
 .products-archive .filter-checkbox-list {
     display: grid;
-    gap: 4px;
+    gap: 2px;
 }
 
 .products-archive .filter-checkbox {
     position: relative;
     display: grid;
-    grid-template-columns: 20px minmax(0, 1fr) auto;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 9px;
-    min-height: 36px;
+    gap: 8px;
+    min-height: 31px;
     margin: 0;
-    padding: 6px 7px;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    color: #526573;
+    padding: 3px 0;
+    border: 0;
+    border-radius: 0;
+    color: #394b59;
     cursor: pointer;
     user-select: none;
-    transition:
-        color 0.18s ease,
-        background 0.18s ease,
-        border-color 0.18s ease;
+    background: transparent;
 }
 
 .products-archive .filter-checkbox:hover {
-    color: var(--color-ink);
-    border-color: rgba(15, 76, 129, 0.085);
-    background: rgba(15, 76, 129, 0.035);
+    color: var(--color-accent);
+    background: transparent;
+}
+
+.products-archive .filter-checkbox.is-extra {
+    display: none;
+}
+
+.products-archive .filter-check-group.is-expanded .filter-checkbox.is-extra {
+    display: grid;
 }
 
 .products-archive .filter-checkbox input[type="checkbox"] {
@@ -16420,33 +16410,29 @@ body .front-page .container {
     position: relative;
     display: grid;
     place-items: center;
-    width: 19px;
-    height: 19px;
-    border: 1.5px solid rgba(16, 40, 61, 0.22);
-    border-radius: 6px;
+    width: 15px;
+    height: 15px;
+    border: 1px solid rgba(16, 40, 61, 0.28);
+    border-radius: 3px;
     background: #ffffff;
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        box-shadow 0.18s ease;
+    transition: background 0.16s ease, border-color 0.16s ease;
 }
 
 .products-archive .filter-checkbox__control::after {
     content: "";
-    width: 6px;
-    height: 10px;
-    margin-top: -2px;
-    border-right: 2px solid #ffffff;
-    border-bottom: 2px solid #ffffff;
+    width: 4px;
+    height: 7px;
+    margin-top: -1px;
+    border-right: 1.7px solid #ffffff;
+    border-bottom: 1.7px solid #ffffff;
     opacity: 0;
-    transform: rotate(45deg) scale(0.72);
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: rotate(45deg) scale(0.75);
+    transition: opacity 0.14s ease, transform 0.14s ease;
 }
 
 .products-archive .filter-checkbox input:checked + .filter-checkbox__control {
     border-color: var(--color-accent);
     background: var(--color-accent);
-    box-shadow: 0 5px 12px rgba(15, 76, 129, 0.16);
 }
 
 .products-archive .filter-checkbox input:checked + .filter-checkbox__control::after {
@@ -16455,64 +16441,95 @@ body .front-page .container {
 }
 
 .products-archive .filter-checkbox input:focus-visible + .filter-checkbox__control {
-    outline: 3px solid rgba(15, 76, 129, 0.13);
+    outline: 3px solid rgba(15, 76, 129, 0.12);
     outline-offset: 2px;
-}
-
-.products-archive .filter-checkbox:has(input:checked) {
-    color: var(--color-ink);
-    border-color: rgba(15, 76, 129, 0.11);
-    background: rgba(15, 76, 129, 0.045);
 }
 
 .products-archive .filter-checkbox__label {
     min-width: 0;
-    font-size: 12.5px;
-    font-weight: 650;
-    line-height: 1.3;
+    overflow: hidden;
+    color: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .products-archive .filter-checkbox__count {
-    min-width: 22px;
     padding-left: 4px;
-    color: #98a3ab;
-    font-size: 10px;
-    font-weight: 700;
+    color: #9aa5ad;
+    font-size: 9.5px;
+    font-weight: 500;
     text-align: right;
+}
+
+.products-archive .filter-checkbox:has(input:checked) .filter-checkbox__label {
+    color: var(--color-ink);
+    font-weight: 700;
 }
 
 .products-archive .filter-checkbox:has(input:checked) .filter-checkbox__count {
     color: var(--color-accent);
 }
 
+.products-archive .filter-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 9px;
+    padding: 0;
+    border: 0;
+    color: var(--color-ink);
+    background: transparent;
+    font: inherit;
+    font-size: 10.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.products-archive .filter-more:hover {
+    color: var(--color-accent);
+}
+
+.products-archive .filter-more svg {
+    width: 9px;
+    height: 6px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.18s ease;
+}
+
+.products-archive .filter-check-group.is-expanded .filter-more svg {
+    transform: rotate(180deg);
+}
+
 .products-archive .product-filters__actions {
     position: sticky;
     bottom: 0;
     z-index: 4;
-    margin: 2px -8px -8px;
-    padding: 15px 8px 8px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0), #ffffff 24%);
+    margin: 0 -20px -20px;
+    padding: 15px 20px 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), #ffffff 26%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .products-archive .product-filters__actions .button {
-    min-height: 46px;
+    min-height: 42px;
     margin: 0;
-    font-size: 12.5px;
-}
-
-.products-archive .product-filters__actions .filters-reset {
-    margin-top: 10px;
-    font-size: 11.5px;
+    border-radius: 9px;
+    font-size: 12px;
+    box-shadow: none;
 }
 
 @media (max-width: 1380px) {
     .products-archive .products-layout {
         grid-template-columns: 292px minmax(0, 1fr) !important;
-        gap: 20px;
-    }
-
-    .products-archive .filter-checkbox__label {
-        font-size: 12px;
+        gap: 22px;
     }
 }
 
@@ -16548,10 +16565,10 @@ body .front-page .container {
 @media (max-width: 780px) {
     .products-archive .product-filters-panel {
         overflow: hidden;
-        border: 1px solid rgba(16, 40, 61, 0.085);
-        border-radius: 18px 18px 28px 18px;
+        border: 1px solid rgba(16, 40, 61, 0.075);
+        border-radius: 14px;
         background: #ffffff;
-        box-shadow: 0 10px 28px rgba(20, 44, 64, 0.045);
+        box-shadow: 0 8px 20px rgba(20, 44, 64, 0.035);
     }
 
     .products-archive .product-filters-toggle {
@@ -16559,8 +16576,8 @@ body .front-page .container {
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        min-height: 60px;
-        padding: 0 17px;
+        min-height: 56px;
+        padding: 0 15px;
         cursor: pointer;
         list-style: none;
         color: var(--color-ink);
@@ -16575,42 +16592,42 @@ body .front-page .container {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 800;
-        letter-spacing: -0.025em;
+        letter-spacing: -0.02em;
     }
 
     .products-archive .product-filters-toggle__title small {
         display: grid;
         place-items: center;
-        min-width: 24px;
-        height: 24px;
+        min-width: 22px;
+        height: 22px;
         padding: 0 6px;
         border-radius: 999px;
         color: #ffffff;
         background: var(--color-accent);
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 800;
     }
 
     .products-archive .product-filters-toggle__action {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 7px;
         color: #71818c;
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 700;
     }
 
     .products-archive .product-filters-toggle__action svg {
-        width: 11px;
+        width: 10px;
         height: 7px;
         fill: none;
         stroke: currentColor;
-        stroke-width: 1.7;
+        stroke-width: 1.6;
         stroke-linecap: round;
         stroke-linejoin: round;
-        transition: transform 0.2s ease;
+        transition: transform 0.18s ease;
     }
 
     .products-archive .product-filters-panel[open] .product-filters-toggle__action svg {
@@ -16626,9 +16643,9 @@ body .front-page .container {
     }
 
     .products-archive .product-filters {
-        padding: 18px 17px 17px;
+        padding: 0 15px 15px;
         border: 0;
-        border-top: 1px solid rgba(16, 40, 61, 0.07);
+        border-top: 1px solid rgba(16, 40, 61, 0.06);
         border-radius: 0;
         box-shadow: none;
     }
@@ -16638,27 +16655,29 @@ body .front-page .container {
     }
 
     .products-archive .filter-search-group {
-        margin-bottom: 17px;
+        padding-top: 16px;
     }
 
     .products-archive .filter-check-group {
-        padding: 16px 0;
+        padding: 17px 0 15px;
     }
 
     .products-archive .filter-checkbox {
-        min-height: 40px;
-        padding: 7px 5px;
+        min-height: 34px;
+        padding-block: 4px;
     }
 
     .products-archive .filter-checkbox__label {
-        font-size: 13px;
+        font-size: 12.5px;
     }
 
     .products-archive .product-filters__actions {
         position: static;
-        margin: 4px 0 0;
-        padding: 14px 0 0;
+        margin: 0;
+        padding: 15px 0 0;
         background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
 }
 
