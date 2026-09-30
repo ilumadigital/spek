@@ -18,6 +18,33 @@ $form_status   = isset($_GET['contact_status'])
     ? sanitize_key(wp_unslash((string) $_GET['contact_status']))
     : '';
 
+$product_id = isset($_GET['product_id'])
+    ? absint($_GET['product_id'])
+    : 0;
+$product_interest = '';
+$product_interest_code = '';
+
+if ($product_id > 0 && get_post_type($product_id) === 'spek_product') {
+    $product_interest = get_the_title($product_id);
+
+    $resolved_code = function_exists('spek_get_product_field')
+        ? spek_get_product_field('product_code', $product_id)
+        : get_post_meta($product_id, 'product_code', true);
+
+    if (function_exists('spek_product_value_is_empty') && !spek_product_value_is_empty($resolved_code)) {
+        $product_interest_code = function_exists('spek_product_value_to_text')
+            ? spek_product_value_to_text($resolved_code)
+            : (string) $resolved_code;
+    }
+} else {
+    $product_interest = isset($_GET['product'])
+        ? sanitize_text_field(wp_unslash((string) $_GET['product']))
+        : '';
+    $product_interest_code = isset($_GET['product_code'])
+        ? sanitize_text_field(wp_unslash((string) $_GET['product_code']))
+        : '';
+}
+
 get_header();
 ?>
 
@@ -119,6 +146,34 @@ get_header();
                         >
                     </div>
 
+                    <?php if ($product_interest !== '') : ?>
+                        <div class="contact-product-context" aria-label="<?php esc_attr_e('Προϊόν ενδιαφέροντος', 'spek-theme'); ?>">
+                            <div class="contact-product-context__meta">
+                                <span class="contact-product-context__eyebrow"><?php esc_html_e('Προϊόν ενδιαφέροντος', 'spek-theme'); ?></span>
+                                <?php if ($product_interest_code !== '') : ?>
+                                    <span class="contact-product-context__code">
+                                        <?php esc_html_e('Κωδικός', 'spek-theme'); ?>:
+                                        <strong><?php echo esc_html($product_interest_code); ?></strong>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="form-row form-row--full contact-product-context__field">
+                                <label for="contact-product-interest"><?php esc_html_e('Προϊόν', 'spek-theme'); ?></label>
+                                <input
+                                    id="contact-product-interest"
+                                    type="text"
+                                    name="product_interest"
+                                    value="<?php echo esc_attr($product_interest); ?>"
+                                    readonly
+                                >
+                            </div>
+
+                            <input type="hidden" name="product_id" value="<?php echo esc_attr((string) $product_id); ?>">
+                            <input type="hidden" name="product_code" value="<?php echo esc_attr($product_interest_code); ?>">
+                        </div>
+                    <?php endif; ?>
+
                     <fieldset class="contact-request-type">
                         <legend><?php esc_html_e('Τύπος αιτήματος', 'spek-theme'); ?></legend>
 
@@ -201,6 +256,7 @@ get_header();
                                     type="text"
                                     name="subject"
                                     maxlength="200"
+                                    value="<?php echo esc_attr($product_interest !== '' ? sprintf(__('Ενδιαφέρον για προϊόν: %s', 'spek-theme'), $product_interest) : ''); ?>"
                                     required
                                 >
                             </div>
