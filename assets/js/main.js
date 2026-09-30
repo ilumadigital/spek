@@ -684,6 +684,46 @@
     }
 
 
+    function setupProductGalleryThumbnails() {
+        const galleries = document.querySelectorAll('.product-gallery--has-thumbs');
+
+        if (!galleries.length) {
+            return;
+        }
+
+        galleries.forEach((gallery) => {
+            const mainImage = gallery.querySelector('[data-product-gallery-main]');
+            const thumbs = gallery.querySelectorAll('[data-product-gallery-thumb]');
+
+            if (!mainImage || !thumbs.length) {
+                return;
+            }
+
+            thumbs.forEach((thumb) => {
+                thumb.addEventListener('click', () => {
+                    const src = thumb.getAttribute('data-product-gallery-src');
+                    const alt = thumb.getAttribute('data-product-gallery-alt') || mainImage.alt;
+
+                    if (!src) {
+                        return;
+                    }
+
+                    mainImage.src = src;
+                    mainImage.alt = alt;
+
+                    thumbs.forEach((item) => {
+                        item.classList.remove('is-active');
+                        item.removeAttribute('aria-current');
+                    });
+
+                    thumb.classList.add('is-active');
+                    thumb.setAttribute('aria-current', 'true');
+                });
+            });
+        });
+    }
+
+
     function setupProductImageMagnifier() {
         const zoomTargets = document.querySelectorAll('[data-product-zoom]');
         const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -869,6 +909,7 @@
     setupHeroBackgroundSlider();
     setupHomeMotion();
     setupCompanyPageMotion();
+    setupProductGalleryThumbnails();
     setupProductImageMagnifier();
     setupCompanyDetailsCopy();
 })();
