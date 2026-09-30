@@ -2,8 +2,7 @@
 /**
  * Product filters.
  *
- * Multi-select taxonomy filters use numeric term IDs so Greek/non-Latin term
- * slugs never collide with WordPress native taxonomy query vars.
+ * Multi-select marketplace-style facets for the product archive.
  *
  * @package SpekTheme
  */
@@ -12,41 +11,114 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$selected_category = function_exists('spek_product_filter_term_ids') ? spek_product_filter_term_ids('product_category') : [];
-$selected_application = function_exists('spek_product_filter_term_ids') ? spek_product_filter_term_ids('product_application') : [];
-$selected_material = function_exists('spek_product_filter_term_ids') ? spek_product_filter_term_ids('product_material') : [];
-$selected_series = function_exists('spek_product_filter_term_ids') ? spek_product_filter_term_ids('product_series') : [];
+$archive_url = get_post_type_archive_link('spek_product');
+$archive_url = $archive_url ?: home_url('/products/');
 
-if (is_tax(['product_category', 'product_application', 'product_material', 'product_series'])) {
-    $term = get_queried_object();
+if (!function_exists('spek_product_filters_normalize')) {
+    function spek_product_filters_normalize(string $value): string
+    {
+        $value = remove_accents(wp_strip_all_tags($value));
+        $value = function_exists('mb_strtolower')
+            ? mb_strtolower($value, 'UTF-8')
+            : strtolower($value);
 
-    if ($term instanceof WP_Term) {
-        $taxonomy_selected_map = [
-            'product_category' => &$selected_category,
-            'product_application' => &$selected_application,
-            'product_material' => &$selected_material,
-            'product_series' => &$selected_series,
-        ];
+        $value = preg_replace('/[^\\p{L}\\p{N}]+/u', ' ', $value);
 
-        if (
-            isset($taxonomy_selected_map[$term->taxonomy])
-            && !in_array((int) $term->term_id, $taxonomy_selected_map[$term->taxonomy], true)
-        ) {
-            $taxonomy_selected_map[$term->taxonomy][] = (int) $term->term_id;
-        }
-
-        unset($taxonomy_selected_map);
+        return trim((string) $value);
     }
 }
+
+$selected_application = function_exists('spek_product_filter_term_ids')
+    ? spek_product_filter_term_ids('product_application')
+    : [];
+
+$selected_material = function_exists('spek_product_filter_term_ids')
+    ? spek_product_filter_term_ids('product_material')
+    : [];
+
+$selected_series = function_exists('spek_product_filter_term_ids')
+    ? spek_product_filter_term_ids('product_series')
+    : [];
+
+$legacy_selected_categories = function_exists('spek_product_filter_term_ids')
+    ? spek_product_filter_term_ids('product_category')
+    : [];
 
 $product_search = isset($_GET['product_search']) && !is_array($_GET['product_search'])
     ? sanitize_text_field(wp_unslash($_GET['product_search']))
     : '';
 
-$categories = get_terms(spek_language_args([
-    'taxonomy' => 'product_category',
-    'hide_empty' => true,
-]));
+$category_groups = function_exists('spek_home_category_group_definitions')
+    ? spek_home_category_group_definitions()
+    : [];
+
+$selected_category_groups = function_exists('spek_product_filter_category_group_keys')
+    ? spek_product_filter_category_group_keys()
+    : [];
+
+if (!$selected_category_groups && isset($_GET['home_category_group']) && !is_array($_GET['home_category_group'])) {
+    $home_group = sanitize_key(wp_unslash((string) $_GET['home_category_group']));
+    if (isset($category_groups[$home_group])) {
+        $selected_category_groups[] = $home_group;
+    }
+}
+
+if (!$selected_category_groups && $legacy_selected_categories && $category_groups) {
+    foreach ($legacy_selected_categories as $term_id) {
+        $matched = false;
+
+        foreach ($category_groups as $group_key => $group_definition) {
+            if ($group_key === 'diafora') {
+                continue;
+            }
+
+            $group_ids = function_exists('spek_home_category_group_term_ids')
+                ? spek_home_category_group_term_ids($group_key)
+                : [];
+
+            if (in_array((int) $term_id, array_map('intval', $group_ids), true)) {
+                $selected_category_groups[] = $group_key;
+                $matched = true;
+                break;
+            }
+        }
+
+        if (!$matched && isset($category_groups['diafora'])) {
+            $selected_category_groups[] = 'diafora';
+        }
+    }
+
+    $selected_category_groups = array_values(array_unique($selected_category_groups));
+}
+
+if (
+    !$selected_category_groups
+    && is_tax('product_category')
+    && ($queried_category = get_queried_object()) instanceof WP_Term
+    && $category_groups
+) {
+    $matched = false;
+
+    foreach ($category_groups as $group_key => $group_definition) {
+        if ($group_key === 'diafora') {
+            continue;
+        }
+
+        $group_ids = function_exists('spek_home_category_group_term_ids')
+            ? spek_home_category_group_term_ids($group_key)
+            : [];
+
+        if (in_array((int) $queried_category->term_id, array_map('intval', $group_ids), true)) {
+            $selected_category_groups[] = $group_key;
+            $matched = true;
+            break;
+        }
+    }
+
+    if (!$matched && isset($category_groups['diafora'])) {
+        $selected_category_groups[] = 'diafora';
+    }
+}
 
 $applications = get_terms(spek_language_args([
     'taxonomy' => 'product_application',
@@ -63,23 +135,140 @@ $series = get_terms(spek_language_args([
     'hide_empty' => true,
 ]));
 
-$archive_url = get_post_type_archive_link('spek_product');
-$archive_url = $archive_url ?: home_url('/products/');
+$applications = (!empty($applications) && !is_wp_error($applications)) ? array_values($applications) : [];
+$materials = (!empty($materials) && !is_wp_error($materials)) ? array_values($materials) : [];
+$series = (!empty($series) && !is_wp_error($series)) ? array_values($series) : [];
 
-$selected_filter_count = count($selected_category)
+$category_icon_map = [
+    'mixanismoi' => 'mechanisms',
+    'floter' => 'float',
+    'sifonia' => 'siphon',
+    'kalymmata-lekanis' => 'seat',
+    'kazanakia' => 'cistern',
+    'banio' => 'bathroom',
+    'lastixa' => 'seals',
+    'diafora' => 'misc',
+];
+
+$category_counts = [];
+$all_category_terms = get_terms(spek_language_args([
+    'taxonomy' => 'product_category',
+    'hide_empty' => true,
+]));
+
+$category_term_counts = [];
+$all_category_term_ids = [];
+
+if (!empty($all_category_terms) && !is_wp_error($all_category_terms)) {
+    foreach ($all_category_terms as $term) {
+        $term_id = (int) $term->term_id;
+        $category_term_counts[$term_id] = (int) $term->count;
+        $all_category_term_ids[] = $term_id;
+    }
+}
+
+$primary_category_ids = [];
+
+foreach (array_keys($category_groups) as $group_key) {
+    if ($group_key === 'diafora') {
+        continue;
+    }
+
+    $group_ids = function_exists('spek_home_category_group_term_ids')
+        ? array_map('intval', spek_home_category_group_term_ids($group_key))
+        : [];
+
+    $primary_category_ids = array_merge($primary_category_ids, $group_ids);
+    $category_counts[$group_key] = array_sum(array_map(
+        static fn ($term_id) => $category_term_counts[(int) $term_id] ?? 0,
+        $group_ids
+    ));
+}
+
+$primary_category_ids = array_values(array_unique(array_filter(array_map('intval', $primary_category_ids))));
+
+if (isset($category_groups['diafora'])) {
+    $other_ids = array_values(array_diff($all_category_term_ids, $primary_category_ids));
+    $category_counts['diafora'] = array_sum(array_map(
+        static fn ($term_id) => $category_term_counts[(int) $term_id] ?? 0,
+        $other_ids
+    ));
+}
+
+$brand_specs = [
+    'spek' => [
+        'patterns' => ['spek'],
+        'logo' => get_template_directory_uri() . '/assets/images/brand/spek_logo.png',
+    ],
+    'nemo' => [
+        'patterns' => ['nemo'],
+        'logo' => get_template_directory_uri() . '/assets/images/brand/nemo_logo.svg',
+    ],
+    'idrospania' => [
+        'patterns' => ['idrospania', 'idro spania', 'υδροσπανια', 'υδροσπάνια'],
+        'logo' => 'https://idrospania.es/wp-content/uploads/2021/10/logotipo-idrospania.svg',
+    ],
+    'lbplast' => [
+        'patterns' => ['lb plast', 'lbplast', 'lb-plast'],
+        'logo' => 'https://lbplast.com/wp-content/uploads/2025/06/logo-LBPlast.svg',
+    ],
+    'mcalpine' => [
+        'patterns' => ['mcalpine', 'mc alpine', 'mc-alpine', 'mc alpin'],
+        'logo' => 'https://mcalpine.pl/wp-content/uploads/2024/10/cropped-Logo-na-Strone.png',
+    ],
+];
+
+$brand_key_for_term = static function (WP_Term $term) use ($brand_specs): string {
+    $haystack = spek_product_filters_normalize($term->name . ' ' . $term->slug);
+
+    foreach ($brand_specs as $brand_key => $spec) {
+        foreach ($spec['patterns'] as $pattern) {
+            $pattern = spek_product_filters_normalize((string) $pattern);
+
+            if ($pattern !== '' && strpos($haystack, $pattern) !== false) {
+                return $brand_key;
+            }
+        }
+    }
+
+    return 'other';
+};
+
+$brand_order = [
+    'spek' => 0,
+    'nemo' => 1,
+    'idrospania' => 2,
+    'lbplast' => 3,
+    'mcalpine' => 4,
+    'other' => 5,
+];
+
+usort($series, static function (WP_Term $a, WP_Term $b) use ($brand_key_for_term, $brand_order): int {
+    $a_key = $brand_key_for_term($a);
+    $b_key = $brand_key_for_term($b);
+    $a_weight = $brand_order[$a_key] ?? 99;
+    $b_weight = $brand_order[$b_key] ?? 99;
+
+    if ($a_weight === $b_weight) {
+        return strnatcasecmp($a->name, $b->name);
+    }
+
+    return $a_weight <=> $b_weight;
+});
+
+$selected_filter_count = count($selected_category_groups)
     + count($selected_application)
     + count($selected_material)
     + count($selected_series)
     + ($product_search !== '' ? 1 : 0);
 
-$render_checkbox_group = static function (
+$render_compact_checkbox_group = static function (
     string $legend,
     string $name,
-    $terms,
-    array $selected_ids,
-    string $more_label
+    array $terms,
+    array $selected_ids
 ): void {
-    if (empty($terms) || is_wp_error($terms)) {
+    if (!$terms) {
         return;
     }
 
@@ -96,7 +285,7 @@ $render_checkbox_group = static function (
                 $is_selected = in_array($term_id, $selected_ids, true);
                 $is_extra = $index >= $visible_limit && !$is_selected;
                 ?>
-                <label class="filter-checkbox <?php echo $is_extra ? 'is-extra' : ''; ?>">
+                <label class="filter-checkbox<?php echo $is_extra ? ' is-extra' : ''; ?>">
                     <input
                         type="checkbox"
                         name="<?php echo esc_attr($name); ?>[]"
@@ -112,8 +301,7 @@ $render_checkbox_group = static function (
 
         <?php if ($has_extra) : ?>
             <button class="filter-more" type="button" data-filter-more aria-expanded="false">
-                <span data-filter-more-label><?php echo esc_html($more_label); ?></span>
-                <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
+                <span data-filter-more-label><?php esc_html_e('Περισσότερα', 'spek-theme'); ?></span>
             </button>
         <?php endif; ?>
     </fieldset>
@@ -129,6 +317,7 @@ $render_checkbox_group = static function (
                 <small><?php echo esc_html(number_format_i18n($selected_filter_count)); ?></small>
             <?php endif; ?>
         </span>
+
         <span class="product-filters-toggle__action">
             <?php esc_html_e('Επιλογές', 'spek-theme'); ?>
             <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
@@ -157,37 +346,118 @@ $render_checkbox_group = static function (
             >
         </div>
 
-        <?php
-        $render_checkbox_group(
-            __('Κατηγορία', 'spek-theme'),
-            'filter_category',
-            $categories,
-            $selected_category,
-            __('Όλες οι κατηγορίες', 'spek-theme')
-        );
+        <?php if ($category_groups) : ?>
+            <fieldset class="filter-check-group filter-check-group--categories">
+                <legend><?php esc_html_e('Κατηγορίες', 'spek-theme'); ?></legend>
 
-        $render_checkbox_group(
+                <div class="filter-category-grid">
+                    <?php foreach ($category_groups as $group_key => $group) : ?>
+                        <?php
+                        $is_selected = in_array($group_key, $selected_category_groups, true);
+                        $icon = $category_icon_map[$group_key] ?? 'misc';
+                        ?>
+                        <label class="filter-category-card">
+                            <input
+                                type="checkbox"
+                                name="filter_category_group[]"
+                                value="<?php echo esc_attr($group_key); ?>"
+                                <?php checked($is_selected); ?>
+                            >
+
+                            <span class="filter-category-card__check" aria-hidden="true"></span>
+
+                            <span class="filter-category-card__icon" aria-hidden="true">
+                                <?php if (function_exists('spek_header_product_icon')) : ?>
+                                    <?php spek_header_product_icon($icon); ?>
+                                <?php else : ?>
+                                    <span>•</span>
+                                <?php endif; ?>
+                            </span>
+
+                            <span class="filter-category-card__body">
+                                <strong><?php echo esc_html((string) ($group['label'] ?? $group_key)); ?></strong>
+                                <small><?php
+                                    printf(
+                                        esc_html(_n('%s προϊόν', '%s προϊόντα', (int) ($category_counts[$group_key] ?? 0), 'spek-theme')),
+                                        esc_html(number_format_i18n((int) ($category_counts[$group_key] ?? 0)))
+                                    );
+                                ?></small>
+                            </span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
+        <?php endif; ?>
+
+        <?php if ($series) : ?>
+            <?php
+            $has_other_brands = false;
+            foreach ($series as $brand_term) {
+                if ($brand_key_for_term($brand_term) === 'other') {
+                    $has_other_brands = true;
+                    break;
+                }
+            }
+            ?>
+            <fieldset class="filter-check-group filter-check-group--brands" data-filter-group>
+                <legend><?php esc_html_e('Εταιρεία', 'spek-theme'); ?></legend>
+
+                <div class="filter-brand-list">
+                    <?php foreach ($series as $item) : ?>
+                        <?php
+                        $brand_key = $brand_key_for_term($item);
+                        $is_selected = in_array((int) $item->term_id, $selected_series, true);
+                        $is_extra = $brand_key === 'other' && !$is_selected;
+                        $logo = $brand_key !== 'other' ? ($brand_specs[$brand_key]['logo'] ?? '') : '';
+                        ?>
+                        <label class="filter-brand-item<?php echo $is_extra ? ' is-extra' : ''; ?>">
+                            <input
+                                type="checkbox"
+                                name="filter_series[]"
+                                value="<?php echo esc_attr((string) $item->term_id); ?>"
+                                <?php checked($is_selected); ?>
+                            >
+
+                            <span class="filter-brand-item__check" aria-hidden="true"></span>
+
+                            <span class="filter-brand-item__logo">
+                                <?php if ($logo !== '') : ?>
+                                    <img
+                                        src="<?php echo esc_url($logo); ?>"
+                                        alt="<?php echo esc_attr($item->name); ?>"
+                                        loading="lazy"
+                                    >
+                                <?php else : ?>
+                                    <strong><?php echo esc_html($item->name); ?></strong>
+                                <?php endif; ?>
+                            </span>
+
+                            <span class="filter-brand-item__count"><?php echo esc_html(number_format_i18n((int) $item->count)); ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+
+                <?php if ($has_other_brands) : ?>
+                    <button class="filter-more" type="button" data-filter-more aria-expanded="false">
+                        <span data-filter-more-label><?php esc_html_e('Υπόλοιπες', 'spek-theme'); ?></span>
+                    </button>
+                <?php endif; ?>
+            </fieldset>
+        <?php endif; ?>
+
+        <?php
+        $render_compact_checkbox_group(
             __('Εφαρμογή', 'spek-theme'),
             'filter_application',
             $applications,
-            $selected_application,
-            __('Όλες οι εφαρμογές', 'spek-theme')
+            $selected_application
         );
 
-        $render_checkbox_group(
+        $render_compact_checkbox_group(
             __('Υλικό', 'spek-theme'),
             'filter_material',
             $materials,
-            $selected_material,
-            __('Όλα τα υλικά', 'spek-theme')
-        );
-
-        $render_checkbox_group(
-            __('Μάρκα / Σειρά', 'spek-theme'),
-            'filter_series',
-            $series,
-            $selected_series,
-            __('Όλες οι μάρκες / σειρές', 'spek-theme')
+            $selected_material
         );
         ?>
 
