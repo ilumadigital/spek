@@ -29,6 +29,50 @@ function spek_product_filter_params(): array
     ];
 }
 
+
+/**
+ * Public sorting options for the product catalogue.
+ */
+function spek_product_sort_options(): array
+{
+    $is_english = function_exists('spek_is_english') && spek_is_english();
+
+    return [
+        'relevance' => $is_english ? 'Relevance' : 'Σχετικότητα',
+        'newest' => $is_english ? 'Newest first' : 'Νεότερα πρώτα',
+        'oldest' => $is_english ? 'Oldest first' : 'Παλαιότερα πρώτα',
+        'title_asc' => $is_english ? 'Alphabetical A–Z' : 'Αλφαβητικά Α–Ω',
+        'title_desc' => $is_english ? 'Alphabetical Z–A' : 'Αλφαβητικά Ω–Α',
+        'code_asc' => $is_english ? 'Product code: ascending' : 'Κωδικός: αύξων',
+        'code_desc' => $is_english ? 'Product code: descending' : 'Κωδικός: φθίνων',
+    ];
+}
+
+/**
+ * Validated catalogue sorting key.
+ */
+function spek_product_sort_key(): string
+{
+    $sort = isset($_GET['product_sort']) && !is_array($_GET['product_sort'])
+        ? sanitize_key(wp_unslash((string) $_GET['product_sort']))
+        : 'relevance';
+
+    return array_key_exists($sort, spek_product_sort_options()) ? $sort : 'relevance';
+}
+
+/**
+ * Validated number of products displayed per page.
+ */
+function spek_product_per_page(): int
+{
+    $allowed = [25, 50, 75, 100];
+    $value = isset($_GET['per_page']) && !is_array($_GET['per_page'])
+        ? absint(wp_unslash((string) $_GET['per_page']))
+        : 25;
+
+    return in_array($value, $allowed, true) ? $value : 25;
+}
+
 /**
  * Resolve a product filter to validated term IDs.
  *
@@ -705,7 +749,52 @@ function spek_filter_product_archive_query($query): void
         $query->set('meta_query', $meta_query);
     }
 
-    $query->set('posts_per_page', 12);
+    $sort = spek_product_sort_key();
+    $query->set('spek_product_sort', $sort);
+    $query->set('posts_per_page', spek_product_per_page());
+
+    switch ($sort) {
+        case 'newest':
+            $query->set('orderby', 'date');
+            $query->set('order', 'DESC');
+            break;
+
+        case 'oldest':
+            $query->set('orderby', 'date');
+            $query->set('order', 'ASC');
+            break;
+
+        case 'title_asc':
+        case 'title_desc':
+            $direction = $sort === 'title_desc' ? 'DESC' : 'ASC';
+
+            if (function_exists('spek_is_english') && spek_is_english()) {
+                $query->set('spek_product_english_title_sort', $direction);
+            } else {
+                $query->set('orderby', 'title');
+                $query->set('order', $direction);
+            }
+            break;
+
+        case 'code_asc':
+        case 'code_desc':
+            $query->set('meta_key', 'product_code');
+            $query->set('orderby', 'meta_value');
+            $query->set('order', $sort === 'code_desc' ? 'DESC' : 'ASC');
+            break;
+
+        case 'relevance':
+        default:
+            if (!empty($_GET['product_search'])) {
+                $query->set('spek_product_relevance', 1);
+            } else {
+                $query->set('orderby', [
+                    'menu_order' => 'ASC',
+                    'date' => 'DESC',
+                ]);
+            }
+            break;
+    }
 }
 
 add_action('pre_get_posts', 'spek_filter_product_archive_query');
@@ -791,11 +880,14 @@ function spek_product_search_join(string $join, $query): string
 {
     global $wpdb;
 
-    if ((is_admin() && empty($GLOBALS['spek_frontend_ajax'])) || !$query->get('spek_product_search')) {
+    $has_search = (bool) $query->get('spek_product_search');
+    $needs_english_title_sort = (bool) $query->get('spek_product_english_title_sort');
+
+    if ((is_admin() && empty($GLOBALS['spek_frontend_ajax'])) || (!$has_search && !$needs_english_title_sort)) {
         return $join;
     }
 
-    if (strpos($join, 'spek_product_code_meta') === false) {
+    if ($has_search && strpos($join, 'spek_product_code_meta') === false) {
         $join .= " LEFT JOIN {$wpdb->postmeta} AS spek_product_code_meta"
             . " ON ({$wpdb->posts}.ID = spek_product_code_meta.post_id"
             . " AND spek_product_code_meta.meta_key = 'product_code') ";
@@ -806,7 +898,7 @@ function spek_product_search_join(string $join, $query): string
                 . " ON ({$wpdb->posts}.ID = spek_product_title_en_meta.post_id"
                 . " AND spek_product_title_en_meta.meta_key = '_spek_title_en') ";
         }
-        if (strpos($join, 'spek_product_content_en_meta') === false) {
+        if ($has_search && strpos($join, 'spek_product_content_en_meta') === false) {
             $join .= " LEFT JOIN {$wpdb->postmeta} AS spek_product_content_en_meta"
                 . " ON ({$wpdb->posts}.ID = spek_product_content_en_meta.post_id"
                 . " AND spek_product_content_en_meta.meta_key = '_spek_content_en') ";
@@ -849,6 +941,72 @@ function spek_product_search_where(string $search, $query): string
     );
 }
 add_filter('posts_search', 'spek_product_search_where', 10, 2);
+
+/**
+ * Catalogue ordering that cannot be expressed by standard WP_Query arguments:
+ * search relevance and alphabetical sorting by the visible English title.
+ */
+function spek_product_archive_orderby(string $orderby, $query): string
+{
+    global $wpdb;
+
+    if (is_admin() && empty($GLOBALS['spek_frontend_ajax'])) {
+        return $orderby;
+    }
+
+    $english_title_direction = (string) $query->get('spek_product_english_title_sort');
+    if (in_array($english_title_direction, ['ASC', 'DESC'], true)) {
+        return "spek_product_title_en_meta.meta_value {$english_title_direction}, {$wpdb->posts}.ID ASC";
+    }
+
+    $term = (string) $query->get('spek_product_search');
+    if (!$query->get('spek_product_relevance') || $term === '') {
+        return $orderby;
+    }
+
+    $exact = $term;
+    $starts = $wpdb->esc_like($term) . '%';
+    $contains = '%' . $wpdb->esc_like($term) . '%';
+
+    if (function_exists('spek_is_english') && spek_is_english()) {
+        return $wpdb->prepare(
+            "CASE"
+            . " WHEN spek_product_code_meta.meta_value = %s THEN 0"
+            . " WHEN spek_product_title_en_meta.meta_value = %s THEN 1"
+            . " WHEN spek_product_code_meta.meta_value LIKE %s THEN 2"
+            . " WHEN spek_product_title_en_meta.meta_value LIKE %s THEN 3"
+            . " WHEN spek_product_title_en_meta.meta_value LIKE %s THEN 4"
+            . " WHEN spek_product_content_en_meta.meta_value LIKE %s THEN 5"
+            . " ELSE 6 END ASC, {$wpdb->posts}.post_date DESC, {$wpdb->posts}.ID DESC",
+            $exact,
+            $exact,
+            $starts,
+            $starts,
+            $contains,
+            $contains
+        );
+    }
+
+    return $wpdb->prepare(
+        "CASE"
+        . " WHEN spek_product_code_meta.meta_value = %s THEN 0"
+        . " WHEN {$wpdb->posts}.post_title = %s THEN 1"
+        . " WHEN spek_product_code_meta.meta_value LIKE %s THEN 2"
+        . " WHEN {$wpdb->posts}.post_title LIKE %s THEN 3"
+        . " WHEN {$wpdb->posts}.post_title LIKE %s THEN 4"
+        . " WHEN {$wpdb->posts}.post_excerpt LIKE %s THEN 5"
+        . " WHEN {$wpdb->posts}.post_content LIKE %s THEN 6"
+        . " ELSE 7 END ASC, {$wpdb->posts}.post_date DESC, {$wpdb->posts}.ID DESC",
+        $exact,
+        $exact,
+        $starts,
+        $starts,
+        $contains,
+        $contains,
+        $contains
+    );
+}
+add_filter('posts_orderby', 'spek_product_archive_orderby', 20, 2);
 
 /** Prevent duplicate products when the SKU meta join is active. */
 function spek_product_search_distinct(string $distinct, $query): string
