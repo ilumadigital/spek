@@ -185,10 +185,18 @@ function spek_contact_internal_email(array $data, int $submission_id): array
     $admin_url = admin_url('post.php?post=' . $submission_id . '&action=edit');
     $submitted_at = get_the_date('d/m/Y H:i', $submission_id);
 
+    $product_detail = !empty($data['product_interest'])
+        ? spek_contact_email_detail_row(
+            'Προϊόν ενδιαφέροντος',
+            trim((string) $data['product_interest'] . (!empty($data['product_code']) ? ' · ' . (string) $data['product_code'] : ''))
+        )
+        : '';
+
     $details = '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border:1px solid #e4eaf0;border-radius:18px;background:#fbfcfd;padding:4px 18px;">'
         . spek_contact_email_detail_row('Κωδικός', $reference)
         . spek_contact_email_detail_row('Υποβλήθηκε', $submitted_at)
         . spek_contact_email_detail_row('Τύπος αιτήματος', $type_label)
+        . $product_detail
         . spek_contact_email_detail_row('Όνομα', (string) $data['first_name'])
         . spek_contact_email_detail_row('Επώνυμο', (string) $data['last_name'])
         . spek_contact_email_detail_row('Email', (string) $data['email'])
@@ -252,6 +260,7 @@ function spek_contact_customer_email(array $data, int $submission_id): array
         $labels = [
             'reference' => 'Reference',
             'type'      => 'Enquiry type',
+            'product'   => 'Product',
             'subject'   => 'Subject',
         ];
         $note = 'Please keep this reference if you need to contact us about the same enquiry.';
@@ -268,6 +277,7 @@ function spek_contact_customer_email(array $data, int $submission_id): array
         $labels = [
             'reference' => 'Κωδικός αναφοράς',
             'type'      => 'Τύπος αιτήματος',
+            'product'   => 'Προϊόν',
             'subject'   => 'Θέμα',
         ];
         $note = 'Κρατήστε τον κωδικό αναφοράς σε περίπτωση που χρειαστεί να επικοινωνήσετε μαζί μας για το ίδιο αίτημα.';
@@ -275,9 +285,17 @@ function spek_contact_customer_email(array $data, int $submission_id): array
         $phone_label = 'Για άμεση επικοινωνία';
     }
 
+    $product_detail = !empty($data['product_interest'])
+        ? spek_contact_email_detail_row(
+            $labels['product'],
+            trim((string) $data['product_interest'] . (!empty($data['product_code']) ? ' · ' . (string) $data['product_code'] : ''))
+        )
+        : '';
+
     $details = '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border:1px solid #e4eaf0;border-radius:18px;background:#fbfcfd;padding:4px 18px;">'
         . spek_contact_email_detail_row($labels['reference'], $reference)
         . spek_contact_email_detail_row($labels['type'], $type_label)
+        . $product_detail
         . spek_contact_email_detail_row($labels['subject'], (string) $data['subject'], true)
         . '</table>';
 
@@ -371,6 +389,30 @@ function spek_handle_contact_submission(): void
         ? sanitize_textarea_field(wp_unslash((string) $_POST['message']))
         : '';
 
+    $product_id = isset($_POST['product_id'])
+        ? absint($_POST['product_id'])
+        : 0;
+    $product_interest = isset($_POST['product_interest'])
+        ? sanitize_text_field(wp_unslash((string) $_POST['product_interest']))
+        : '';
+    $product_code = isset($_POST['product_code'])
+        ? sanitize_text_field(wp_unslash((string) $_POST['product_code']))
+        : '';
+
+    if ($product_id > 0 && get_post_type($product_id) === 'spek_product') {
+        $product_interest = get_the_title($product_id);
+
+        $resolved_code = function_exists('spek_get_product_field')
+            ? spek_get_product_field('product_code', $product_id)
+            : get_post_meta($product_id, 'product_code', true);
+
+        if (function_exists('spek_product_value_is_empty') && !spek_product_value_is_empty($resolved_code)) {
+            $product_code = function_exists('spek_product_value_to_text')
+                ? spek_product_value_to_text($resolved_code)
+                : (string) $resolved_code;
+        }
+    }
+
     $valid_types = ['general', 'partner'];
     $message_length = function_exists('mb_strlen')
         ? mb_strlen($message, 'UTF-8')
@@ -413,6 +455,9 @@ function spek_handle_contact_submission(): void
         '_spek_contact_phone'        => $phone,
         '_spek_contact_subject'      => $subject,
         '_spek_contact_message'      => $message,
+        '_spek_contact_product_id'   => $product_id,
+        '_spek_contact_product'      => $product_interest,
+        '_spek_contact_product_code' => $product_code,
         '_spek_contact_lang'         => $lang,
         '_spek_contact_mail_status'  => 'pending',
         '_spek_contact_ack_status'   => 'pending',
@@ -430,9 +475,12 @@ function spek_handle_contact_submission(): void
         'last_name'    => $last_name,
         'email'        => $email,
         'phone'        => $phone,
-        'subject'      => $subject,
-        'message'      => $message,
-        'lang'         => $lang,
+        'subject'          => $subject,
+        'message'          => $message,
+        'product_id'       => $product_id,
+        'product_interest' => $product_interest,
+        'product_code'     => $product_code,
+        'lang'             => $lang,
     ];
 
     [$internal_subject, $internal_body, $internal_headers] = spek_contact_internal_email(
@@ -502,6 +550,8 @@ function spek_contact_render_submission_meta_box(WP_Post $post): void
     $phone        = (string) get_post_meta($post->ID, '_spek_contact_phone', true);
     $subject      = (string) get_post_meta($post->ID, '_spek_contact_subject', true);
     $message      = (string) get_post_meta($post->ID, '_spek_contact_message', true);
+    $product      = (string) get_post_meta($post->ID, '_spek_contact_product', true);
+    $product_code = (string) get_post_meta($post->ID, '_spek_contact_product_code', true);
     $lang         = (string) get_post_meta($post->ID, '_spek_contact_lang', true);
     $mail_status  = (string) get_post_meta($post->ID, '_spek_contact_mail_status', true);
     $ack_status   = (string) get_post_meta($post->ID, '_spek_contact_ack_status', true);
@@ -513,6 +563,9 @@ function spek_contact_render_submission_meta_box(WP_Post $post): void
         'Email'           => $email,
         'Τηλέφωνο'        => $phone,
         'Θέμα'            => $subject,
+        'Προϊόν ενδιαφέροντος' => $product !== ''
+            ? trim($product . ($product_code !== '' ? ' · ' . $product_code : ''))
+            : '—',
         'Γλώσσα'          => strtoupper($lang ?: 'el'),
         'Email προς SPEK' => $mail_status === 'sent' ? 'Sent' : ($mail_status === 'failed' ? 'Failed' : 'Pending'),
         'Επιβεβαίωση πελάτη' => $ack_status === 'sent' ? 'Sent' : ($ack_status === 'failed' ? 'Failed' : 'Pending'),
