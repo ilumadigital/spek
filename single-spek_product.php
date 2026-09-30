@@ -35,6 +35,72 @@ $contact_url = add_query_arg($contact_args, spek_page_url('contact/')) . '#conta
 $primary_category = (!empty($product_categories) && !is_wp_error($product_categories))
     ? reset($product_categories)
     : null;
+
+$product_manufacturers = get_the_terms($product_id, 'product_series');
+$manufacturer_name = 'SPEK';
+$manufacturer_key = 'spek';
+$manufacturer_logo = get_template_directory_uri() . '/assets/images/brand/spek_logo.png';
+
+$manufacturer_specs = [
+    'spek' => [
+        'patterns' => ['spek'],
+        'logo' => get_template_directory_uri() . '/assets/images/brand/spek_logo.png',
+    ],
+    'nemo' => [
+        'patterns' => ['nemo'],
+        'logo' => get_template_directory_uri() . '/assets/images/brand/nemo_logo.svg',
+    ],
+    'idrospania' => [
+        'patterns' => ['idrospania', 'idro spania', 'υδροσπανια', 'υδροσπάνια'],
+        'logo' => 'https://idrospania.es/wp-content/uploads/2021/10/logotipo-idrospania.svg',
+    ],
+    'lbplast' => [
+        'patterns' => ['lb plast', 'lbplast', 'lb-plast'],
+        'logo' => 'https://lbplast.com/wp-content/uploads/2025/06/logo-LBPlast.svg',
+    ],
+    'mcalpine' => [
+        'patterns' => ['mcalpine', 'mc alpine', 'mc-alpine', 'mc alpin'],
+        'logo' => 'https://mcalpine.pl/wp-content/uploads/2024/10/cropped-Logo-na-Strone.png',
+    ],
+];
+
+$normalize_manufacturer = static function (string $value): string {
+    $value = remove_accents(wp_strip_all_tags($value));
+    $value = function_exists('mb_strtolower')
+        ? mb_strtolower($value, 'UTF-8')
+        : strtolower($value);
+
+    $value = preg_replace('/[^\\p{L}\\p{N}]+/u', ' ', $value);
+
+    return trim((string) $value);
+};
+
+if (!empty($product_manufacturers) && !is_wp_error($product_manufacturers)) {
+    $fallback_manufacturer = reset($product_manufacturers);
+
+    if ($fallback_manufacturer instanceof WP_Term) {
+        $manufacturer_name = $fallback_manufacturer->name;
+        $manufacturer_key = 'other';
+        $manufacturer_logo = '';
+    }
+
+    foreach ($product_manufacturers as $manufacturer_term) {
+        $haystack = $normalize_manufacturer($manufacturer_term->name . ' ' . $manufacturer_term->slug);
+
+        foreach ($manufacturer_specs as $brand_key => $spec) {
+            foreach ($spec['patterns'] as $pattern) {
+                $pattern = $normalize_manufacturer((string) $pattern);
+
+                if ($pattern !== '' && strpos($haystack, $pattern) !== false) {
+                    $manufacturer_name = $manufacturer_term->name;
+                    $manufacturer_key = $brand_key;
+                    $manufacturer_logo = $spec['logo'];
+                    break 3;
+                }
+            }
+        }
+    }
+}
 ?>
 
 <main id="main" class="site-main single-product-page">
@@ -67,13 +133,21 @@ $primary_category = (!empty($product_categories) && !is_wp_error($product_catego
                     </div>
 
                     <div class="single-product-summary">
-                        <span class="eyebrow spek-brand-eyebrow single-product-brand">
-                            <img
-                                src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
-                                alt="SPEK"
-                                class="spek-brand-logo"
-                            >
-                            <span>/ Product</span>
+                        <span
+                            class="eyebrow single-product-brand single-product-manufacturer"
+                            aria-label="<?php echo esc_attr(sprintf(__('Κατασκευαστής: %s', 'spek-theme'), $manufacturer_name)); ?>"
+                        >
+                            <?php if ($manufacturer_logo !== '') : ?>
+                                <img
+                                    src="<?php echo esc_url($manufacturer_logo); ?>"
+                                    alt="<?php echo esc_attr($manufacturer_name); ?>"
+                                    class="single-product-manufacturer__logo single-product-manufacturer__logo--<?php echo esc_attr($manufacturer_key); ?>"
+                                >
+                            <?php else : ?>
+                                <span class="single-product-manufacturer__name">
+                                    <?php echo esc_html($manufacturer_name); ?>
+                                </span>
+                            <?php endif; ?>
                         </span>
 
                         <?php if (!empty($product_categories) && !is_wp_error($product_categories)) : ?>
