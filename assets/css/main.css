@@ -18513,3 +18513,16 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
         max-height: 100px !important;
     }
 }
+
+
+/* SPEK shared category icon assets */
+.spek-category-icon {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    margin: 0 !important;
+    pointer-events: none !important;
+    user-select: none !important;
+}
