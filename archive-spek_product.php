@@ -27,7 +27,8 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
 <main id="main" class="site-main products-archive">
 
     <section class="page-hero products-archive__hero">
-        <div class="container products-archive__container">
+        <div class="container products-archive__container products-archive__hero-inner">
+            <div class="products-archive__hero-copy">
             <span class="eyebrow"><?php esc_html_e('Product Catalogue', 'spek-theme'); ?></span>
             <h1><?php
                 if ($home_category_group_label !== '') {
@@ -51,7 +52,7 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
                 );
                 ?>
             </p>
-        </div>
+            </div>
 
         <?php
         $finder_is_english = function_exists('spek_is_english') && spek_is_english();
@@ -88,6 +89,7 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
                 <span aria-hidden="true">→</span>
             </span>
         </a>
+        </div>
     </section>
 
     <section class="section products-listing">
