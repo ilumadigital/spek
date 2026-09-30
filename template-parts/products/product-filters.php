@@ -28,7 +28,10 @@ if (is_tax(['product_category', 'product_application', 'product_material', 'prod
             'product_series' => &$selected_series,
         ];
 
-        if (isset($taxonomy_selected_map[$term->taxonomy]) && !in_array((int) $term->term_id, $taxonomy_selected_map[$term->taxonomy], true)) {
+        if (
+            isset($taxonomy_selected_map[$term->taxonomy])
+            && !in_array((int) $term->term_id, $taxonomy_selected_map[$term->taxonomy], true)
+        ) {
             $taxonomy_selected_map[$term->taxonomy][] = (int) $term->term_id;
         }
 
@@ -73,24 +76,32 @@ $render_checkbox_group = static function (
     string $legend,
     string $name,
     $terms,
-    array $selected_ids
+    array $selected_ids,
+    string $more_label
 ): void {
     if (empty($terms) || is_wp_error($terms)) {
         return;
     }
+
+    $visible_limit = 6;
+    $has_extra = count($terms) > $visible_limit;
     ?>
-    <fieldset class="filter-check-group">
+    <fieldset class="filter-check-group" data-filter-group>
         <legend><?php echo esc_html($legend); ?></legend>
 
         <div class="filter-checkbox-list">
-            <?php foreach ($terms as $term) : ?>
-                <?php $term_id = (int) $term->term_id; ?>
-                <label class="filter-checkbox">
+            <?php foreach ($terms as $index => $term) : ?>
+                <?php
+                $term_id = (int) $term->term_id;
+                $is_selected = in_array($term_id, $selected_ids, true);
+                $is_extra = $index >= $visible_limit && !$is_selected;
+                ?>
+                <label class="filter-checkbox <?php echo $is_extra ? 'is-extra' : ''; ?>">
                     <input
                         type="checkbox"
                         name="<?php echo esc_attr($name); ?>[]"
                         value="<?php echo esc_attr((string) $term_id); ?>"
-                        <?php checked(in_array($term_id, $selected_ids, true)); ?>
+                        <?php checked($is_selected); ?>
                     >
                     <span class="filter-checkbox__control" aria-hidden="true"></span>
                     <span class="filter-checkbox__label"><?php echo esc_html($term->name); ?></span>
@@ -98,6 +109,13 @@ $render_checkbox_group = static function (
                 </label>
             <?php endforeach; ?>
         </div>
+
+        <?php if ($has_extra) : ?>
+            <button class="filter-more" type="button" data-filter-more aria-expanded="false">
+                <span data-filter-more-label><?php echo esc_html($more_label); ?></span>
+                <svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
+            </button>
+        <?php endif; ?>
     </fieldset>
     <?php
 };
@@ -119,20 +137,12 @@ $render_checkbox_group = static function (
 
     <form class="product-filters" method="get" action="<?php echo esc_url($archive_url); ?>">
         <div class="product-filters__head">
-            <div>
-                <span><?php esc_html_e('Κατάλογος', 'spek-theme'); ?></span>
-                <h2><?php esc_html_e('Φίλτρα', 'spek-theme'); ?></h2>
-            </div>
+            <h2><?php esc_html_e('Φίλτρα', 'spek-theme'); ?></h2>
 
             <?php if ($selected_filter_count > 0) : ?>
-                <span class="product-filters__selected">
-                    <?php
-                    printf(
-                        esc_html(_n('%s επιλογή', '%s επιλογές', $selected_filter_count, 'spek-theme')),
-                        esc_html(number_format_i18n($selected_filter_count))
-                    );
-                    ?>
-                </span>
+                <a href="<?php echo esc_url($archive_url); ?>" class="product-filters__clear">
+                    <?php esc_html_e('Καθαρισμός', 'spek-theme'); ?>
+                </a>
             <?php endif; ?>
         </div>
 
@@ -147,21 +157,44 @@ $render_checkbox_group = static function (
             >
         </div>
 
-        <?php $render_checkbox_group(__('Κατηγορία', 'spek-theme'), 'filter_category', $categories, $selected_category); ?>
-        <?php $render_checkbox_group(__('Εφαρμογή', 'spek-theme'), 'filter_application', $applications, $selected_application); ?>
-        <?php $render_checkbox_group(__('Υλικό', 'spek-theme'), 'filter_material', $materials, $selected_material); ?>
-        <?php $render_checkbox_group(__('Μάρκα / Σειρά', 'spek-theme'), 'filter_series', $series, $selected_series); ?>
+        <?php
+        $render_checkbox_group(
+            __('Κατηγορία', 'spek-theme'),
+            'filter_category',
+            $categories,
+            $selected_category,
+            __('Όλες οι κατηγορίες', 'spek-theme')
+        );
+
+        $render_checkbox_group(
+            __('Εφαρμογή', 'spek-theme'),
+            'filter_application',
+            $applications,
+            $selected_application,
+            __('Όλες οι εφαρμογές', 'spek-theme')
+        );
+
+        $render_checkbox_group(
+            __('Υλικό', 'spek-theme'),
+            'filter_material',
+            $materials,
+            $selected_material,
+            __('Όλα τα υλικά', 'spek-theme')
+        );
+
+        $render_checkbox_group(
+            __('Μάρκα / Σειρά', 'spek-theme'),
+            'filter_series',
+            $series,
+            $selected_series,
+            __('Όλες οι μάρκες / σειρές', 'spek-theme')
+        );
+        ?>
 
         <div class="product-filters__actions">
             <button type="submit" class="button button-primary button-full">
                 <?php esc_html_e('Εφαρμογή φίλτρων', 'spek-theme'); ?>
             </button>
-
-            <?php if ($selected_filter_count > 0) : ?>
-                <a href="<?php echo esc_url($archive_url); ?>" class="filters-reset">
-                    <?php esc_html_e('Καθαρισμός όλων', 'spek-theme'); ?>
-                </a>
-            <?php endif; ?>
         </div>
     </form>
 </details>
