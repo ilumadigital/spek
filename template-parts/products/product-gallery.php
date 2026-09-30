@@ -93,8 +93,14 @@ $has_multiple_images = count($gallery_items) > 1;
             >
             <span class="product-gallery__lens" data-product-zoom-lens aria-hidden="true"></span>
         <?php else : ?>
-            <div class="product-gallery__placeholder">
-                <span>SPEK</span>
+            <div class="product-gallery__placeholder" aria-hidden="true">
+                <img
+                    class="product-gallery__placeholder-logo"
+                    src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/brand/spek_logo.png'); ?>"
+                    alt=""
+                    loading="eager"
+                    decoding="async"
+                >
             </div>
         <?php endif; ?>
     </div>
