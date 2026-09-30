@@ -28,6 +28,24 @@ if (!function_exists('spek_product_filters_normalize')) {
     }
 }
 
+if (!function_exists('spek_product_filter_icon_svg')) {
+    function spek_product_filter_icon_svg(string $key): string
+    {
+        $icons = [
+            'mixanismoi' => '<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="9" width="18" height="30" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 15v18M13 20h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M29 16h10v8H29z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M35 24v10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+            'floter' => '<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><circle cx="17" cy="28" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M24 28h7V14h7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 14h4v4h-4zM37 11h4v4h-4z" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>',
+            'sifonia' => '<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><path d="M16 11v12a6 6 0 0 0 6 6h8v7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 11h8M28 36h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="10" y="8" width="8" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>',
+            'kalymmata-lekanis' => '<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 9c7.2 0 13 5.8 13 13v5c0 2.8-2.2 5-5 5H16c-2.8 0-5-2.2-5-5v-5c0-7.2 5.8-13 13-13Z" fill="none" stroke="currentColor" stroke-width="2.2"/><ellipse cx="24" cy="33.5" rx="12" ry="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>',
+            'kazanakia' => '<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="11" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M34 17h4a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-4" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 11V8h8v3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+            'banio' => '<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><path d="M10 27h26a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4Z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M16 27V15a4 4 0 0 1 8 0v1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M12 31l-2 6M34 31l2 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+            'lastixa' => '<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="18" cy="24" rx="8" ry="11" fill="none" stroke="currentColor" stroke-width="2.2"/><ellipse cx="31" cy="25" rx="6" ry="8" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M36 15c2 1 3 4 3 7 0 5-3 9-7 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+            'diafora' => '<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="11" width="30" height="24" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M16 9v6M32 9v6M9 19h30" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M18 25h12M18 29h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+        ];
+
+        return $icons[$key] ?? $icons['diafora'];
+    }
+}
+
 $selected_application = function_exists('spek_product_filter_term_ids')
     ? spek_product_filter_term_ids('product_application')
     : [];
@@ -140,14 +158,14 @@ $materials = (!empty($materials) && !is_wp_error($materials)) ? array_values($ma
 $series = (!empty($series) && !is_wp_error($series)) ? array_values($series) : [];
 
 $category_icon_map = [
-    'mixanismoi' => 'mechanisms',
-    'floter' => 'float',
-    'sifonia' => 'siphon',
-    'kalymmata-lekanis' => 'seat',
-    'kazanakia' => 'cistern',
-    'banio' => 'bathroom',
-    'lastixa' => 'seals',
-    'diafora' => 'misc',
+    'mixanismoi' => 'mixanismoi',
+    'floter' => 'floter',
+    'sifonia' => 'sifonia',
+    'kalymmata-lekanis' => 'kalymmata-lekanis',
+    'kazanakia' => 'kazanakia',
+    'banio' => 'banio',
+    'lastixa' => 'lastixa',
+    'diafora' => 'diafora',
 ];
 
 $category_counts = [];
@@ -287,7 +305,7 @@ $render_compact_checkbox_group = static function (
                 ?>
                 <label class="filter-checkbox<?php echo $is_extra ? ' is-extra' : ''; ?>">
                     <input
-                        type="checkbox"
+                        type="checkbox" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
                         name="<?php echo esc_attr($name); ?>[]"
                         value="<?php echo esc_attr((string) $term_id); ?>"
                         <?php checked($is_selected); ?>
@@ -358,7 +376,7 @@ $render_compact_checkbox_group = static function (
                         ?>
                         <label class="filter-category-card">
                             <input
-                                type="checkbox"
+                                type="checkbox" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
                                 name="filter_category_group[]"
                                 value="<?php echo esc_attr($group_key); ?>"
                                 <?php checked($is_selected); ?>
@@ -366,12 +384,8 @@ $render_compact_checkbox_group = static function (
 
                             <span class="filter-category-card__check" aria-hidden="true"></span>
 
-                            <span class="filter-category-card__icon" aria-hidden="true">
-                                <?php if (function_exists('spek_header_product_icon')) : ?>
-                                    <?php spek_header_product_icon($icon); ?>
-                                <?php else : ?>
-                                    <span>•</span>
-                                <?php endif; ?>
+                            <span class="filter-category-card__icon" aria-hidden="true" style="display:grid;place-items:center;width:40px;height:40px;overflow:hidden">
+                                <?php echo spek_product_filter_icon_svg($icon); ?>
                             </span>
 
                             <span class="filter-category-card__body">
@@ -412,7 +426,7 @@ $render_compact_checkbox_group = static function (
                         ?>
                         <label class="filter-brand-item<?php echo $is_extra ? ' is-extra' : ''; ?>">
                             <input
-                                type="checkbox"
+                                type="checkbox" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
                                 name="filter_series[]"
                                 value="<?php echo esc_attr((string) $item->term_id); ?>"
                                 <?php checked($is_selected); ?>
@@ -426,6 +440,9 @@ $render_compact_checkbox_group = static function (
                                         src="<?php echo esc_url($logo); ?>"
                                         alt="<?php echo esc_attr($item->name); ?>"
                                         loading="lazy"
+                                        width="118"
+                                        height="24"
+                                        style="display:block;width:auto;max-width:118px;height:auto;max-height:24px;object-fit:contain;object-position:left center"
                                     >
                                 <?php else : ?>
                                     <strong><?php echo esc_html($item->name); ?></strong>
