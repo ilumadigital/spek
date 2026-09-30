@@ -103,7 +103,7 @@ $render_checkbox_group = static function (
 };
 ?>
 
-<details class="product-filters-panel">
+<details class="product-filters-panel" data-product-filters-panel>
     <summary class="product-filters-toggle">
         <span class="product-filters-toggle__title">
             <?php esc_html_e('Φίλτρα', 'spek-theme'); ?>
