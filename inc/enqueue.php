@@ -20,6 +20,105 @@ function spek_enqueue_assets(): void
 
     wp_enqueue_style('spek-multilingual', SPEK_THEME_URI . '/assets/css/multilingual.css', ['spek-main'], filemtime(SPEK_THEME_DIR . '/assets/css/multilingual.css'));
 
+    if (is_singular('spek_product')) {
+        wp_add_inline_style(
+            'spek-main',
+            '
+            .single-product-page .single-product-summary h1 {
+                font-size: 26px !important;
+                line-height: 1.15 !important;
+                letter-spacing: -0.025em !important;
+            }
+
+            .single-product-page .product-gallery {
+                height: 100% !important;
+            }
+
+            .single-product-page .product-gallery--has-thumbs {
+                display: block !important;
+            }
+
+            .single-product-page .product-gallery--has-thumbs .product-gallery__main {
+                position: relative !important;
+                padding-left: 126px !important;
+            }
+
+            .single-product-page .product-gallery__thumbs {
+                position: absolute !important;
+                left: 20px !important;
+                top: 50% !important;
+                z-index: 8 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 10px !important;
+                width: 78px !important;
+                max-height: calc(100% - 40px) !important;
+                margin: 0 !important;
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                transform: translateY(-50%) !important;
+                scrollbar-width: thin;
+            }
+
+            .single-product-page .product-gallery__thumb {
+                position: relative !important;
+                flex: 0 0 auto !important;
+                width: 76px !important;
+                height: 76px !important;
+                padding: 7px !important;
+                overflow: hidden !important;
+                border: 1px solid rgba(232, 224, 214, 0.98) !important;
+                border-radius: 14px !important;
+                background: #fff !important;
+                box-shadow: 0 5px 16px rgba(17, 24, 32, 0.06) !important;
+                cursor: pointer !important;
+            }
+
+            .single-product-page .product-gallery__thumb:hover,
+            .single-product-page .product-gallery__thumb.is-active {
+                border-color: rgba(15, 76, 129, 0.62) !important;
+                box-shadow: 0 8px 22px rgba(15, 76, 129, 0.12) !important;
+            }
+
+            .single-product-page .product-gallery__thumb img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: contain !important;
+            }
+
+            @media (max-width: 760px) {
+                .single-product-page .single-product-summary h1 {
+                    font-size: 26px !important;
+                }
+
+                .single-product-page .product-gallery--has-thumbs .product-gallery__main {
+                    padding-left: 24px !important;
+                    padding-bottom: 104px !important;
+                }
+
+                .single-product-page .product-gallery__thumbs {
+                    left: 50% !important;
+                    right: auto !important;
+                    top: auto !important;
+                    bottom: 16px !important;
+                    width: calc(100% - 32px) !important;
+                    max-height: none !important;
+                    flex-direction: row !important;
+                    justify-content: flex-start !important;
+                    overflow-x: auto !important;
+                    overflow-y: hidden !important;
+                    transform: translateX(-50%) !important;
+                }
+
+                .single-product-page .product-gallery__thumb {
+                    width: 64px !important;
+                    height: 64px !important;
+                }
+            }
+            '
+        );
+    }
+
     if (
         is_front_page()
         || (function_exists('spek_is_english_home_request') && spek_is_english_home_request())
