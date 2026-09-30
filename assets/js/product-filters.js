@@ -21,4 +21,24 @@
     } else if (typeof mobileQuery.addListener === 'function') {
         mobileQuery.addListener(syncPanel);
     }
+
+    panel.querySelectorAll('[data-filter-more]').forEach((button) => {
+        const group = button.closest('[data-filter-group]');
+        const label = button.querySelector('[data-filter-more-label]');
+
+        if (!group || !label) {
+            return;
+        }
+
+        const initialLabel = label.textContent.trim();
+        const lessLabel = document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en')
+            ? 'Show less'
+            : 'Λιγότερα';
+
+        button.addEventListener('click', () => {
+            const expanded = group.classList.toggle('is-expanded');
+            button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            label.textContent = expanded ? lessLabel : initialLabel;
+        });
+    });
 })();
