@@ -5,6 +5,7 @@
     const form = document.getElementById('product-filters-form');
     const search = document.getElementById('product_search');
     const scrollKey = 'spekProductFiltersScrollY';
+    const panelKey = 'spekProductFiltersPanelOpen';
     let searchTimer = null;
     let isSubmitting = false;
 
@@ -13,7 +14,20 @@
 
         function syncPanel(event) {
             const isMobile = typeof event.matches === 'boolean' ? event.matches : mobileQuery.matches;
-            panel.open = !isMobile;
+
+            if (!isMobile) {
+                panel.open = true;
+                return;
+            }
+
+            let shouldOpen = false;
+            try {
+                shouldOpen = sessionStorage.getItem(panelKey) === '1';
+            } catch (error) {
+                shouldOpen = false;
+            }
+
+            panel.open = shouldOpen;
         }
 
         syncPanel(mobileQuery);
@@ -23,6 +37,19 @@
         } else if (typeof mobileQuery.addListener === 'function') {
             mobileQuery.addListener(syncPanel);
         }
+
+
+        panel.addEventListener('toggle', () => {
+            if (!mobileQuery.matches) {
+                return;
+            }
+
+            try {
+                sessionStorage.setItem(panelKey, panel.open ? '1' : '0');
+            } catch (error) {
+                // Ignore storage failures.
+            }
+        });
     }
 
     try {
@@ -68,6 +95,17 @@
         });
 
         form.addEventListener('submit', rememberScroll);
+
+        const clearLink = form.querySelector('.product-filters__clear');
+        if (clearLink) {
+            clearLink.addEventListener('click', () => {
+                try {
+                    sessionStorage.removeItem(panelKey);
+                } catch (error) {
+                    // Ignore storage failures.
+                }
+            });
+        }
     }
 
     if (search) {
