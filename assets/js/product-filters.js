@@ -129,4 +129,8 @@
             submitFilters();
         });
     }
+
+    document.querySelectorAll('[data-product-sort], [data-product-per-page]').forEach((select) => {
+        select.addEventListener('change', submitFilters);
+    });
 })();
