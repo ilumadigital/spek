@@ -65,36 +65,10 @@ $product_menu_categories = [
 if (!function_exists('spek_header_product_icon')) {
     function spek_header_product_icon(string $icon): void
     {
-        echo '<svg class="category-card__svg spek-menu-category__svg" viewBox="0 0 64 64" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round">';
-
-        switch ($icon) {
-            case 'mechanisms':
-                echo '<path d="M14 16h36v34H14z"/><path d="M20 13h24v5H20z"/><path d="M29 20h8v23h-8z"/><path d="M27 43h12v5H27z"/><circle cx="44" cy="31" r="5"/><path d="M39 31h-5"/>';
-                break;
-            case 'float':
-                echo '<circle cx="19" cy="41" r="11"/><path d="M26 34 42 21"/><circle cx="44" cy="19" r="3"/><path d="M47 19h7v8h-8"/><path d="M48 27v18h-7V25"/><path d="M51 16h8v6h-8"/>';
-                break;
-            case 'siphon':
-                echo '<path d="M21 11h12v8H21z"/><path d="M24 19v8"/><path d="M20 27h16v17a8 8 0 0 1-16 0z"/><path d="M36 32h12v8h-8"/><path d="M48 31h8v10h-8"/>';
-                break;
-            case 'seat':
-                echo '<ellipse cx="32" cy="23" rx="15" ry="18"/><path d="M21 39h22"/><path d="M24 39v5h16v-5"/><ellipse cx="32" cy="49" rx="17" ry="9"/><ellipse cx="32" cy="49" rx="10" ry="4.5"/>';
-                break;
-            case 'cistern':
-                echo '<rect x="13" y="14" width="38" height="29" rx="4"/><path d="M11 17h42"/><path d="M28 11h8v5h-8z"/><circle cx="44" cy="27" r="4"/><path d="M48 27h7"/><path d="M28 43h8v10h-8"/>';
-                break;
-            case 'bathroom':
-                echo '<path d="M18 43h31v8H18z"/><path d="M45 43V18a7 7 0 0 0-7-7h-9"/><path d="M29 11v7"/><path d="M23 18h12"/><path d="M24 22v3m5-3v3m5-3v3"/><circle cx="45" cy="34" r="4"/><path d="M45 38v5"/>';
-                break;
-            case 'seals':
-                echo '<ellipse cx="27" cy="32" rx="13" ry="18"/><ellipse cx="27" cy="32" rx="7" ry="11"/><ellipse cx="43" cy="45" rx="10" ry="5"/><path d="M48 18c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>';
-                break;
-            default:
-                echo '<path d="M12 29h40v23H12z"/><path d="M15 29l6-9h22l6 9"/><circle cx="23" cy="27" r="6"/><path d="M35 20h7v9h-7z"/><path d="M39 16v4m-6 0h12"/><path d="M20 39h9m7 0h8m-22 7h20"/>';
-                break;
-        }
-
-        echo '</svg>';
+        spek_render_product_category_icon(
+            $icon,
+            'category-card__svg spek-menu-category__svg spek-category-icon'
+        );
     }
 }
 
