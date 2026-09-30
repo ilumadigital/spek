@@ -116,6 +116,38 @@ function spek_product_filter_term_id(string $taxonomy): int
 }
 
 /**
+ * Resolve curated product-category group selections from filter_category_group[].
+ */
+function spek_product_filter_category_group_keys(): array
+{
+    if (!isset($_GET['filter_category_group'])) {
+        return [];
+    }
+
+    $raw = wp_unslash($_GET['filter_category_group']);
+    $values = is_array($raw) ? $raw : [$raw];
+    $definitions = function_exists('spek_home_category_group_definitions')
+        ? spek_home_category_group_definitions()
+        : [];
+
+    $keys = [];
+
+    foreach ($values as $value) {
+        if (is_array($value)) {
+            continue;
+        }
+
+        $key = sanitize_key((string) $value);
+
+        if ($key !== '' && isset($definitions[$key])) {
+            $keys[] = $key;
+        }
+    }
+
+    return array_values(array_unique($keys));
+}
+
+/**
  * Homepage category groups.
  *
  * The homepage intentionally presents a curated eight-card structure that can
@@ -255,10 +287,11 @@ function spek_filter_product_archive_query($query): void
         : '';
 
     $selected_category_ids = spek_product_filter_term_ids('product_category');
+    $selected_category_groups = spek_product_filter_category_group_keys();
 
     // A manually selected category set takes precedence over a curated homepage
     // group. The filter form itself does not re-submit home_category_group.
-    if ($home_group !== '' && !$selected_category_ids && function_exists('spek_home_category_group_definitions')) {
+    if ($home_group !== '' && !$selected_category_ids && !$selected_category_groups && function_exists('spek_home_category_group_definitions')) {
         $definitions = spek_home_category_group_definitions();
 
         if (isset($definitions[$home_group])) {
@@ -294,7 +327,65 @@ function spek_filter_product_archive_query($query): void
         }
     }
 
+    if ($selected_category_groups && function_exists('spek_home_category_group_definitions')) {
+        $definitions = spek_home_category_group_definitions();
+        $all_category_term_ids = get_terms([
+            'taxonomy' => 'product_category',
+            'hide_empty' => false,
+            'fields' => 'ids',
+        ]);
+
+        $all_category_term_ids = is_wp_error($all_category_term_ids)
+            ? []
+            : array_values(array_unique(array_filter(array_map('intval', $all_category_term_ids))));
+
+        $primary_group_keys = array_values(array_filter(
+            array_keys($definitions),
+            static fn ($group_key) => $group_key !== 'diafora'
+        ));
+
+        $primary_term_ids = [];
+
+        foreach ($primary_group_keys as $primary_group_key) {
+            $primary_term_ids = array_merge(
+                $primary_term_ids,
+                spek_home_category_group_term_ids($primary_group_key)
+            );
+        }
+
+        $primary_term_ids = array_values(array_unique(array_filter(array_map('intval', $primary_term_ids))));
+        $selected_group_term_ids = [];
+
+        foreach ($selected_category_groups as $selected_group) {
+            if ($selected_group === 'diafora') {
+                $selected_group_term_ids = array_merge(
+                    $selected_group_term_ids,
+                    array_values(array_diff($all_category_term_ids, $primary_term_ids))
+                );
+                continue;
+            }
+
+            $selected_group_term_ids = array_merge(
+                $selected_group_term_ids,
+                spek_home_category_group_term_ids($selected_group)
+            );
+        }
+
+        $selected_group_term_ids = array_values(array_unique(array_filter(array_map('intval', $selected_group_term_ids))));
+
+        $tax_query[] = [
+            'taxonomy' => 'product_category',
+            'field' => 'term_id',
+            'terms' => $selected_group_term_ids ?: [0],
+            'operator' => 'IN',
+        ];
+    }
+
     foreach (array_keys(spek_product_filter_params()) as $taxonomy) {
+        if ($taxonomy === 'product_category' && $selected_category_groups) {
+            continue;
+        }
+
         $term_ids = spek_product_filter_term_ids($taxonomy);
 
         if ($term_ids) {
