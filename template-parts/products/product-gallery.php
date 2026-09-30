@@ -14,7 +14,7 @@ $gallery = spek_get_product_field('product_gallery', $product_id);
 ?>
 
 <div class="product-gallery">
-    <div class="product-gallery__main">
+    <div class="product-gallery__main"<?php echo has_post_thumbnail() ? ' data-product-zoom' : ''; ?>>
         <?php if (has_post_thumbnail()) : ?>
             <?php
             $main_image_id = get_post_thumbnail_id($product_id);
@@ -28,7 +28,9 @@ $gallery = spek_get_product_field('product_gallery', $product_id);
                 loading="eager"
                 decoding="async"
                 fetchpriority="high"
+                data-product-zoom-image
             >
+            <span class="product-gallery__lens" data-product-zoom-lens aria-hidden="true"></span>
         <?php else : ?>
             <div class="product-gallery__placeholder">
                 <span>SPEK</span>
