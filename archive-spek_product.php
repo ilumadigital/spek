@@ -11,24 +11,33 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
-$product_categories = get_terms(spek_language_args([
-    'taxonomy' => 'product_category',
-    'hide_empty' => true,
-]));
-
 $products_archive_url = get_post_type_archive_link('spek_product');
 $products_archive_url = $products_archive_url ?: home_url('/products/');
-$selected_category_id = function_exists('spek_product_filter_term_id') ? spek_product_filter_term_id('product_category') : 0;
 $home_category_group = isset($_GET['home_category_group']) ? sanitize_key(wp_unslash((string) $_GET['home_category_group'])) : '';
 $home_category_group_label = ($home_category_group !== '' && function_exists('spek_home_category_group_label'))
     ? spek_home_category_group_label($home_category_group)
     : '';
+
+$archive_category_groups = function_exists('spek_home_category_group_definitions')
+    ? spek_home_category_group_definitions()
+    : [];
+
+$archive_category_icons = [
+    'mixanismoi' => 'mechanisms',
+    'floter' => 'float',
+    'sifonia' => 'siphon',
+    'kalymmata-lekanis' => 'seat',
+    'kazanakia' => 'cistern',
+    'banio' => 'bathroom',
+    'lastixa' => 'seals',
+    'diafora' => 'misc',
+];
 ?>
 
 <main id="main" class="site-main products-archive">
 
     <section class="page-hero products-archive__hero">
-        <div class="container">
+        <div class="container products-archive__container">
             <span class="eyebrow"><?php esc_html_e('Product Catalogue', 'spek-theme'); ?></span>
             <h1><?php
                 if ($home_category_group_label !== '') {
@@ -49,30 +58,55 @@ $home_category_group_label = ($home_category_group !== '' && function_exists('sp
         </div>
     </section>
 
-    <?php if (!empty($product_categories) && !is_wp_error($product_categories)) : ?>
-        <section class="product-category-nav">
-            <div class="container product-category-nav__inner">
-                <a href="<?php echo esc_url($products_archive_url); ?>" class="product-category-pill <?php echo is_post_type_archive('spek_product') && !$selected_category_id && $home_category_group === '' ? 'is-active' : ''; ?>">
-                    <?php esc_html_e('Όλα', 'spek-theme'); ?>
-                </a>
+    <?php if (!empty($archive_category_groups)) : ?>
+        <section class="product-category-nav" aria-label="<?php esc_attr_e('Κατηγορίες προϊόντων', 'spek-theme'); ?>">
+            <div class="container products-archive__container product-category-nav__shell">
+                <div class="product-category-nav__head">
+                    <div>
+                        <span><?php esc_html_e('Προϊόντα', 'spek-theme'); ?></span>
+                        <strong><?php esc_html_e('Κατηγορίες προϊόντων', 'spek-theme'); ?></strong>
+                    </div>
 
-                <?php foreach ($product_categories as $category) : ?>
-                    <?php
-                    $is_active_category = is_tax('product_category', $category->term_id)
-                        || ($selected_category_id === (int) $category->term_id);
-                    $category_filter_url = add_query_arg('filter_category', (int) $category->term_id, $products_archive_url);
-                    ?>
-
-                    <a href="<?php echo esc_url($category_filter_url); ?>" class="product-category-pill <?php echo $is_active_category ? 'is-active' : ''; ?>">
-                        <?php echo esc_html($category->name); ?>
+                    <a
+                        href="<?php echo esc_url($products_archive_url); ?>"
+                        class="product-category-all <?php echo $home_category_group === '' && !is_tax() ? 'is-active' : ''; ?>"
+                        <?php echo $home_category_group === '' && !is_tax() ? 'aria-current="page"' : ''; ?>
+                    >
+                        <?php esc_html_e('Όλα τα προϊόντα', 'spek-theme'); ?>
+                        <span aria-hidden="true">→</span>
                     </a>
-                <?php endforeach; ?>
+                </div>
+
+                <div class="product-category-nav__grid">
+                    <?php foreach ($archive_category_groups as $group_key => $group) : ?>
+                        <?php
+                        $category_url = add_query_arg('home_category_group', $group_key, $products_archive_url);
+                        $is_active_group = $home_category_group === $group_key;
+                        $icon = $archive_category_icons[$group_key] ?? 'misc';
+                        ?>
+
+                        <a
+                            href="<?php echo esc_url($category_url); ?>"
+                            class="product-category-tile <?php echo $is_active_group ? 'is-active' : ''; ?>"
+                            <?php echo $is_active_group ? 'aria-current="page"' : ''; ?>
+                        >
+                            <span class="product-category-tile__icon" aria-hidden="true">
+                                <?php if (function_exists('spek_header_product_icon')) : ?>
+                                    <?php spek_header_product_icon($icon); ?>
+                                <?php else : ?>
+                                    <span>•</span>
+                                <?php endif; ?>
+                            </span>
+                            <span class="product-category-tile__label"><?php echo esc_html((string) ($group['label'] ?? $group_key)); ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </section>
     <?php endif; ?>
 
     <section class="section products-listing">
-        <div class="container products-layout">
+        <div class="container products-archive__container products-layout">
 
             <aside class="products-sidebar">
                 <?php get_template_part('template-parts/products/product-filters'); ?>
@@ -80,14 +114,17 @@ $home_category_group_label = ($home_category_group !== '' && function_exists('sp
 
             <div class="products-content">
                 <div class="products-toolbar">
-                    <p>
-                        <?php
-                        printf(
-                            esc_html(_n('%s προϊόν', '%s προϊόντα', $wp_query->found_posts, 'spek-theme')),
-                            esc_html(number_format_i18n($wp_query->found_posts))
-                        );
-                        ?>
-                    </p>
+                    <div class="products-toolbar__copy">
+                        <span><?php esc_html_e('Κατάλογος προϊόντων', 'spek-theme'); ?></span>
+                        <strong>
+                            <?php
+                            printf(
+                                esc_html(_n('%s προϊόν', '%s προϊόντα', $wp_query->found_posts, 'spek-theme')),
+                                esc_html(number_format_i18n($wp_query->found_posts))
+                            );
+                            ?>
+                        </strong>
+                    </div>
                 </div>
 
                 <?php if (have_posts()) : ?>
