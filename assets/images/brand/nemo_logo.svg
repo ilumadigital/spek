@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 82" role="img" aria-labelledby="title">
+<title>Nemo</title>
+<g transform="translate(9 4)">
+  <text x="4" y="48" fill="#2f5da8" font-family="Arial, Helvetica, sans-serif" font-size="48" font-style="italic" font-weight="700" letter-spacing="-3">NEMO</text>
+  <path d="M4 60C45 52 93 51 137 54C178 56 211 62 239 60" fill="none" stroke="#d52b3f" stroke-width="5" stroke-linecap="round"/>
+</g>
+</svg>
