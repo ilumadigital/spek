@@ -22,6 +22,12 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
     ? sanitize_text_field(wp_unslash((string) $_GET['product_search']))
     : '';
 
+$product_sort = function_exists('spek_product_sort_key') ? spek_product_sort_key() : 'relevance';
+$product_sort_options = function_exists('spek_product_sort_options') ? spek_product_sort_options() : [];
+$product_per_page = function_exists('spek_product_per_page') ? spek_product_per_page() : 25;
+$product_per_page_options = [25, 50, 75, 100];
+$product_toolbar_is_english = function_exists('spek_is_english') && spek_is_english();
+
 ?>
 
 <main id="main" class="site-main products-archive">
@@ -113,24 +119,58 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
                         </strong>
                     </div>
 
-                    <label class="products-toolbar__search" for="product_search">
-                        <span class="products-toolbar__search-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24">
-                                <circle cx="11" cy="11" r="6.5"></circle>
-                                <path d="m16 16 4 4"></path>
-                            </svg>
-                        </span>
-                        <input
-                            id="product_search"
-                            type="search"
-                            name="product_search"
-                            form="product-filters-form"
-                            value="<?php echo esc_attr($product_search); ?>"
-                            placeholder="<?php esc_attr_e('Αναζήτηση προϊόντος ή κωδικού', 'spek-theme'); ?>"
-                            autocomplete="off"
-                            enterkeyhint="search"
-                        >
-                    </label>
+                    <div class="products-toolbar__controls">
+                        <label class="products-toolbar__search" for="product_search">
+                            <span class="products-toolbar__search-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="11" cy="11" r="6.5"></circle>
+                                    <path d="m16 16 4 4"></path>
+                                </svg>
+                            </span>
+                            <input
+                                id="product_search"
+                                type="search"
+                                name="product_search"
+                                form="product-filters-form"
+                                value="<?php echo esc_attr($product_search); ?>"
+                                placeholder="<?php echo esc_attr($product_toolbar_is_english ? 'Search product or code' : 'Αναζήτηση προϊόντος ή κωδικού'); ?>"
+                                autocomplete="off"
+                                enterkeyhint="search"
+                            >
+                        </label>
+
+                        <label class="products-toolbar__field products-toolbar__field--sort">
+                            <span><?php echo esc_html($product_toolbar_is_english ? 'Sort' : 'Ταξινόμηση'); ?></span>
+                            <select
+                                name="product_sort"
+                                form="product-filters-form"
+                                data-product-sort
+                                aria-label="<?php echo esc_attr($product_toolbar_is_english ? 'Sort products' : 'Ταξινόμηση προϊόντων'); ?>"
+                            >
+                                <?php foreach ($product_sort_options as $sort_key => $sort_label) : ?>
+                                    <option value="<?php echo esc_attr($sort_key); ?>" <?php selected($product_sort, $sort_key); ?>>
+                                        <?php echo esc_html($sort_label); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+
+                        <label class="products-toolbar__field products-toolbar__field--per-page">
+                            <span><?php echo esc_html($product_toolbar_is_english ? 'Per page' : 'Ανά σελίδα'); ?></span>
+                            <select
+                                name="per_page"
+                                form="product-filters-form"
+                                data-product-per-page
+                                aria-label="<?php echo esc_attr($product_toolbar_is_english ? 'Products per page' : 'Προϊόντα ανά σελίδα'); ?>"
+                            >
+                                <?php foreach ($product_per_page_options as $page_size) : ?>
+                                    <option value="<?php echo esc_attr((string) $page_size); ?>" <?php selected($product_per_page, $page_size); ?>>
+                                        <?php echo esc_html(number_format_i18n($page_size)); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                    </div>
                 </div>
 
                 <?php if (have_posts()) : ?>
@@ -144,7 +184,7 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
                         <?php
                         $pagination_args = [];
 
-                        foreach (['product_search', 'filter_category_group', 'filter_category', 'filter_application', 'filter_material', 'filter_series', 'home_category_group'] as $param) {
+                        foreach (['product_search', 'product_sort', 'per_page', 'filter_category_group', 'filter_category', 'filter_application', 'filter_material', 'filter_series', 'home_category_group'] as $param) {
                             if (!isset($_GET[$param]) || $_GET[$param] === '') {
                                 continue;
                             }
@@ -167,9 +207,13 @@ $product_search = isset($_GET['product_search']) && !is_array($_GET['product_sea
                                 continue;
                             }
 
-                            $pagination_args[$param] = $param === 'home_category_group'
-                                ? sanitize_key((string) $raw_value)
-                                : sanitize_text_field((string) $raw_value);
+                            if ($param === 'home_category_group' || $param === 'product_sort') {
+                                $pagination_args[$param] = sanitize_key((string) $raw_value);
+                            } elseif ($param === 'per_page') {
+                                $pagination_args[$param] = absint($raw_value);
+                            } else {
+                                $pagination_args[$param] = sanitize_text_field((string) $raw_value);
+                            }
                         }
 
                         the_posts_pagination([
