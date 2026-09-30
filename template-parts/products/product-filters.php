@@ -405,7 +405,7 @@ $render_compact_checkbox_group = static function (
                         $is_selected = in_array((int) $item->term_id, $selected_series, true);
                         $logo = $brand_key !== 'other' ? ($brand_specs[$brand_key]['logo'] ?? '') : '';
                         ?>
-                        <label class="filter-brand-item">
+                        <label class="filter-brand-item filter-brand-item--<?php echo esc_attr($brand_key); ?>">
                             <input
                                 type="checkbox" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
                                 name="filter_series[]"
