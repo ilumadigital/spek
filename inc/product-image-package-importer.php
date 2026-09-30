@@ -410,7 +410,17 @@ function spek_image_package_product_identity(string $sku)
                 }
 
                 if (!empty($record['id'])) {
-                    return (int) $record['id'];
+                    $candidate_id = (int) $record['id'];
+
+                    if (get_post_status($candidate_id) === 'trash') {
+                        return new WP_Error(
+                            'trashed_sku',
+                            sprintf(__('SKU %s: το προϊόν βρίσκεται στον κάδο.', 'spek-theme'), $sku),
+                            ['ids' => [$candidate_id]]
+                        );
+                    }
+
+                    return $candidate_id;
                 }
             }
         }
