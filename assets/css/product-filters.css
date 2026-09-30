@@ -26,9 +26,9 @@
 .products-archive .product-filters-panel {
     display: block !important;
     width: 100% !important;
-    max-height: calc(100vh - 112px) !important;
+    max-height: none !important;
     margin: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     border: 0 !important;
     background: transparent !important;
 }
@@ -39,7 +39,7 @@
 }
 
 .admin-bar .products-archive .product-filters-panel {
-    max-height: calc(100vh - 144px) !important;
+    max-height: none !important;
 }
 
 .products-archive .product-filters-toggle {
@@ -53,12 +53,11 @@
 }
 
 .products-archive .product-filters {
-    display: flex !important;
-    flex-direction: column !important;
+    display: block !important;
     width: 100% !important;
-    max-height: calc(100vh - 112px) !important;
+    max-height: none !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     border: 1px solid rgba(16, 40, 61, .08) !important;
     border-radius: 18px !important;
     background: #fff !important;
@@ -66,23 +65,8 @@
 }
 
 .products-archive .product-filters__scroll {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    padding: 0 18px !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(15, 76, 129, .16) transparent;
-}
-
-.products-archive .product-filters__scroll::-webkit-scrollbar {
-    width: 4px;
-}
-
-.products-archive .product-filters__scroll::-webkit-scrollbar-thumb {
-    border-radius: 999px;
-    background: rgba(15, 76, 129, .16);
+    padding: 0 20px !important;
+    overflow: visible !important;
 }
 
 .products-archive .product-filters__head {
@@ -108,16 +92,16 @@
 
 .products-archive .filter-search-group {
     display: grid !important;
-    gap: 6px !important;
-    padding: 14px 0 12px !important;
+    gap: 8px !important;
+    padding: 18px 0 20px !important;
     margin: 0 !important;
-    border-bottom: 1px solid rgba(16, 40, 61, .065) !important;
+    border-bottom: 1px solid rgba(16, 40, 61, .075) !important;
 }
 
 .products-archive .filter-search-group > label {
     margin: 0 !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
 }
 
 .products-archive .filter-search-group input[type="search"] {
@@ -133,19 +117,20 @@
 .products-archive .filter-check-group {
     min-width: 0 !important;
     margin: 0 !important;
-    padding: 13px 0 11px !important;
+    padding: 22px 0 20px !important;
     border: 0 !important;
-    border-bottom: 1px solid rgba(16, 40, 61, .065) !important;
+    border-bottom: 1px solid rgba(16, 40, 61, .075) !important;
 }
 
 .products-archive .filter-check-group legend {
     width: 100% !important;
-    margin: 0 0 8px !important;
+    margin: 0 0 13px !important;
     padding: 0 !important;
     color: var(--color-ink) !important;
-    font-size: 12.5px !important;
+    font-size: 14.5px !important;
     font-weight: 800 !important;
     line-height: 1.2 !important;
+    letter-spacing: -0.015em !important;
 }
 
 /* Hide browser-native checkbox boxes regardless of older theme rules. */
@@ -225,10 +210,10 @@
     display: grid !important;
     grid-template-columns: 18px minmax(0, 1fr) auto !important;
     align-items: center !important;
-    gap: 7px !important;
-    min-height: 26px !important;
+    gap: 8px !important;
+    min-height: 30px !important;
     margin: 0 !important;
-    padding: 1px 0 !important;
+    padding: 2px 0 !important;
     color: #394b59 !important;
     cursor: pointer !important;
 }
@@ -236,9 +221,9 @@
 .products-archive .filter-checkbox__label {
     min-width: 0 !important;
     overflow: hidden !important;
-    font-size: 11.7px !important;
+    font-size: 12.8px !important;
     font-weight: 500 !important;
-    line-height: 1.18 !important;
+    line-height: 1.25 !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
 }
@@ -587,5 +572,77 @@
 @media (max-width: 780px) {
     .admin-bar .products-archive .product-filters {
         max-height: none !important;
+    }
+}
+
+
+/* All filter options are always visible; no internal scroll / no collapsed company rows. */
+.products-archive .filter-checkbox.is-extra,
+.products-archive .filter-brand-item.is-extra {
+    display: grid !important;
+}
+
+.products-archive .filter-more {
+    display: none !important;
+}
+
+.products-archive .filter-brand-item {
+    min-height: 38px !important;
+    padding: 3px 0 !important;
+}
+
+.products-archive .filter-brand-item__logo {
+    min-height: 28px !important;
+    max-height: 30px !important;
+}
+
+.products-archive .filter-brand-item__logo img {
+    max-width: 126px !important;
+    max-height: 28px !important;
+}
+
+.products-archive .filter-category-card__body strong {
+    font-size: 12.2px !important;
+}
+
+.products-archive .filter-category-card__body small {
+    font-size: 10px !important;
+}
+
+/* With all filters visible, the action follows the panel naturally. */
+.products-archive .product-filters__actions {
+    position: static !important;
+    margin: 0 !important;
+    padding: 16px 20px 18px !important;
+    border-top: 1px solid rgba(16, 40, 61, .075) !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+.admin-bar .products-archive .product-filters {
+    max-height: none !important;
+}
+
+@media (max-width: 780px) {
+    .products-archive .product-filters__scroll {
+        padding: 0 14px !important;
+        overflow: visible !important;
+    }
+
+    .products-archive .filter-check-group {
+        padding: 18px 0 17px !important;
+    }
+
+    .products-archive .filter-check-group legend {
+        margin-bottom: 11px !important;
+        font-size: 14px !important;
+    }
+
+    .products-archive .filter-checkbox__label {
+        font-size: 12.8px !important;
+    }
+
+    .products-archive .product-filters__actions {
+        padding: 14px !important;
     }
 }
