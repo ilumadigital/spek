@@ -28,6 +28,7 @@ $required_files = [
     '/inc/product-image-processing.php',
     '/inc/product-importer.php',
     '/inc/product-image-importer.php',
+    '/inc/product-image-package-importer.php',
     '/inc/partner-metaboxes.php',
     '/inc/product-query.php',
     '/inc/helpers.php',
