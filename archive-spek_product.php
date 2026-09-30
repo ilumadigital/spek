@@ -138,7 +138,7 @@ $archive_category_icons = [
                         <?php
                         $pagination_args = [];
 
-                        foreach (['product_search', 'filter_category', 'filter_application', 'filter_material', 'filter_series', 'home_category_group'] as $param) {
+                        foreach (['product_search', 'filter_category_group', 'filter_category', 'filter_application', 'filter_material', 'filter_series', 'home_category_group'] as $param) {
                             if (!isset($_GET[$param]) || $_GET[$param] === '') {
                                 continue;
                             }
@@ -146,7 +146,15 @@ $archive_category_icons = [
                             $raw_value = wp_unslash($_GET[$param]);
 
                             if (is_array($raw_value)) {
-                                $clean_values = array_values(array_filter(array_map('absint', $raw_value)));
+                                if ($param === 'filter_category_group') {
+                                    $clean_values = array_values(array_filter(array_map(
+                                        static fn ($value) => is_array($value) ? '' : sanitize_key((string) $value),
+                                        $raw_value
+                                    )));
+                                } else {
+                                    $clean_values = array_values(array_filter(array_map('absint', $raw_value)));
+                                }
+
                                 if ($clean_values) {
                                     $pagination_args[$param] = $clean_values;
                                 }
