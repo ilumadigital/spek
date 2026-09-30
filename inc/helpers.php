@@ -63,6 +63,57 @@ if (!function_exists('spek_primary_menu_fallback')) {
         echo '</ul>';
     }
 }
+if (!function_exists('spek_product_category_icon_asset')) {
+    /**
+     * Return the shared category icon asset URL.
+     *
+     * Accepts both category group keys and the legacy icon keys used by
+     * homepage / mega-menu category definitions.
+     */
+    function spek_product_category_icon_asset(string $icon): string
+    {
+        $aliases = [
+            'mixanismoi' => 'mechanisms.svg',
+            'mechanisms' => 'mechanisms.svg',
+            'floter' => 'float.svg',
+            'float' => 'float.svg',
+            'sifonia' => 'siphon.svg',
+            'siphon' => 'siphon.svg',
+            'kalymmata-lekanis' => 'seat.svg',
+            'seat' => 'seat.svg',
+            'kazanakia' => 'cistern.svg',
+            'cistern' => 'cistern.svg',
+            'banio' => 'bathroom.svg',
+            'bathroom' => 'bathroom.svg',
+            'lastixa' => 'seals.svg',
+            'seals' => 'seals.svg',
+            'diafora' => 'misc.svg',
+            'misc' => 'misc.svg',
+        ];
+
+        $filename = $aliases[$icon] ?? 'misc.svg';
+
+        return get_template_directory_uri() . '/assets/images/categories/' . $filename;
+    }
+}
+
+if (!function_exists('spek_render_product_category_icon')) {
+    /**
+     * Render a shared category icon image.
+     */
+    function spek_render_product_category_icon(string $icon, string $class = 'spek-category-icon'): void
+    {
+        echo '<img'
+            . ' src="' . esc_url(spek_product_category_icon_asset($icon)) . '"'
+            . ' class="' . esc_attr($class) . '"'
+            . ' alt=""'
+            . ' aria-hidden="true"'
+            . ' loading="lazy"'
+            . ' decoding="async"'
+            . '>';
+    }
+}
+
 if (!function_exists('spek_product_value_is_empty')) {
     /**
      * Determine whether a product field should be considered empty.
