@@ -17520,14 +17520,12 @@ body .front-page .container {
 }
 
 .single-product-page .product-gallery--has-thumbs {
-    display: grid;
-    grid-template-columns: 76px minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
+    display: block;
 }
 
 .single-product-page .product-gallery--has-thumbs .product-gallery__main {
     min-width: 0;
+    padding-left: 126px;
 }
 
 .single-product-page .product-gallery__main {
@@ -17597,13 +17595,20 @@ body .front-page .container {
 }
 
 .single-product-page .product-gallery__thumbs {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    z-index: 8;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-height: clamp(500px, 42vw, 650px);
+    width: 78px;
+    max-height: calc(100% - 40px);
     margin: 0;
+    overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
+    transform: translateY(-50%);
     scrollbar-width: thin;
 }
 
@@ -17714,7 +17719,7 @@ body .front-page .container {
     max-width: 720px;
     margin: 0;
     color: var(--color-ink);
-    font-size: clamp(24px, 1.7vw, 26px);
+    font-size: 26px !important;
     line-height: 1.12;
     letter-spacing: -0.025em;
 }
@@ -18038,12 +18043,12 @@ body .front-page .container {
     }
 
     .single-product-page .product-gallery--has-thumbs {
-        grid-template-columns: 1fr;
-        gap: 12px;
+        display: block;
     }
 
     .single-product-page .product-gallery--has-thumbs .product-gallery__main {
-        order: 1;
+        padding-left: 24px;
+        padding-bottom: 104px;
     }
 
     .single-product-page .product-gallery__main {
@@ -18053,12 +18058,16 @@ body .front-page .container {
     }
 
     .single-product-page .product-gallery__thumbs {
-        order: 2;
-        flex-direction: row;
+        left: 50%;
+        top: auto;
+        bottom: 16px;
+        width: calc(100% - 32px);
         max-height: none;
+        flex-direction: row;
         overflow-x: auto;
         overflow-y: hidden;
         padding-bottom: 2px;
+        transform: translateX(-50%);
     }
 
     .single-product-page .product-gallery__thumb {
@@ -18076,7 +18085,7 @@ body .front-page .container {
     }
 
     .single-product-page .single-product-summary h1 {
-        font-size: 24px;
+        font-size: 26px !important;
         line-height: 1.12;
     }
 
