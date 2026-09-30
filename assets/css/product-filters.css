@@ -1000,3 +1000,26 @@
         font-size: 11.5px !important;
     }
 }
+
+
+/* SPEK shared category assets in filters */
+.products-archive .filter-category-card__icon {
+    display: grid !important;
+    place-items: center !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    overflow: hidden !important;
+}
+
+.products-archive .filter-category-card__asset {
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+}
