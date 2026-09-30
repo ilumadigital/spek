@@ -17544,8 +17544,8 @@ body .front-page .container {
 .product-gallery__lens {
     position: absolute;
     z-index: 4;
-    width: 164px;
-    height: 164px;
+    width: clamp(228px, 17vw, 272px);
+    height: clamp(228px, 17vw, 272px);
     overflow: hidden;
     pointer-events: none;
     opacity: 0;
@@ -17619,7 +17619,37 @@ body .front-page .container {
 }
 
 .single-product-brand {
+    min-height: 40px;
     margin-bottom: 24px;
+}
+
+.single-product-manufacturer__logo {
+    display: block;
+    width: auto;
+    max-width: 154px;
+    height: auto;
+    max-height: 38px;
+    object-fit: contain;
+    object-position: left center;
+}
+
+.single-product-manufacturer__logo--spek {
+    max-width: 98px;
+    max-height: 30px;
+}
+
+.single-product-manufacturer__logo--nemo {
+    max-width: 138px;
+    max-height: 34px;
+}
+
+.single-product-manufacturer__name {
+    color: var(--color-accent-dark);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 .single-product-page .product-taxonomy-links--hero {
@@ -17638,12 +17668,12 @@ body .front-page .container {
 }
 
 .single-product-page .single-product-summary h1 {
-    max-width: 760px;
+    max-width: 720px;
     margin: 0;
     color: var(--color-ink);
-    font-size: clamp(42px, 4.25vw, 70px);
-    line-height: 0.98;
-    letter-spacing: -0.052em;
+    font-size: clamp(34px, 3.2vw, 54px);
+    line-height: 1.03;
+    letter-spacing: -0.045em;
 }
 
 .product-identity-card {
@@ -17985,8 +18015,8 @@ body .front-page .container {
     }
 
     .single-product-page .single-product-summary h1 {
-        font-size: clamp(36px, 11vw, 52px);
-        line-height: 1;
+        font-size: clamp(32px, 9.5vw, 44px);
+        line-height: 1.03;
     }
 
     .product-identity-card {
