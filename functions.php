@@ -21,6 +21,7 @@ $required_files = [
     '/inc/enqueue.php',
     '/inc/custom-post-types.php',
     '/inc/contact-submissions.php',
+    '/inc/career-applications.php',
     '/inc/taxonomies.php',
     '/inc/product-metaboxes.php',
     '/inc/product-admin-list.php',
