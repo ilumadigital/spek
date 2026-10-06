@@ -204,6 +204,15 @@ function spek_enqueue_assets(): void
         'Φόρτωση PDF.js…' => __('Φόρτωση PDF.js…', 'spek-theme'),
     ]);
 
+    if (is_page_template('templates/template-careers.php')) {
+        wp_enqueue_style(
+            'spek-careers',
+            SPEK_THEME_URI . '/assets/css/careers.css',
+            ['spek-main', 'spek-multilingual'],
+            filemtime(SPEK_THEME_DIR . '/assets/css/careers.css')
+        );
+    }
+
     if (is_page_template('templates/template-contact.php')) {
         wp_enqueue_style(
             'spek-contact-form',
