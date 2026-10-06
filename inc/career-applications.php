@@ -33,9 +33,22 @@ function spek_register_career_applications_post_type(): void
         'menu_icon'           => 'dashicons-id-alt',
         'menu_position'       => 27,
         'supports'            => [],
-        'map_meta_cap'        => true,
+        'map_meta_cap'        => false,
         'capabilities'        => [
-            'create_posts' => 'do_not_allow',
+            'edit_post'              => 'manage_options',
+            'read_post'              => 'manage_options',
+            'delete_post'            => 'manage_options',
+            'edit_posts'             => 'manage_options',
+            'edit_others_posts'      => 'manage_options',
+            'delete_posts'           => 'manage_options',
+            'delete_private_posts'   => 'manage_options',
+            'delete_published_posts' => 'manage_options',
+            'delete_others_posts'    => 'manage_options',
+            'edit_private_posts'     => 'manage_options',
+            'edit_published_posts'   => 'manage_options',
+            'publish_posts'          => 'do_not_allow',
+            'read_private_posts'     => 'manage_options',
+            'create_posts'           => 'do_not_allow',
         ],
     ]);
 }
@@ -417,15 +430,23 @@ function spek_career_download_url(int $application_id, string $kind, int $index 
 
 function spek_handle_career_download(): void
 {
-    if (!current_user_can('edit_posts')) {
-        wp_die(esc_html__('Δεν έχετε δικαίωμα πρόσβασης σε αυτό το αρχείο.', 'spek-theme'), 403);
+    if (!current_user_can('manage_options')) {
+        wp_die(
+            esc_html__('Δεν έχετε δικαίωμα πρόσβασης σε αυτό το αρχείο.', 'spek-theme'),
+            '',
+            ['response' => 403]
+        );
     }
 
     $application_id = isset($_GET['application_id']) ? absint($_GET['application_id']) : 0;
     check_admin_referer('spek_career_download_' . $application_id);
 
     if ($application_id <= 0 || get_post_type($application_id) !== 'spek_job_app') {
-        wp_die(esc_html__('Η αίτηση δεν βρέθηκε.', 'spek-theme'), 404);
+        wp_die(
+            esc_html__('Η αίτηση δεν βρέθηκε.', 'spek-theme'),
+            '',
+            ['response' => 404]
+        );
     }
 
     $kind = isset($_GET['kind']) ? sanitize_key(wp_unslash((string) $_GET['kind'])) : '';
@@ -442,13 +463,21 @@ function spek_handle_career_download(): void
     }
 
     if (!is_array($record) || empty($record['path']) || !is_file((string) $record['path'])) {
-        wp_die(esc_html__('Το αρχείο δεν βρέθηκε.', 'spek-theme'), 404);
+        wp_die(
+            esc_html__('Το αρχείο δεν βρέθηκε.', 'spek-theme'),
+            '',
+            ['response' => 404]
+        );
     }
 
     $dir = realpath(spek_career_application_storage_dir());
     $file = realpath((string) $record['path']);
     if (!$dir || !$file || strpos($file, $dir . DIRECTORY_SEPARATOR) !== 0) {
-        wp_die(esc_html__('Μη έγκυρη διαδρομή αρχείου.', 'spek-theme'), 403);
+        wp_die(
+            esc_html__('Μη έγκυρη διαδρομή αρχείου.', 'spek-theme'),
+            '',
+            ['response' => 403]
+        );
     }
 
     $download_name = sanitize_file_name((string) ($record['name'] ?? basename($file)));
@@ -465,14 +494,27 @@ add_action('admin_post_spek_career_download', 'spek_handle_career_download');
 
 function spek_career_application_details_box(WP_Post $post): void
 {
+    $employment_type = (string) get_post_meta($post->ID, '_spek_job_employment_type', true);
+    $department = (string) get_post_meta($post->ID, '_spek_job_department', true);
+    $department_labels = [
+        'production' => __('Παραγωγή', 'spek-theme'),
+        'warehouse_logistics' => __('Αποθήκη & Logistics', 'spek-theme'),
+        'technical' => __('Τεχνικό / Μηχανικό', 'spek-theme'),
+        'quality' => __('Ποιότητα', 'spek-theme'),
+        'sales' => __('Πωλήσεις / Εξυπηρέτηση', 'spek-theme'),
+        'administration' => __('Διοίκηση / Οικονομικά', 'spek-theme'),
+        'other' => __('Άλλο', 'spek-theme'),
+        '' => __('Δεν δηλώθηκε', 'spek-theme'),
+    ];
+
     $fields = [
         __('Όνομα', 'spek-theme') => trim((string) get_post_meta($post->ID, '_spek_job_first_name', true) . ' ' . (string) get_post_meta($post->ID, '_spek_job_last_name', true)),
         __('Email', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_email', true),
         __('Τηλέφωνο', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_phone', true),
         __('Πόλη / Περιοχή', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_city', true),
         __('Θέση ενδιαφέροντος', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_position_label', true),
-        __('Τύπος απασχόλησης', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_employment_type', true),
-        __('Τομέας', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_department', true),
+        __('Τύπος απασχόλησης', 'spek-theme') => $employment_type === 'part_time' ? __('Μερική απασχόληση', 'spek-theme') : __('Πλήρης απασχόληση', 'spek-theme'),
+        __('Τομέας', 'spek-theme') => $department_labels[$department] ?? __('Δεν δηλώθηκε', 'spek-theme'),
         __('Έτη εμπειρίας', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_experience_years', true),
         __('Διαθεσιμότητα από', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_available_from', true),
         'LinkedIn' => (string) get_post_meta($post->ID, '_spek_job_linkedin', true),
