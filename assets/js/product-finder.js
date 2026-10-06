@@ -247,7 +247,12 @@
 
     function applicationSummaryLabel() {
         if (!isSeatCoverSelected()) {
-            return getLabel('product_application');
+            const selectedApplication = getLabel('product_application');
+            if (selectedApplication) {
+                return selectedApplication;
+            }
+
+            return applicationOptionCount === 0 ? spekText('Δεν απαιτείται') : '';
         }
 
         const known = coverDimensionsKnown();
@@ -660,7 +665,15 @@
         const restartButton = event.target.closest('.spek-finder-restart');
 
         if (nextButton && !nextButton.disabled) {
-            if (nextButton.hasAttribute('data-application-next')) {
+            if (nextButton.hasAttribute('data-category-next')) {
+                refreshFacets().finally(() => {
+                    if (isSeatCoverSelected() || applicationOptionCount > 0) {
+                        showStep('application');
+                    } else {
+                        showStep('specs');
+                    }
+                });
+            } else if (nextButton.hasAttribute('data-application-next')) {
                 refreshFacets().finally(() => {
                     showStep(nextButton.dataset.nextStep);
                 });
@@ -670,7 +683,15 @@
         }
 
         if (prevButton) {
-            showStep(prevButton.dataset.prevStep);
+            if (
+                prevButton.dataset.prevStep === 'application'
+                && !isSeatCoverSelected()
+                && applicationOptionCount === 0
+            ) {
+                showStep('category');
+            } else {
+                showStep(prevButton.dataset.prevStep);
+            }
         }
 
         if (submitButton) {
