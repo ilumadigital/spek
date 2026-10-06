@@ -65,10 +65,6 @@ $product_toolbar_is_english = function_exists('spek_is_english') && spek_is_engl
         $finder_url = spek_page_url('product-finder/');
         ?>
         <a class="products-hero-finder" href="<?php echo esc_url($finder_url); ?>">
-            <span class="products-hero-finder__eyebrow">
-                <?php echo esc_html($finder_is_english ? 'Looking for something specific?' : 'Ψάχνετε κάτι συγκεκριμένο;'); ?>
-            </span>
-
             <span class="products-hero-finder__icon" aria-hidden="true">
                 <svg viewBox="0 0 48 48">
                     <circle cx="21" cy="21" r="11"></circle>
@@ -78,20 +74,14 @@ $product_toolbar_is_english = function_exists('spek_is_english') && spek_is_engl
             </span>
 
             <span class="products-hero-finder__content">
-                <strong><?php echo esc_html($finder_is_english ? 'Guided Product Finder' : 'Καθοδηγούμενη Εύρεση Προϊόντος'); ?></strong>
+                <strong><?php echo esc_html($finder_is_english ? 'Looking for something specific?' : 'Ψάχνετε κάτι συγκεκριμένο;'); ?></strong>
                 <small>
-                    <?php
-                    echo esc_html(
-                        $finder_is_english
-                            ? 'Answer a few quick questions and we will narrow the catalogue down to products that actually fit your needs.'
-                            : 'Απαντήστε σε λίγες σύντομες ερωτήσεις και θα περιορίσουμε τον κατάλογο μόνο στα προϊόντα που ταιριάζουν πραγματικά στις ανάγκες σας.'
-                    );
-                    ?>
+                    <?php echo esc_html($finder_is_english ? 'Answer a few questions and find the right product.' : 'Απαντήστε σε λίγες ερωτήσεις και βρείτε το κατάλληλο προϊόν.'); ?>
                 </small>
             </span>
 
             <span class="products-hero-finder__cta">
-                <?php echo esc_html($finder_is_english ? 'Start guided finder' : 'Ξεκινήστε την καθοδήγηση'); ?>
+                <?php echo esc_html($finder_is_english ? 'Start finder' : 'Έναρξη εύρεσης'); ?>
                 <span aria-hidden="true">→</span>
             </span>
         </a>
