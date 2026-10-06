@@ -18526,3 +18526,179 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
     pointer-events: none !important;
     user-select: none !important;
 }
+
+
+/* =========================================================
+   Product Finder — live facets + toilet-seat measurements
+   ========================================================= */
+.spek-finder--v2 [hidden] {
+    display: none !important;
+}
+
+.spek-finder-facet-state {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 54px;
+    margin: 0 0 20px;
+    padding: 14px 16px;
+    border: 1px solid rgba(23, 79, 138, 0.10);
+    border-radius: 15px;
+    color: #657682;
+    background: rgba(23, 79, 138, 0.04);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.spek-finder-facet-state .spek-finder-loading__spinner {
+    width: 20px;
+    height: 20px;
+}
+
+.spek-finder--v2.is-facets-loading [data-application-options],
+.spek-finder--v2.is-facets-loading [data-specs-grid] {
+    opacity: 0.58;
+    pointer-events: none;
+}
+
+.spek-finder-options--dimensions-choice {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.spek-finder-options--dimensions-choice .spek-finder-chip > span {
+    min-height: 86px;
+}
+
+.spek-finder-seat-cover__measurements {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.spek-finder-measure-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(16, 40, 61, 0.09);
+    border-radius: 22px 22px 42px 22px;
+    background: #fbfcfd;
+    box-shadow: 0 14px 34px rgba(20, 44, 64, 0.055);
+}
+
+.spek-finder-measure-card figure {
+    display: grid;
+    min-height: 300px;
+    margin: 0;
+    padding: 22px;
+    place-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(16, 40, 61, 0.07);
+    background: #ffffff;
+}
+
+.spek-finder-measure-card figure img {
+    display: block;
+    width: 100%;
+    height: 300px;
+    object-fit: contain;
+}
+
+.spek-finder-measure-card__body {
+    padding: 20px;
+}
+
+.spek-finder-measure-card__body p {
+    margin: 9px 0 16px;
+    color: #6c7c87;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.spek-finder-measure-input {
+    position: relative;
+}
+
+.spek-finder-measure-input input {
+    width: 100%;
+    min-height: 56px;
+    padding: 0 58px 0 15px;
+    border: 1px solid rgba(16, 40, 61, 0.10);
+    border-radius: 13px;
+    color: var(--finder-navy);
+    background: #ffffff;
+    font: inherit;
+    font-weight: 700;
+    outline: none;
+}
+
+.spek-finder-measure-input input:focus {
+    border-color: rgba(23, 79, 138, 0.42);
+    box-shadow: 0 0 0 4px rgba(23, 79, 138, 0.08);
+}
+
+.spek-finder-measure-input > span {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    color: #83919b;
+    font-size: 11px;
+    font-weight: 700;
+    transform: translateY(-50%);
+}
+
+.spek-finder-form-grid--search-only {
+    grid-template-columns: minmax(0, 620px) !important;
+}
+
+@media (max-width: 900px) {
+    .spek-finder-seat-cover__measurements {
+        grid-template-columns: 1fr;
+    }
+
+    .spek-finder-measure-card {
+        display: grid;
+        grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1.18fr);
+    }
+
+    .spek-finder-measure-card figure {
+        min-height: 250px;
+        border-right: 1px solid rgba(16, 40, 61, 0.07);
+        border-bottom: 0;
+    }
+
+    .spek-finder-measure-card figure img {
+        height: 250px;
+    }
+
+    .spek-finder-measure-card__body {
+        align-self: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .spek-finder-options--dimensions-choice {
+        grid-template-columns: 1fr;
+    }
+
+    .spek-finder-measure-card {
+        display: block;
+        border-radius: 18px 18px 32px 18px;
+    }
+
+    .spek-finder-measure-card figure {
+        min-height: 230px;
+        padding: 16px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(16, 40, 61, 0.07);
+    }
+
+    .spek-finder-measure-card figure img {
+        height: 230px;
+    }
+
+    .spek-finder-measure-card__body {
+        padding: 17px;
+    }
+}
