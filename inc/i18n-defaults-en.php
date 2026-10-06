@@ -590,4 +590,6 @@ return [
     'Αναμονή διαστάσεων' => 'Waiting for dimensions',
 
     'Δεν απαιτείται' => 'Not required',
+
+    'Θα εμφανίσουμε και καλύμματα με απόκλιση έως 5 cm σε κάθε διάσταση. Ελέγχουμε και τις δύο φορές τη διάταξη των μετρήσεων, ώστε ένα προϊόν 50 × 40 cm να μπορεί να ταιριάξει και με αναζήτηση 40 × 50 cm. Στα αποτελέσματα θα βλέπετε πάντα τις πραγματικές διαστάσεις κάθε προϊόντος.' => 'We will also show seat covers within 5 cm on each dimension. We check both measurement orientations, so a 50 × 40 cm product can also match a 40 × 50 cm search. The actual dimensions of every product are always shown in the results.',
 ];
