@@ -67,7 +67,7 @@ if (!defined('ABSPATH')) {
             <article class="spek-finder-measure-card">
                 <figure>
                     <img
-                        src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/finder/seat-cover-length.svg'); ?>"
+                        src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/finder/seat-cover-length.jpg'); ?>"
                         alt="<?php esc_attr_e('Οδηγός μέτρησης μήκους καλύμματος λεκάνης', 'spek-theme'); ?>"
                         loading="lazy"
                         decoding="async"
@@ -89,7 +89,7 @@ if (!defined('ABSPATH')) {
             <article class="spek-finder-measure-card">
                 <figure>
                     <img
-                        src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/finder/seat-cover-width.svg'); ?>"
+                        src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/finder/seat-cover-width.jpg'); ?>"
                         alt="<?php esc_attr_e('Οδηγός μέτρησης πλάτους καλύμματος λεκάνης', 'spek-theme'); ?>"
                         loading="lazy"
                         decoding="async"
