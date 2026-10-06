@@ -41,6 +41,55 @@ function spek_finder_request_filters(): array
     ];
 }
 
+/** Finder values backed by post meta are encoded so they cannot be confused with taxonomy slugs. */
+function spek_finder_encode_meta_option(string $meta_key, string $value): string
+{
+    return 'meta:' . rawurlencode($meta_key) . ':' . rawurlencode($value);
+}
+
+/** Decode a finder meta-backed value. */
+function spek_finder_decode_meta_option(string $value): array
+{
+    if (strpos($value, 'meta:') !== 0) {
+        return [];
+    }
+
+    $parts = explode(':', $value, 3);
+    if (count($parts) !== 3) {
+        return [];
+    }
+
+    $meta_key = rawurldecode((string) $parts[1]);
+    $meta_value = rawurldecode((string) $parts[2]);
+
+    $allowed = [
+        '_spek_product_application',
+        'product_application_text',
+        'product_material',
+        '_spek_product_series',
+    ];
+
+    if (!in_array($meta_key, $allowed, true) || $meta_value === '') {
+        return [];
+    }
+
+    return [
+        'key' => $meta_key,
+        'value' => $meta_value,
+    ];
+}
+
+/** Normalize labels so taxonomy and meta fallbacks do not create duplicate UI choices. */
+function spek_finder_normalize_option_label(string $value): string
+{
+    $value = trim(wp_strip_all_tags($value));
+    $value = remove_accents($value);
+
+    return function_exists('mb_strtolower')
+        ? mb_strtolower($value, 'UTF-8')
+        : strtolower($value);
+}
+
 /** Turn a decimal centimetre value into stable textual variants for legacy dimensions fields. */
 function spek_finder_dimension_tokens(float $value): array
 {
@@ -92,29 +141,76 @@ function spek_finder_dimension_meta_clause(string $structured_key, float $value)
     return $clause;
 }
 
+/** Build a language-aware query clause for a meta-backed finder option. */
+function spek_finder_meta_option_query_clause(string $meta_key, string $value, string $lang): array
+{
+    $clause = [
+        'relation' => 'OR',
+        [
+            'key' => $meta_key,
+            'value' => $value,
+            'compare' => '=',
+        ],
+    ];
+
+    if ($lang === 'en' && function_exists('spek_i18n_post_meta_key')) {
+        $translated_key = spek_i18n_post_meta_key($meta_key);
+        if ($translated_key !== $meta_key) {
+            $clause[] = [
+                'key' => $translated_key,
+                'value' => $value,
+                'compare' => '=',
+            ];
+        }
+    }
+
+    return $clause;
+}
+
 /** Build taxonomy/meta query parts for a finder filter set. */
 function spek_finder_query_parts(array $filters, string $lang, string $exclude_taxonomy = '', string $exclude_meta = ''): array
 {
     $tax_query = [];
-    $taxonomies = ['product_category', 'product_application', 'product_material', 'product_series'];
+    $meta_query = [];
 
-    foreach ($taxonomies as $taxonomy) {
+    $taxonomy_filters = [
+        'product_category',
+        'product_application',
+        'product_material',
+        'product_series',
+    ];
+
+    foreach ($taxonomy_filters as $taxonomy) {
         if ($taxonomy === $exclude_taxonomy || empty($filters[$taxonomy])) {
+            continue;
+        }
+
+        $selected = (string) $filters[$taxonomy];
+        $meta_option = spek_finder_decode_meta_option($selected);
+
+        // The current database contains both taxonomy-backed and imported meta-backed
+        // technical values. Meta-backed UI choices must filter against their real field.
+        if (!empty($meta_option)) {
+            if ($exclude_meta !== $meta_option['key']) {
+                $meta_query[] = spek_finder_meta_option_query_clause(
+                    (string) $meta_option['key'],
+                    (string) $meta_option['value'],
+                    $lang
+                );
+            }
             continue;
         }
 
         $tax_query[] = [
             'taxonomy' => $taxonomy,
             'field' => 'slug',
-            'terms' => sanitize_title((string) $filters[$taxonomy]),
+            'terms' => sanitize_title($selected),
         ];
     }
 
     if (!empty($tax_query)) {
         $tax_query['relation'] = 'AND';
     }
-
-    $meta_query = [];
 
     if ($exclude_meta !== 'product_installation_type' && !empty($filters['product_installation_type'])) {
         $meta_query[] = [
@@ -253,6 +349,79 @@ function spek_finder_term_options(array $product_ids, string $taxonomy, string $
     return $options;
 }
 
+/**
+ * Build options directly from the real product meta values.
+ * This is required for the existing SPEK catalogue because many imported products
+ * have application/material/series in post meta even when the matching taxonomy
+ * was never assigned.
+ */
+function spek_finder_meta_options(array $product_ids, array $meta_keys, string $lang): array
+{
+    if (empty($product_ids) || empty($meta_keys)) {
+        return [];
+    }
+
+    $values = [];
+
+    foreach ($product_ids as $post_id) {
+        foreach ($meta_keys as $meta_key) {
+            $label = get_post_meta((int) $post_id, (string) $meta_key, true);
+            $label = is_scalar($label) ? trim(wp_strip_all_tags((string) $label)) : '';
+
+            if ($label === '') {
+                continue;
+            }
+
+            $normalized = spek_finder_normalize_option_label($label);
+            if ($normalized === '') {
+                continue;
+            }
+
+            if (!isset($values[$normalized])) {
+                $values[$normalized] = [
+                    'value' => spek_finder_encode_meta_option((string) $meta_key, $label),
+                    'label' => $label,
+                    'count' => 0,
+                ];
+            }
+
+            $values[$normalized]['count']++;
+
+            // The first populated key is the preferred source for this product.
+            // e.g. _spek_product_application before the longer application text.
+            break;
+        }
+    }
+
+    $options = array_values($values);
+    usort($options, static function (array $a, array $b): int {
+        return strnatcasecmp((string) $a['label'], (string) $b['label']);
+    });
+
+    return $options;
+}
+
+/** Merge taxonomy and meta fallbacks without showing the same human label twice. */
+function spek_finder_merge_options(array $primary, array $fallback): array
+{
+    $merged = [];
+    $seen = [];
+
+    foreach (array_merge($primary, $fallback) as $option) {
+        $label = isset($option['label']) ? (string) $option['label'] : '';
+        $normalized = spek_finder_normalize_option_label($label);
+
+        if ($normalized === '' || isset($seen[$normalized])) {
+            continue;
+        }
+
+        $seen[$normalized] = true;
+        $merged[] = $option;
+    }
+
+    return $merged;
+}
+
 /** Build counted installation-type options from the actual matching products. */
 function spek_finder_installation_options(array $product_ids, string $lang): array
 {
@@ -324,20 +493,38 @@ function spek_ajax_product_finder_facets(): void
 
     if (!$is_seat_cover) {
         $application_ids = spek_finder_product_ids($application_filters, $lang, 'product_application');
-        $applications = spek_finder_term_options($application_ids, 'product_application', $lang);
+
+        $applications = spek_finder_merge_options(
+            spek_finder_term_options($application_ids, 'product_application', $lang),
+            spek_finder_meta_options(
+                $application_ids,
+                ['_spek_product_application', 'product_application_text'],
+                $lang
+            )
+        );
     }
 
     // Faceted options: each facet is calculated with the other selected facets applied,
     // so every option shown can still lead to at least one real product.
-    $material_ids = spek_finder_product_ids($filters, $lang, 'product_material');
-    $series_ids = spek_finder_product_ids($filters, $lang, 'product_series');
+    $material_ids = spek_finder_product_ids($filters, $lang, 'product_material', 'product_material');
+    $series_ids = spek_finder_product_ids($filters, $lang, 'product_series', '_spek_product_series');
     $installation_ids = spek_finder_product_ids($filters, $lang, '', 'product_installation_type');
     $matching_ids = spek_finder_product_ids($filters, $lang);
 
+    $materials = spek_finder_merge_options(
+        spek_finder_term_options($material_ids, 'product_material', $lang),
+        spek_finder_meta_options($material_ids, ['product_material'], $lang)
+    );
+
+    $series = spek_finder_merge_options(
+        spek_finder_term_options($series_ids, 'product_series', $lang),
+        spek_finder_meta_options($series_ids, ['_spek_product_series'], $lang)
+    );
+
     wp_send_json_success([
         'applications' => $applications,
-        'materials' => spek_finder_term_options($material_ids, 'product_material', $lang),
-        'series' => spek_finder_term_options($series_ids, 'product_series', $lang),
+        'materials' => $materials,
+        'series' => $series,
         'installationTypes' => spek_finder_installation_options($installation_ids, $lang),
         'count' => count($matching_ids),
     ]);
