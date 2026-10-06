@@ -113,6 +113,198 @@ function spek_finder_dimension_tokens(float $value): array
     return array_values(array_unique(array_filter($tokens)));
 }
 
+
+/** Extract one numeric dimension from a stored field value. */
+function spek_finder_dimension_number($value): ?float
+{
+    if (is_numeric($value)) {
+        $number = (float) $value;
+        return $number > 0 ? $number : null;
+    }
+
+    if (!is_scalar($value)) {
+        return null;
+    }
+
+    $text = trim((string) $value);
+    if ($text === '' || !preg_match('/(\d+(?:[\.,]\d+)?)/u', $text, $match)) {
+        return null;
+    }
+
+    $number = (float) str_replace(',', '.', (string) $match[1]);
+    if ($number <= 0) {
+        return null;
+    }
+
+    if (preg_match('/\bmm\b/iu', $text)) {
+        $number /= 10;
+    }
+
+    return $number;
+}
+
+/**
+ * Read every usable length × width pair stored on a toilet-seat product.
+ *
+ * We intentionally keep the stored order because it is shown back to the
+ * customer, but matching later treats both orientations as equivalent.
+ */
+function spek_finder_product_dimension_pairs(int $post_id): array
+{
+    $pairs = [];
+
+    $structured_length = spek_finder_dimension_number(get_post_meta($post_id, 'product_cover_length', true));
+    $structured_width = spek_finder_dimension_number(get_post_meta($post_id, 'product_cover_width', true));
+
+    if ($structured_length !== null && $structured_width !== null) {
+        $pairs[] = [$structured_length, $structured_width];
+    }
+
+    $raw = function_exists('spek_get_product_field')
+        ? spek_get_product_field('product_dimensions', $post_id)
+        : get_post_meta($post_id, 'product_dimensions', true);
+
+    $raw = is_scalar($raw) ? trim((string) $raw) : '';
+
+    if (
+        $raw !== ''
+        && preg_match_all(
+            '/(\d+(?:[\.,]\d+)?)\s*(?:x|×|χ|Χ)\s*(\d+(?:[\.,]\d+)?)\s*(mm|cm)?/iu',
+            $raw,
+            $matches,
+            PREG_SET_ORDER
+        )
+    ) {
+        foreach ($matches as $match) {
+            $first = (float) str_replace(',', '.', (string) $match[1]);
+            $second = (float) str_replace(',', '.', (string) $match[2]);
+            $unit = isset($match[3]) ? strtolower((string) $match[3]) : '';
+
+            if ($unit === 'mm' || ($unit === '' && $first > 100 && $second > 100)) {
+                $first /= 10;
+                $second /= 10;
+            }
+
+            if ($first > 0 && $second > 0) {
+                $pairs[] = [$first, $second];
+            }
+        }
+    }
+
+    $unique = [];
+    foreach ($pairs as $pair) {
+        $key = number_format((float) $pair[0], 2, '.', '') . 'x' . number_format((float) $pair[1], 2, '.', '');
+        $unique[$key] = [(float) $pair[0], (float) $pair[1]];
+    }
+
+    return array_values($unique);
+}
+
+/**
+ * Calculate how closely a product matches requested toilet-seat dimensions.
+ *
+ * Both orientations are accepted: 50×40 and 40×50 are treated as the same
+ * physical fit. Each side may differ by up to 5 cm.
+ */
+function spek_finder_product_dimension_score(int $post_id, float $length, float $width, float $tolerance = 5.0): ?float
+{
+    $best = null;
+
+    foreach (spek_finder_product_dimension_pairs($post_id) as $pair) {
+        [$first, $second] = $pair;
+
+        $normal_a = abs($first - $length);
+        $normal_b = abs($second - $width);
+
+        if ($normal_a <= $tolerance && $normal_b <= $tolerance) {
+            $score = $normal_a + $normal_b;
+            $best = $best === null ? $score : min($best, $score);
+        }
+
+        $swapped_a = abs($first - $width);
+        $swapped_b = abs($second - $length);
+
+        if ($swapped_a <= $tolerance && $swapped_b <= $tolerance) {
+            $score = $swapped_a + $swapped_b;
+            $best = $best === null ? $score : min($best, $score);
+        }
+    }
+
+    return $best;
+}
+
+/** Filter and rank seat-cover products by the customer's dimensions. */
+function spek_finder_filter_ids_by_dimensions(array $product_ids, array $filters, string $exclude_meta = ''): array
+{
+    $seat_cover = ($filters['product_category'] ?? '') === 'kalymmata-lekanis';
+    $known = ($filters['cover_dimensions_known'] ?? '') === 'yes';
+
+    if (!$seat_cover || !$known || in_array($exclude_meta, ['cover_length', 'cover_width'], true)) {
+        return array_values(array_map('intval', $product_ids));
+    }
+
+    if (!is_numeric($filters['cover_length'] ?? '') || !is_numeric($filters['cover_width'] ?? '')) {
+        return [];
+    }
+
+    $length = (float) $filters['cover_length'];
+    $width = (float) $filters['cover_width'];
+
+    if ($length <= 0 || $width <= 0) {
+        return [];
+    }
+
+    $scored = [];
+
+    foreach ($product_ids as $product_id) {
+        $product_id = (int) $product_id;
+        $score = spek_finder_product_dimension_score($product_id, $length, $width, 5.0);
+
+        if ($score !== null) {
+            $scored[] = [
+                'id' => $product_id,
+                'score' => $score,
+            ];
+        }
+    }
+
+    usort($scored, static function (array $a, array $b): int {
+        if ((float) $a['score'] === (float) $b['score']) {
+            return (int) $a['id'] <=> (int) $b['id'];
+        }
+
+        return (float) $a['score'] <=> (float) $b['score'];
+    });
+
+    return array_values(array_map(static fn (array $item): int => (int) $item['id'], $scored));
+}
+
+/** Human-readable stored dimensions for finder result cards. */
+function spek_finder_product_dimensions_label(int $post_id): string
+{
+    $raw = function_exists('spek_get_product_field')
+        ? spek_get_product_field('product_dimensions', $post_id)
+        : get_post_meta($post_id, 'product_dimensions', true);
+
+    if (is_scalar($raw) && trim((string) $raw) !== '') {
+        return trim(wp_strip_all_tags((string) $raw));
+    }
+
+    $pairs = spek_finder_product_dimension_pairs($post_id);
+    if (!$pairs) {
+        return '';
+    }
+
+    [$length, $width] = reset($pairs);
+
+    $format = static function (float $number): string {
+        $text = number_format($number, 1, '.', '');
+        return rtrim(rtrim($text, '0'), '.');
+    };
+
+    return $format((float) $length) . ' × ' . $format((float) $width) . ' cm';
+}
+
 /**
  * Build a dimension clause that supports future structured fields and the current free-text dimensions field.
  * A small tolerance is allowed on dedicated numeric fields because seat covers are commonly specified approximately.
@@ -244,24 +436,8 @@ function spek_finder_query_parts(array $filters, string $lang, string $exclude_t
         ];
     }
 
-    $seat_cover = !empty($filters['product_category']) && $filters['product_category'] === 'kalymmata-lekanis';
-    $known_dimensions = $seat_cover && (($filters['cover_dimensions_known'] ?? '') === 'yes');
-
-    if ($known_dimensions) {
-        if ($exclude_meta !== 'cover_length' && is_numeric($filters['cover_length'] ?? '')) {
-            $length = (float) $filters['cover_length'];
-            if ($length > 0) {
-                $meta_query[] = spek_finder_dimension_meta_clause('product_cover_length', $length);
-            }
-        }
-
-        if ($exclude_meta !== 'cover_width' && is_numeric($filters['cover_width'] ?? '')) {
-            $width = (float) $filters['cover_width'];
-            if ($width > 0) {
-                $meta_query[] = spek_finder_dimension_meta_clause('product_cover_width', $width);
-            }
-        }
-    }
+    // Toilet-seat dimensions are filtered after the base query so matching can
+    // accept both orientations and a real ±5 cm tolerance on each side.
 
     if ($lang === 'en') {
         $meta_query[] = [
@@ -302,7 +478,9 @@ function spek_finder_product_ids(array $filters, string $lang, string $exclude_t
     }
 
     $query = new WP_Query($args);
-    return array_values(array_map('intval', $query->posts));
+    $product_ids = array_values(array_map('intval', $query->posts));
+
+    return spek_finder_filter_ids_by_dimensions($product_ids, $filters, $exclude_meta);
 }
 
 /** Resolve a public taxonomy label for the language used by the current finder AJAX request. */
@@ -568,7 +746,7 @@ function spek_ajax_product_finder(): void
     $GLOBALS['spek_frontend_ajax'] = true;
     $lang = spek_finder_request_language();
     $filters = spek_finder_request_filters();
-    $parts = spek_finder_query_parts($filters, $lang);
+    $matching_ids = spek_finder_product_ids($filters, $lang);
 
     $search = '';
     if (!empty($_POST['product_search'])) {
@@ -579,21 +757,18 @@ function spek_ajax_product_finder(): void
         'post_type' => 'spek_product',
         'post_status' => 'publish',
         'posts_per_page' => 12,
+        'post__in' => $matching_ids ?: [0],
+        'orderby' => 'post__in',
         's' => '',
         'spek_product_search' => $search,
         'suppress_filters' => false,
     ];
 
-    if (!empty($parts['tax_query'])) {
-        $args['tax_query'] = $parts['tax_query'];
-    }
-    if (!empty($parts['meta_query'])) {
-        $args['meta_query'] = $parts['meta_query'];
-    }
-
     $products = new WP_Query($args);
 
     ob_start();
+
+    $GLOBALS['spek_finder_show_dimensions'] = (($filters['product_category'] ?? '') === 'kalymmata-lekanis');
 
     if ($products->have_posts()) :
         while ($products->have_posts()) :
@@ -613,6 +788,7 @@ function spek_ajax_product_finder(): void
     endif;
 
     wp_reset_postdata();
+    unset($GLOBALS['spek_finder_show_dimensions']);
 
     $html = ob_get_clean();
     $count = (int) $products->found_posts;
