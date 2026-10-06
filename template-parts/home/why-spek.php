@@ -87,13 +87,15 @@ $items = [
             <span><?php esc_html_e('Στην πράξη', 'spek-theme'); ?></span>
         </div>
 
-        <div class="features-grid">
+        <div class="why-spek__benefits">
             <?php foreach ($items as $index => $item) : ?>
-                <div class="feature-card" data-reveal style="--reveal-delay: <?php echo esc_attr(($index * 70) + 180); ?>ms;">
-                    <span class="feature-card__index"><?php echo esc_html(sprintf('%02d', $index + 1)); ?></span>
-                    <h3><?php echo esc_html($item['title']); ?></h3>
-                    <p><?php echo esc_html($item['text']); ?></p>
-                </div>
+                <article class="why-spek__benefit" data-reveal style="--reveal-delay: <?php echo esc_attr(($index * 70) + 180); ?>ms;">
+                    <span class="why-spek__benefit-index"><?php echo esc_html(sprintf('%02d', $index + 1)); ?></span>
+                    <div class="why-spek__benefit-copy">
+                        <h3><?php echo esc_html($item['title']); ?></h3>
+                        <p><?php echo esc_html($item['text']); ?></p>
+                    </div>
+                </article>
             <?php endforeach; ?>
         </div>
     </div>
