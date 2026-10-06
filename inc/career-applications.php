@@ -369,7 +369,7 @@ function spek_handle_career_application(): void
         ''                    => __('Δεν δηλώθηκε', 'spek-theme'),
     ];
 
-    $recipient = (string) apply_filters('spek_career_application_recipient', get_option('admin_email'), (int) $application_id);
+    $recipient = (string) apply_filters('spek_career_application_recipient', 'spek@spek.gr', (int) $application_id);
     $admin_url = admin_url('post.php?post=' . (int) $application_id . '&action=edit');
     $subject = sprintf('[SPEK Careers] %s %s — %s', $first_name, $last_name, $position_label);
     $body = '<p><strong>Νέα αίτηση καριέρας</strong></p>'
