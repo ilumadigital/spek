@@ -298,11 +298,26 @@ function spek_product_category_group_term_ids(array $groups): array
         static fn ($group_key) => $group_key !== 'diafora'
     ));
 
+    $expand_term_ids = static function (array $term_ids): array {
+        $expanded = [];
+
+        foreach (array_values(array_unique(array_filter(array_map('intval', $term_ids)))) as $term_id) {
+            $expanded[] = $term_id;
+            $children = get_term_children($term_id, 'product_category');
+
+            if (!is_wp_error($children) && $children) {
+                $expanded = array_merge($expanded, array_map('intval', $children));
+            }
+        }
+
+        return array_values(array_unique(array_filter($expanded)));
+    };
+
     $primary_term_ids = [];
     foreach ($primary_group_keys as $group_key) {
         $primary_term_ids = array_merge(
             $primary_term_ids,
-            spek_home_category_group_term_ids($group_key)
+            $expand_term_ids(spek_home_category_group_term_ids($group_key))
         );
     }
     $primary_term_ids = array_values(array_unique(array_filter(array_map('intval', $primary_term_ids))));
@@ -325,7 +340,7 @@ function spek_product_category_group_term_ids(array $groups): array
 
         $resolved = array_merge(
             $resolved,
-            spek_home_category_group_term_ids($group_key)
+            $expand_term_ids(spek_home_category_group_term_ids($group_key))
         );
     }
 
