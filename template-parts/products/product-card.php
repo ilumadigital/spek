@@ -14,6 +14,10 @@ $product_id = get_the_ID();
 $product_subtitle = get_post_meta($product_id, '_spek_product_subtitle', true) ?: spek_get_product_field('product_short_description', $product_id);
 $product_application = get_post_meta($product_id, '_spek_product_application', true);
 $product_series = get_post_meta($product_id, '_spek_product_series', true);
+$show_finder_dimensions = !empty($GLOBALS['spek_finder_show_dimensions']);
+$product_dimensions = ($show_finder_dimensions && function_exists('spek_finder_product_dimensions_label'))
+    ? spek_finder_product_dimensions_label($product_id)
+    : '';
 ?>
 
 <article class="spek-product-card">
@@ -74,6 +78,13 @@ $product_series = get_post_meta($product_id, '_spek_product_series', true);
         <?php if ($product_application) : ?>
             <div class="spek-product-card__meta">
                 <?php echo esc_html($product_application); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($product_dimensions !== '') : ?>
+            <div class="spek-product-card__finder-dimensions">
+                <span><?php esc_html_e('Διαστάσεις', 'spek-theme'); ?></span>
+                <strong><?php echo esc_html($product_dimensions); ?></strong>
             </div>
         <?php endif; ?>
 
