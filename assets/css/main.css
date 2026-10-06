@@ -18731,3 +18731,42 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
     font-weight: 800;
     text-align: right;
 }
+
+
+/* SPEK finder seat measurement tolerance */
+.spek-finder-measure-tolerance {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 2px;
+    padding: 14px 16px;
+    border: 1px solid rgba(15, 76, 129, .10);
+    border-radius: 14px;
+    background: rgba(15, 76, 129, .045);
+}
+
+.spek-finder-measure-tolerance > span {
+    display: inline-grid;
+    place-items: center;
+    min-width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.spek-finder-measure-tolerance p {
+    margin: 2px 0 0;
+    color: #687985;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+@media (max-width: 640px) {
+    .spek-finder-measure-tolerance {
+        padding: 13px 14px;
+    }
+}
