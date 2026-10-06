@@ -66,7 +66,7 @@ $product_toolbar_is_english = function_exists('spek_is_english') && spek_is_engl
         ?>
         <a class="products-hero-finder" href="<?php echo esc_url($finder_url); ?>">
             <span class="products-hero-finder__eyebrow">
-                <?php echo esc_html($finder_is_english ? 'Find the right product' : 'Βρείτε το σωστό προϊόν'); ?>
+                <?php echo esc_html($finder_is_english ? 'Looking for something specific?' : 'Ψάχνετε κάτι συγκεκριμένο;'); ?>
             </span>
 
             <span class="products-hero-finder__icon" aria-hidden="true">
@@ -78,20 +78,20 @@ $product_toolbar_is_english = function_exists('spek_is_english') && spek_is_engl
             </span>
 
             <span class="products-hero-finder__content">
-                <strong><?php echo esc_html($finder_is_english ? 'Product Finder' : 'Εύρεση Προϊόντος'); ?></strong>
+                <strong><?php echo esc_html($finder_is_english ? 'Guided Product Finder' : 'Καθοδηγούμενη Εύρεση Προϊόντος'); ?></strong>
                 <small>
                     <?php
                     echo esc_html(
                         $finder_is_english
-                            ? 'Answer a few quick questions and discover the products that fit your application.'
-                            : 'Απαντήστε σε λίγες σύντομες ερωτήσεις και βρείτε τα προϊόντα που ταιριάζουν στην εφαρμογή σας.'
+                            ? 'Answer a few quick questions and we will narrow the catalogue down to products that actually fit your needs.'
+                            : 'Απαντήστε σε λίγες σύντομες ερωτήσεις και θα περιορίσουμε τον κατάλογο μόνο στα προϊόντα που ταιριάζουν πραγματικά στις ανάγκες σας.'
                     );
                     ?>
                 </small>
             </span>
 
             <span class="products-hero-finder__cta">
-                <?php echo esc_html($finder_is_english ? 'Start finder' : 'Έναρξη εύρεσης'); ?>
+                <?php echo esc_html($finder_is_english ? 'Start guided finder' : 'Ξεκινήστε την καθοδήγηση'); ?>
                 <span aria-hidden="true">→</span>
             </span>
         </a>
