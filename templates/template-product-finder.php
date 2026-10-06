@@ -26,13 +26,13 @@ get_header();
                     <span><?php esc_html_e('Εύρεση Προϊόντος', 'spek-theme'); ?></span>
                 </span>
                 <h1><?php esc_html_e('Βρείτε το κατάλληλο προϊόν.', 'spek-theme'); ?></h1>
-                <p><?php esc_html_e('Ένας γρήγορος οδηγός επιλογής για επαγγελματίες. Ορίστε κατηγορία, εφαρμογή και προαιρετικά τεχνικά χαρακτηριστικά.', 'spek-theme'); ?></p>
+                <p><?php esc_html_e('Επιλέξτε κατηγορία και το εργαλείο θα σας δείχνει σε κάθε επόμενο βήμα μόνο κριτήρια που αντιστοιχούν σε πραγματικά διαθέσιμα προϊόντα.', 'spek-theme'); ?></p>
             </div>
 
             <div class="finder-hero__meta" data-reveal style="--reveal-delay: 100ms;">
                 <div><strong>01</strong><span><?php esc_html_e('Κατηγορία', 'spek-theme'); ?></span></div>
                 <i aria-hidden="true"></i>
-                <div><strong>02</strong><span><?php esc_html_e('Εφαρμογή', 'spek-theme'); ?></span></div>
+                <div><strong>02</strong><span data-hero-label-application><?php esc_html_e('Εφαρμογή', 'spek-theme'); ?></span></div>
                 <i aria-hidden="true"></i>
                 <div><strong>03</strong><span><?php esc_html_e('Χαρακτηριστικά', 'spek-theme'); ?></span></div>
                 <i aria-hidden="true"></i>
@@ -61,7 +61,7 @@ get_header();
                             <small data-summary-category><?php esc_html_e('Δεν έχει επιλεγεί', 'spek-theme'); ?></small>
                         </span>
                         <span data-progress-step="application">
-                            <i>02</i><b><?php esc_html_e('Εφαρμογή', 'spek-theme'); ?></b>
+                            <i>02</i><b data-progress-label-application><?php esc_html_e('Εφαρμογή', 'spek-theme'); ?></b>
                             <small data-summary-application><?php esc_html_e('Δεν έχει επιλεγεί', 'spek-theme'); ?></small>
                         </span>
                         <span data-progress-step="specs">
