@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 
 $categories = get_terms(spek_language_args([
     'taxonomy' => 'product_category',
-    'hide_empty' => false,
+    'hide_empty' => true,
 ]));
 ?>
 
@@ -22,18 +22,20 @@ $categories = get_terms(spek_language_args([
             <small><?php esc_html_e('Βήμα 1 από 3', 'spek-theme'); ?></small>
         </div>
         <h2><?php esc_html_e('Τι προϊόν ψάχνετε;', 'spek-theme'); ?></h2>
-        <p><?php esc_html_e('Επιλέξτε τη βασική κατηγορία. Μπορείτε να αλλάξετε την επιλογή σας οποιαδήποτε στιγμή.', 'spek-theme'); ?></p>
+        <p><?php esc_html_e('Επιλέξτε τη βασική κατηγορία. Εμφανίζονται μόνο κατηγορίες που έχουν διαθέσιμα προϊόντα.', 'spek-theme'); ?></p>
     </div>
 
     <div class="spek-finder-options spek-finder-options--cards">
         <?php if (!empty($categories) && !is_wp_error($categories)) : ?>
             <?php foreach ($categories as $index => $category) : ?>
+                <?php $is_seat_cover = $category->slug === 'kalymmata-lekanis'; ?>
                 <label class="spek-finder-option">
                     <input
                         type="radio"
                         name="product_category"
                         value="<?php echo esc_attr($category->slug); ?>"
                         data-label="<?php echo esc_attr($category->name); ?>"
+                        data-seat-cover="<?php echo $is_seat_cover ? '1' : '0'; ?>"
                     >
                     <span>
                         <i class="spek-finder-option__index"><?php echo esc_html(str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT)); ?></i>
