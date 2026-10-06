@@ -23,6 +23,8 @@ if (!defined('ABSPATH')) {
         <div class="spek-water spek-water--ripple spek-water--ripple-two" data-parallax="14"></div>
         <div class="spek-water spek-water--ripple spek-water--ripple-three" data-parallax="10"></div>
         <div class="spek-water spek-water--light" data-parallax="8"></div>
+        <div class="spek-water spek-water--glass" data-parallax="16"></div>
+        <div class="spek-water spek-water--droplets" data-parallax="20"></div>
         <div class="spek-water spek-water--mist"></div>
     </div>
 
@@ -83,9 +85,10 @@ if (!defined('ABSPATH')) {
     z-index: 0;
     overflow: hidden;
     background:
-        radial-gradient(circle at 78% 18%, rgba(125,217,255,.20), transparent 24%),
-        radial-gradient(circle at 18% 82%, rgba(15,105,182,.24), transparent 30%),
-        linear-gradient(135deg, #06131f 0%, #0a2741 42%, #0d5f9d 100%);
+        radial-gradient(circle at 80% 16%, rgba(190,239,255,.30), transparent 22%),
+        radial-gradient(circle at 22% 82%, rgba(20,126,205,.30), transparent 30%),
+        radial-gradient(circle at 58% 54%, rgba(40,155,222,.15), transparent 34%),
+        linear-gradient(135deg, #06131f 0%, #092b47 44%, #0a69aa 100%);
 }
 
 .spek-hero-v2--water .spek-water {
@@ -97,28 +100,28 @@ if (!defined('ABSPATH')) {
 .spek-hero-v2--water .spek-water--base {
     inset: -8%;
     background:
-        radial-gradient(circle at 18% 18%, rgba(171,231,255,.22), transparent 22%),
-        radial-gradient(circle at 66% 34%, rgba(73,178,230,.20), transparent 28%),
-        radial-gradient(circle at 74% 76%, rgba(13,96,164,.32), transparent 34%),
-        linear-gradient(155deg, rgba(3,22,36,.12), rgba(34,144,205,.12));
+        radial-gradient(circle at 18% 18%, rgba(205,244,255,.30), transparent 22%),
+        radial-gradient(circle at 66% 34%, rgba(87,196,243,.28), transparent 28%),
+        radial-gradient(circle at 74% 76%, rgba(13,106,176,.40), transparent 34%),
+        linear-gradient(155deg, rgba(3,22,36,.08), rgba(40,159,220,.18));
     animation: spekWaterBase 18s ease-in-out infinite alternate;
 }
 
 .spek-hero-v2--water .spek-water--caustics {
     inset: -22% -14%;
-    opacity: .33;
+    opacity: .52;
     mix-blend-mode: screen;
     background:
         repeating-radial-gradient(
             ellipse at 48% 56%,
             transparent 0 24px,
-            rgba(195,238,255,.12) 25px 27px,
+            rgba(220,247,255,.20) 25px 28px,
             transparent 28px 58px
         ),
         repeating-radial-gradient(
             ellipse at 72% 38%,
             transparent 0 42px,
-            rgba(122,211,255,.10) 43px 45px,
+            rgba(148,223,255,.16) 43px 46px,
             transparent 46px 88px
         );
     filter: blur(.4px);
@@ -130,7 +133,7 @@ if (!defined('ABSPATH')) {
     height: 30vw;
     min-width: 900px;
     min-height: 300px;
-    border: 1px solid rgba(188,234,255,.17);
+    border: 1px solid rgba(210,244,255,.28);
     border-radius: 50%;
     filter: blur(.1px);
 }
@@ -140,8 +143,8 @@ if (!defined('ABSPATH')) {
     bottom: -12vw;
     transform: rotate(-7deg);
     box-shadow:
-        0 -32px 70px rgba(103,210,255,.06),
-        inset 0 24px 80px rgba(160,229,255,.04);
+        0 -34px 90px rgba(112,217,255,.12),
+        inset 0 26px 90px rgba(184,237,255,.08);
     animation: spekWaterFlowOne 13s ease-in-out infinite alternate;
 }
 
@@ -149,16 +152,16 @@ if (!defined('ABSPATH')) {
     right: -30vw;
     top: 7vh;
     transform: rotate(11deg);
-    opacity: .58;
+    opacity: .72;
     animation: spekWaterFlowTwo 17s ease-in-out infinite alternate;
 }
 
 .spek-hero-v2--water .spek-water--ripple {
     border-radius: 50%;
-    border: 1px solid rgba(207,240,255,.23);
+    border: 1px solid rgba(220,248,255,.38);
     box-shadow:
-        0 0 70px rgba(87,196,246,.06),
-        inset 0 0 70px rgba(87,196,246,.035);
+        0 0 92px rgba(110,211,255,.12),
+        inset 0 0 82px rgba(137,222,255,.07);
 }
 
 .spek-hero-v2--water .spek-water--ripple-one {
@@ -189,7 +192,7 @@ if (!defined('ABSPATH')) {
     min-height: 230px;
     right: 23vw;
     top: 18vh;
-    opacity: .42;
+    opacity: .62;
     animation: spekWaterRippleThree 10s ease-in-out infinite;
 }
 
@@ -205,18 +208,49 @@ if (!defined('ABSPATH')) {
         115deg,
         transparent 12%,
         rgba(163,226,255,.03) 34%,
-        rgba(255,255,255,.16) 48%,
-        rgba(114,207,255,.04) 62%,
+        rgba(255,255,255,.28) 48%,
+        rgba(138,220,255,.08) 62%,
         transparent 78%
     );
     animation: spekWaterLight 11s ease-in-out infinite;
 }
 
+.spek-hero-v2--water .spek-water--glass {
+    width: 58vw;
+    height: 58vw;
+    min-width: 700px;
+    min-height: 700px;
+    right: -20vw;
+    top: -16vw;
+    border: 1px solid rgba(255,255,255,.24);
+    border-radius: 50%;
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.015) 46%, transparent 70%);
+    box-shadow:
+        inset 24px 18px 90px rgba(255,255,255,.05),
+        0 0 120px rgba(123,218,255,.08);
+    mix-blend-mode: screen;
+    animation: spekWaterGlass 16s ease-in-out infinite alternate;
+}
+
+.spek-hero-v2--water .spek-water--droplets {
+    inset: 0;
+    opacity: .76;
+    background:
+        radial-gradient(circle at 76% 26%, rgba(255,255,255,.92) 0 2px, rgba(162,228,255,.42) 3px 5px, transparent 7px),
+        radial-gradient(circle at 84% 40%, rgba(255,255,255,.78) 0 1px, rgba(162,228,255,.32) 2px 4px, transparent 6px),
+        radial-gradient(circle at 69% 62%, rgba(255,255,255,.74) 0 2px, rgba(162,228,255,.28) 3px 5px, transparent 7px),
+        radial-gradient(circle at 91% 66%, rgba(255,255,255,.70) 0 1px, rgba(162,228,255,.26) 2px 4px, transparent 6px),
+        radial-gradient(circle at 58% 18%, rgba(255,255,255,.60) 0 1px, rgba(162,228,255,.22) 2px 3px, transparent 5px);
+    filter: drop-shadow(0 0 12px rgba(147,224,255,.20));
+    animation: spekWaterDroplets 13s ease-in-out infinite alternate;
+}
+
 .spek-hero-v2--water .spek-water--mist {
     inset: 0;
     background:
-        radial-gradient(circle at 58% 44%, rgba(180,230,255,.08), transparent 24%),
-        radial-gradient(circle at 91% 72%, rgba(111,211,255,.08), transparent 22%);
+        radial-gradient(circle at 58% 44%, rgba(190,237,255,.13), transparent 24%),
+        radial-gradient(circle at 91% 72%, rgba(121,220,255,.12), transparent 22%);
     filter: blur(18px);
     animation: spekWaterMist 14s ease-in-out infinite alternate;
 }
@@ -228,11 +262,11 @@ if (!defined('ABSPATH')) {
     background:
         linear-gradient(
             90deg,
-            rgba(3,16,27,.78) 0%,
-            rgba(3,16,27,.57) 28%,
-            rgba(3,16,27,.28) 54%,
-            rgba(3,16,27,.08) 78%,
-            rgba(3,16,27,.04) 100%
+            rgba(3,16,27,.80) 0%,
+            rgba(3,16,27,.58) 27%,
+            rgba(3,16,27,.25) 52%,
+            rgba(3,16,27,.04) 78%,
+            rgba(3,16,27,.01) 100%
         ),
         linear-gradient(
             180deg,
@@ -309,7 +343,7 @@ if (!defined('ABSPATH')) {
     min-height: 52px;
     padding-inline: 26px;
     border-radius: 8px;
-    box-shadow: none;
+    box-shadow: 0 12px 32px rgba(2,25,45,.14);
 }
 
 .spek-hero-v2--water .spek-hero-v2__actions .button-primary {
@@ -342,12 +376,11 @@ if (!defined('ABSPATH')) {
     inset: 0;
     z-index: 2;
     pointer-events: none;
-    opacity: .22;
+    opacity: .72;
     background:
-        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
-    background-size: 88px 88px;
-    mask-image: linear-gradient(180deg, rgba(0,0,0,.42), transparent 72%);
+        linear-gradient(125deg, transparent 0 56%, rgba(255,255,255,.055) 64%, rgba(255,255,255,.015) 70%, transparent 78%),
+        radial-gradient(circle at 86% 16%, rgba(255,255,255,.12), transparent 18%);
+    mix-blend-mode: screen;
 }
 
 .spek-hero-v2--water::after {
@@ -400,6 +433,16 @@ if (!defined('ABSPATH')) {
 @keyframes spekWaterLight {
     0%,100% { transform: translate3d(var(--px,0px),var(--py,0px),0) rotate(17deg); opacity: .20; }
     50% { transform: translate3d(calc(var(--px,0px) - 24px),calc(var(--py,0px) + 16px),0) rotate(19deg); opacity: .46; }
+}
+
+@keyframes spekWaterGlass {
+    0% { transform: translate3d(var(--px,0px),var(--py,0px),0) rotate(-2deg) scale(.98); opacity: .52; }
+    100% { transform: translate3d(calc(var(--px,0px) - 18px),calc(var(--py,0px) + 12px),0) rotate(2deg) scale(1.03); opacity: .82; }
+}
+
+@keyframes spekWaterDroplets {
+    0% { transform: translate3d(var(--px,0px),var(--py,0px),0); opacity: .52; }
+    100% { transform: translate3d(calc(var(--px,0px) + 12px),calc(var(--py,0px) - 18px),0); opacity: .86; }
 }
 
 @keyframes spekWaterMist {
