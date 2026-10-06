@@ -556,4 +556,36 @@ return [
 
     // Company details language-specific view.
     'Τα επίσημα στοιχεία της εταιρείας συγκεντρωμένα για άμεση αναφορά.' => 'The company\'s official details, presented for quick reference.',
+
+
+    // Product Finder live facets + toilet-seat measurements — 2026-10-06.
+    'Επιλέξτε τη βασική κατηγορία. Εμφανίζονται μόνο κατηγορίες που έχουν διαθέσιμα προϊόντα.' => 'Choose the main category. Only categories with available products are shown.',
+    'Εμφανίζονται μόνο οι εφαρμογές που υπάρχουν πραγματικά στην κατηγορία που επιλέξατε.' => 'Only applications that actually exist in the selected category are shown.',
+    'Ελέγχουμε τις διαθέσιμες εφαρμογές…' => 'Checking available applications…',
+    'Για αυτή την κατηγορία δεν χρειάζεται επιπλέον επιλογή εφαρμογής. Μπορείτε να συνεχίσετε.' => 'This category does not require an additional application choice. You can continue.',
+    'Έχετε τις διαστάσεις του καλύμματος;' => 'Do you have the seat-cover dimensions?',
+    'Αν γνωρίζετε το μήκος και το πλάτος, συμπληρώστε τα ώστε να περιορίσουμε τις προτάσεις. Οι εικόνες δείχνουν ακριβώς από πού γίνεται κάθε μέτρηση.' => 'If you know the length and width, enter them to narrow the suggestions. The images show exactly where to take each measurement.',
+    'Έχω τις διαστάσεις' => 'I have the dimensions',
+    'Ναι, τις έχω' => 'Yes, I have them',
+    'Δεν γνωρίζω τις διαστάσεις' => 'I don\'t know the dimensions',
+    'Όχι, δεν τις γνωρίζω' => 'No, I don\'t know them',
+    'Οδηγός μέτρησης μήκους καλύμματος λεκάνης' => 'Guide for measuring toilet-seat cover length',
+    'Οδηγός μέτρησης πλάτους καλύμματος λεκάνης' => 'Guide for measuring toilet-seat cover width',
+    'Μήκος καλύμματος' => 'Cover length',
+    'Πλάτος καλύμματος' => 'Cover width',
+    'σε cm' => 'in cm',
+    'Μετρήστε από το σημείο στήριξης μέχρι το μπροστινό άκρο του καλύμματος, όπως φαίνεται στην εικόνα.' => 'Measure from the mounting point to the front edge of the cover, as shown in the image.',
+    'Μετρήστε το κάλυμμα οριζόντια στο φαρδύτερο σημείο του, όπως φαίνεται στην εικόνα.' => 'Measure the cover horizontally at its widest point, as shown in the image.',
+    'Δεν υπάρχει πρόβλημα αν δεν γνωρίζετε τις διαστάσεις. Θα συνεχίσουμε μόνο με τα πραγματικά διαθέσιμα χαρακτηριστικά της κατηγορίας.' => 'No problem if you do not know the dimensions. We will continue using only the category\'s actual available characteristics.',
+    'Κάθε επιλογή που εμφανίζεται παρακάτω υπάρχει πραγματικά στα προϊόντα που ταιριάζουν ήδη με τα προηγούμενα βήματα.' => 'Every option shown below actually exists on products that already match the previous steps.',
+    'Ενημερώνουμε τα διαθέσιμα χαρακτηριστικά…' => 'Updating available characteristics…',
+    'Όλα τα διαθέσιμα υλικά' => 'All available materials',
+    'Όλες οι διαθέσιμες σειρές' => 'All available series',
+    'Όλοι οι διαθέσιμοι τύποι' => 'All available types',
+    'Δεν υπάρχουν επιπλέον τεχνικά φίλτρα για αυτόν τον συνδυασμό. Μπορείτε να δείτε απευθείας τα αποτελέσματα.' => 'There are no additional technical filters for this combination. You can view the results directly.',
+    'Αν δεν γνωρίζετε κάποια προδιαγραφή, αφήστε το πεδίο κενό. Δεν εμφανίζουμε επιλογές που θα οδηγούσαν σε μηδενικά αποτελέσματα.' => 'If you do not know a specification, leave it blank. We do not show options that would lead to zero results.',
+    'Επιλέξτε κατηγορία και το εργαλείο θα σας δείχνει σε κάθε επόμενο βήμα μόνο κριτήρια που αντιστοιχούν σε πραγματικά διαθέσιμα προϊόντα.' => 'Choose a category and the tool will show only criteria tied to actually available products at every next step.',
+    'Διαστάσεις' => 'Dimensions',
+    'Χωρίς διαστάσεις' => 'Without dimensions',
+    'Αναμονή διαστάσεων' => 'Waiting for dimensions',
 ];
