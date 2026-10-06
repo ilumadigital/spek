@@ -8,16 +8,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
-$materials = get_terms(spek_language_args([
-    'taxonomy' => 'product_material',
-    'hide_empty' => false,
-]));
-
-$series = get_terms(spek_language_args([
-    'taxonomy' => 'product_series',
-    'hide_empty' => false,
-]));
 ?>
 
 <div class="spek-finder-panel" data-step="specs">
@@ -27,46 +17,43 @@ $series = get_terms(spek_language_args([
             <small><?php esc_html_e('Βήμα 3 από 3', 'spek-theme'); ?></small>
         </div>
         <h2><?php esc_html_e('Περιορίστε τα αποτελέσματα.', 'spek-theme'); ?></h2>
-        <p><?php esc_html_e('Τα παρακάτω πεδία είναι προαιρετικά. Συμπληρώστε μόνο όσα γνωρίζετε.', 'spek-theme'); ?></p>
+        <p><?php esc_html_e('Κάθε επιλογή που εμφανίζεται παρακάτω υπάρχει πραγματικά στα προϊόντα που ταιριάζουν ήδη με τα προηγούμενα βήματα.', 'spek-theme'); ?></p>
     </div>
 
-    <div class="spek-finder-form-grid">
-        <div class="spek-finder-field">
+    <div class="spek-finder-facet-state" data-specs-loading hidden>
+        <span class="spek-finder-loading__spinner" aria-hidden="true"></span>
+        <span><?php esc_html_e('Ενημερώνουμε τα διαθέσιμα χαρακτηριστικά…', 'spek-theme'); ?></span>
+    </div>
+
+    <div class="spek-finder-form-grid" data-specs-grid>
+        <div class="spek-finder-field" data-facet-field="material">
             <div class="spek-finder-field__label">
                 <label for="finder-material"><?php esc_html_e('Υλικό', 'spek-theme'); ?></label>
                 <span><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></span>
             </div>
             <select id="finder-material" name="product_material">
-                <option value=""><?php esc_html_e('Όλα τα υλικά', 'spek-theme'); ?></option>
-                <?php if (!empty($materials) && !is_wp_error($materials)) : ?>
-                    <?php foreach ($materials as $material) : ?>
-                        <option value="<?php echo esc_attr($material->slug); ?>"><?php echo esc_html($material->name); ?></option>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                <option value=""><?php esc_html_e('Όλα τα διαθέσιμα υλικά', 'spek-theme'); ?></option>
             </select>
         </div>
 
-        <div class="spek-finder-field">
+        <div class="spek-finder-field" data-facet-field="series">
             <div class="spek-finder-field__label">
                 <label for="finder-series"><?php esc_html_e('Σειρά προϊόντος', 'spek-theme'); ?></label>
                 <span><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></span>
             </div>
             <select id="finder-series" name="product_series">
-                <option value=""><?php esc_html_e('Όλες οι σειρές', 'spek-theme'); ?></option>
-                <?php if (!empty($series) && !is_wp_error($series)) : ?>
-                    <?php foreach ($series as $item) : ?>
-                        <option value="<?php echo esc_attr($item->slug); ?>"><?php echo esc_html($item->name); ?></option>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                <option value=""><?php esc_html_e('Όλες οι διαθέσιμες σειρές', 'spek-theme'); ?></option>
             </select>
         </div>
 
-        <div class="spek-finder-field">
+        <div class="spek-finder-field" data-facet-field="installation">
             <div class="spek-finder-field__label">
                 <label for="finder-installation"><?php esc_html_e('Τύπος εγκατάστασης', 'spek-theme'); ?></label>
                 <span><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></span>
             </div>
-            <input id="finder-installation" type="text" name="product_installation_type" placeholder="<?php esc_attr_e('π.χ. εσωτερική, επιτοίχια, γενικής χρήσης', 'spek-theme'); ?>">
+            <select id="finder-installation" name="product_installation_type">
+                <option value=""><?php esc_html_e('Όλοι οι διαθέσιμοι τύποι', 'spek-theme'); ?></option>
+            </select>
         </div>
 
         <div class="spek-finder-field">
@@ -78,9 +65,14 @@ $series = get_terms(spek_language_args([
         </div>
     </div>
 
-    <div class="spek-finder-specs-note">
+    <div class="spek-finder-specs-note" data-specs-empty hidden>
         <span aria-hidden="true">i</span>
-        <p><?php esc_html_e('Αν δεν γνωρίζετε κάποια προδιαγραφή, αφήστε το πεδίο κενό. Το εργαλείο εύρεσης προϊόντος θα χρησιμοποιήσει τις προηγούμενες επιλογές.', 'spek-theme'); ?></p>
+        <p><?php esc_html_e('Δεν υπάρχουν επιπλέον τεχνικά φίλτρα για αυτόν τον συνδυασμό. Μπορείτε να δείτε απευθείας τα αποτελέσματα.', 'spek-theme'); ?></p>
+    </div>
+
+    <div class="spek-finder-specs-note" data-specs-note>
+        <span aria-hidden="true">i</span>
+        <p><?php esc_html_e('Αν δεν γνωρίζετε κάποια προδιαγραφή, αφήστε το πεδίο κενό. Δεν εμφανίζουμε επιλογές που θα οδηγούσαν σε μηδενικά αποτελέσματα.', 'spek-theme'); ?></p>
     </div>
 
     <div class="spek-finder-actions">
