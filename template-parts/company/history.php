@@ -68,7 +68,7 @@ $chapters = [
         'text' => '',
         'milestones' => [],
     ],
-]
+];
 ?>
 
 <!--<section class="section company-history">-->
