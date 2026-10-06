@@ -307,11 +307,12 @@ function spek_finder_product_dimensions_label(int $post_id): string
 
 /**
  * Build a dimension clause that supports future structured fields and the current free-text dimensions field.
- * A small tolerance is allowed on dedicated numeric fields because seat covers are commonly specified approximately.
+ * Kept for backwards compatibility with older callers; the active finder now
+ * performs product-level orientation-aware matching with a 5 cm tolerance.
  */
 function spek_finder_dimension_meta_clause(string $structured_key, float $value): array
 {
-    $tolerance = 1.5;
+    $tolerance = 5.0;
     $clause = [
         'relation' => 'OR',
         [
