@@ -18888,20 +18888,11 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
     text-transform: uppercase;
 }
 
-.why-spek__benefits-intro::after {
-    content: "";
-    flex: 1 1 auto;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(15, 76, 129, .20), rgba(15, 76, 129, .05));
-}
-
 .why-spek__benefits {
     position: relative;
     z-index: 2;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    border-top: 1px solid rgba(15, 76, 129, .14);
-    border-bottom: 1px solid rgba(15, 76, 129, .08);
 }
 
 .why-spek__benefit {
