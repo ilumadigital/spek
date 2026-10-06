@@ -18866,3 +18866,155 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
         font-size: 10.5px !important;
     }
 }
+
+
+/* Why SPEK — corporate borderless benefits */
+.why-spek__benefits-intro {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin: 62px 0 22px;
+}
+
+.why-spek__benefits-intro > span {
+    flex: 0 0 auto;
+    color: var(--color-accent);
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+}
+
+.why-spek__benefits-intro::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(15, 76, 129, .20), rgba(15, 76, 129, .05));
+}
+
+.why-spek__benefits {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid rgba(15, 76, 129, .14);
+    border-bottom: 1px solid rgba(15, 76, 129, .08);
+}
+
+.why-spek__benefit {
+    position: relative;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 14px;
+    min-width: 0;
+    padding: 28px 26px 30px 0;
+}
+
+.why-spek__benefit:not(:first-child) {
+    padding-left: 26px;
+}
+
+.why-spek__benefit:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    top: 28px;
+    bottom: 30px;
+    left: 0;
+    width: 1px;
+    background: rgba(15, 76, 129, .10);
+}
+
+.why-spek__benefit::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--color-accent);
+    transition: width .25s ease;
+}
+
+.why-spek__benefit:hover::after {
+    width: 54px;
+}
+
+.why-spek__benefit-index {
+    padding-top: 2px;
+    color: rgba(15, 76, 129, .58);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .10em;
+}
+
+.why-spek__benefit-copy {
+    min-width: 0;
+}
+
+.why-spek__benefit h3 {
+    margin: 0 0 10px;
+    color: var(--color-ink);
+    font-size: 20px;
+    line-height: 1.12;
+    letter-spacing: -.025em;
+}
+
+.why-spek__benefit p {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 14px;
+    line-height: 1.62;
+}
+
+@media (max-width: 1100px) {
+    .why-spek__benefits {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .why-spek__benefit:nth-child(3),
+    .why-spek__benefit:nth-child(4) {
+        border-top: 1px solid rgba(15, 76, 129, .08);
+    }
+
+    .why-spek__benefit:nth-child(3) {
+        padding-left: 0;
+    }
+
+    .why-spek__benefit:nth-child(3)::before {
+        display: none;
+    }
+}
+
+@media (max-width: 680px) {
+    .why-spek__benefits-intro {
+        margin-top: 44px;
+    }
+
+    .why-spek__benefits {
+        grid-template-columns: 1fr;
+        border-bottom: 0;
+    }
+
+    .why-spek__benefit,
+    .why-spek__benefit:not(:first-child),
+    .why-spek__benefit:nth-child(3) {
+        padding: 22px 0 24px;
+    }
+
+    .why-spek__benefit:not(:first-child),
+    .why-spek__benefit:nth-child(3),
+    .why-spek__benefit:nth-child(4) {
+        border-top: 1px solid rgba(15, 76, 129, .08);
+    }
+
+    .why-spek__benefit:not(:first-child)::before {
+        display: none;
+    }
+
+    .why-spek__benefit h3 {
+        font-size: 19px;
+    }
+}
