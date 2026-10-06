@@ -518,13 +518,14 @@ function spek_ajax_product_finder_facets(): void
     if (!$is_seat_cover) {
         $application_ids = spek_finder_product_ids($application_filters, $lang, 'product_application');
 
-        $applications = spek_finder_merge_options(
-            spek_finder_term_options($application_ids, 'product_application', $lang),
-            spek_finder_meta_options(
-                $application_ids,
-                ['_spek_product_application', 'product_application_text'],
-                $lang
-            )
+        // Application choices must come exclusively from the canonical
+        // product_application taxonomy shown in wp-admin. Do not synthesize
+        // extra choices from free-text product meta such as
+        // "Μπαλκόνι / ταράτσα".
+        $applications = spek_finder_term_options(
+            $application_ids,
+            'product_application',
+            $lang
         );
     }
 
