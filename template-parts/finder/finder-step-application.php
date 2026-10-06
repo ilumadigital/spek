@@ -107,6 +107,11 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
             </article>
+
+            <div class="spek-finder-measure-tolerance">
+                <span aria-hidden="true">±5</span>
+                <p><?php esc_html_e('Θα εμφανίσουμε και καλύμματα με απόκλιση έως 5 cm σε κάθε διάσταση. Ελέγχουμε και τις δύο φορές τη διάταξη των μετρήσεων, ώστε ένα προϊόν 50 × 40 cm να μπορεί να ταιριάξει και με αναζήτηση 40 × 50 cm. Στα αποτελέσματα θα βλέπετε πάντα τις πραγματικές διαστάσεις κάθε προϊόντος.', 'spek-theme'); ?></p>
+            </div>
         </div>
 
         <div class="spek-finder-specs-note" data-cover-no-dimensions-note hidden>
