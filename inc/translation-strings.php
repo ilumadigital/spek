@@ -735,4 +735,6 @@ return [
     'Διαστάσεις' => 'SPEK Product Finder',
     'Χωρίς διαστάσεις' => 'SPEK Product Finder',
     'Αναμονή διαστάσεων' => 'SPEK Product Finder',
+
+    'Δεν απαιτείται' => 'SPEK Product Finder',
 ];
