@@ -588,4 +588,6 @@ return [
     'Διαστάσεις' => 'Dimensions',
     'Χωρίς διαστάσεις' => 'Without dimensions',
     'Αναμονή διαστάσεων' => 'Waiting for dimensions',
+
+    'Δεν απαιτείται' => 'Not required',
 ];
