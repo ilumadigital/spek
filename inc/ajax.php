@@ -186,6 +186,30 @@ function spek_finder_query_parts(array $filters, string $lang, string $exclude_t
         }
 
         $selected = (string) $filters[$taxonomy];
+
+        // Finder Step 1 uses the same curated public groups as the homepage/archive.
+        // "diafora" in particular is a virtual group that spans all non-primary
+        // product categories, so treating it as one taxonomy slug returns the wrong set.
+        if (
+            $taxonomy === 'product_category'
+            && function_exists('spek_home_category_group_definitions')
+            && function_exists('spek_product_category_group_term_ids')
+        ) {
+            $definitions = spek_home_category_group_definitions();
+
+            if (isset($definitions[$selected])) {
+                $group_term_ids = spek_product_category_group_term_ids([$selected]);
+
+                $tax_query[] = [
+                    'taxonomy' => 'product_category',
+                    'field' => 'term_id',
+                    'terms' => $group_term_ids ?: [0],
+                    'operator' => 'IN',
+                ];
+                continue;
+            }
+        }
+
         $meta_option = spek_finder_decode_meta_option($selected);
 
         // The current database contains both taxonomy-backed and imported meta-backed
