@@ -18770,3 +18770,79 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
         padding: 13px 14px;
     }
 }
+
+
+/* Products hero finder — simplified 50/50 layout */
+.products-archive .products-archive__hero-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: clamp(36px, 4vw, 64px) !important;
+}
+
+.products-archive .products-hero-finder {
+    width: 100% !important;
+    min-height: 176px !important;
+    padding: 28px 30px 24px !important;
+    grid-template-columns: 62px minmax(0, 1fr) !important;
+    gap: 16px 20px !important;
+}
+
+.products-archive .products-hero-finder__eyebrow {
+    display: none !important;
+}
+
+.products-archive .products-hero-finder__icon {
+    width: 62px !important;
+    height: 62px !important;
+}
+
+.products-archive .products-hero-finder__content {
+    gap: 7px !important;
+}
+
+.products-archive .products-hero-finder__content strong {
+    font-size: clamp(25px, 2vw, 30px) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -.045em !important;
+}
+
+.products-archive .products-hero-finder__content small {
+    max-width: 430px !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+}
+
+.products-archive .products-hero-finder__cta {
+    min-height: 42px !important;
+    margin-top: 0 !important;
+    font-size: 12px !important;
+}
+
+@media (max-width: 920px) {
+    .products-archive .products-archive__hero-inner {
+        grid-template-columns: 1fr !important;
+    }
+
+    .products-archive .products-hero-finder {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 680px) {
+    .products-archive .products-hero-finder {
+        grid-template-columns: 50px minmax(0, 1fr) !important;
+        padding: 21px 18px 18px !important;
+    }
+
+    .products-archive .products-hero-finder__icon {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .products-archive .products-hero-finder__content strong {
+        font-size: 21px !important;
+    }
+
+    .products-archive .products-hero-finder__content small {
+        font-size: 11.5px !important;
+    }
+}
