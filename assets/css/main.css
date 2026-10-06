@@ -18702,3 +18702,32 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
         padding: 17px;
     }
 }
+
+
+/* SPEK finder result dimensions */
+.spek-product-card__finder-dimensions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border: 1px solid rgba(15, 76, 129, .10);
+    border-radius: 12px;
+    background: rgba(15, 76, 129, .045);
+}
+
+.spek-product-card__finder-dimensions span {
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.spek-product-card__finder-dimensions strong {
+    color: var(--color-ink);
+    font-size: 14px;
+    font-weight: 800;
+    text-align: right;
+}
