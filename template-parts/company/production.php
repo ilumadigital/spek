@@ -77,12 +77,12 @@ $steps = [
             <div class="company-facility__content">
                 <span class="eyebrow"><?php esc_html_e('Παραγωγική βάση', 'spek-theme'); ?></span>
                 <h2><?php esc_html_e('8.100 m² αφιερωμένα στην εξέλιξη.', 'spek-theme'); ?></h2>
-                <p><?php esc_html_e('Το 2008 η SPEK απέκτησε οικόπεδο 8.100 m² στο Τανάγρα και το 2010 μεταφέρθηκε στις νέες ιδιόκτητες εγκαταστάσεις της, δημιουργώντας παράλληλα νέο κέντρο διανομής.', 'spek-theme'); ?></p>
+                <p><?php esc_html_e('Το 2008 η SPEK απέκτησε οικόπεδο 8.100 m² στην Τανάγρα και το 2010 μεταφέρθηκε στις νέες ιδιόκτητες εγκαταστάσεις της, δημιουργώντας παράλληλα νέο κέντρο διανομής.', 'spek-theme'); ?></p>
             </div>
             <div class="company-facility__visual company-facility__visual--photo">
                 <img
                     src="<?php echo esc_url($iluma_image_base . 'spek-website-new-factory.png'); ?>"
-                    alt="<?php esc_attr_e('Οι ιδιόκτητες εγκαταστάσεις της SPEK στο Τανάγρα', 'spek-theme'); ?>"
+                    alt="<?php esc_attr_e('Οι ιδιόκτητες εγκαταστάσεις της SPEK στην Τανάγρα', 'spek-theme'); ?>"
                     loading="lazy"
                     decoding="async"
                 >
