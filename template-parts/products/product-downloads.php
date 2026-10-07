@@ -29,21 +29,21 @@ if (empty($datasheets) && empty($catalogues)) {
     <div class="container">
         <div class="downloads-box downloads-box--product">
             <div>
-                <span class="eyebrow"><?php esc_html_e('Downloads', 'spek-theme'); ?></span>
+                <span class="eyebrow"><?php esc_html_e('Λήψεις', 'spek-theme'); ?></span>
                 <h2><?php esc_html_e('Αρχεία & κατάλογοι προϊόντος', 'spek-theme'); ?></h2>
-                <p><?php esc_html_e('Κατεβάστε διαθέσιμα datasheets, τεχνικά έντυπα και τον κατάλογο για το συγκεκριμένο προϊόν.', 'spek-theme'); ?></p>
+                <p><?php esc_html_e('Κατεβάστε διαθέσιμα τεχνικά φύλλα, τεχνικά έντυπα και τον κατάλογο για το συγκεκριμένο προϊόν.', 'spek-theme'); ?></p>
             </div>
 
             <div class="product-download-list">
                 <?php foreach ($datasheets as $index => $datasheet) : ?>
                     <a href="<?php echo esc_url($datasheet); ?>" class="product-download-item" target="_blank" rel="noopener">
-                        <span class="product-download-item__type"><?php esc_html_e('PDF / Datasheet', 'spek-theme'); ?></span>
+                        <span class="product-download-item__type"><?php esc_html_e('PDF / Τεχνικό φύλλο', 'spek-theme'); ?></span>
                         <strong>
                             <?php
                             echo esc_html(
                                 count($datasheets) > 1
-                                    ? sprintf(__('Datasheet %d', 'spek-theme'), (int) $index + 1)
-                                    : __('Λήψη Datasheet', 'spek-theme')
+                                    ? sprintf(__('Τεχνικό φύλλο %d', 'spek-theme'), (int) $index + 1)
+                                    : __('Λήψη τεχνικού φύλλου', 'spek-theme')
                             );
                             ?>
                         </strong>
