@@ -72,6 +72,7 @@ if (!function_exists('spek_header_product_icon')) {
     }
 }
 
+$is_home = is_front_page() || is_home();
 $is_company = is_page(['company-details', 'company']) || is_page_template('templates/template-company.php');
 $is_products = is_post_type_archive('spek_product') || is_singular('spek_product') || is_tax('product_category');
 $is_catalogue = is_page('catalogues') || is_page_template('templates/template-catalogues.php') || is_singular('spek_catalogue');
@@ -93,6 +94,12 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
 
         <nav class="site-nav spek-primary-nav" aria-label="<?php esc_attr_e('Κύρια πλοήγηση', 'spek-theme'); ?>">
             <ul class="site-nav__menu" id="primary-menu">
+                <li class="menu-item <?php echo $is_home ? 'is-current' : ''; ?>">
+                    <a href="<?php echo esc_url(spek_page_url('')); ?>">
+                        <?php esc_html_e('Αρχική', 'spek-theme'); ?>
+                    </a>
+                </li>
+
                 <li class="menu-item <?php echo $is_company ? 'is-current' : ''; ?>">
                     <a href="<?php echo esc_url(spek_page_url('company/')); ?>">
                         <?php esc_html_e('Η Εταιρεία', 'spek-theme'); ?>
@@ -116,7 +123,7 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
 
                 <li class="menu-item <?php echo $is_catalogue ? 'is-current' : ''; ?>">
                     <a href="<?php echo esc_url(spek_page_url('catalogues/')); ?>">
-                        <?php echo esc_html(function_exists('spek_is_english') && spek_is_english() ? 'Product Catalogue' : 'Κατάλογος Προϊόντων'); ?>
+                        <?php esc_html_e('Κατάλογος', 'spek-theme'); ?>
                     </a>
                 </li>
 
@@ -201,6 +208,12 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
 
         <nav class="mobile-menu__nav-wrap" aria-label="<?php esc_attr_e('Πλοήγηση κινητού', 'spek-theme'); ?>">
             <ul class="mobile-menu__nav" id="mobile-primary-menu">
+                <li class="<?php echo $is_home ? 'is-current' : ''; ?>">
+                    <a href="<?php echo esc_url(spek_page_url('')); ?>">
+                        <?php esc_html_e('Αρχική', 'spek-theme'); ?>
+                    </a>
+                </li>
+
                 <li class="<?php echo $is_company ? 'is-current' : ''; ?>">
                     <a href="<?php echo esc_url(spek_page_url('company/')); ?>">
                         <?php esc_html_e('Η Εταιρεία', 'spek-theme'); ?>
