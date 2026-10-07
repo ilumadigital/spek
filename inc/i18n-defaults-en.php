@@ -707,4 +707,13 @@ return [
     'Σύγχρονη γραμμή παραγωγής με μηχανές χύτευσης με έγχυση' => 'Modern production line with injection moulding machines',
     'Πλοήγηση κινητού' => 'Mobile navigation',
     'Επιλογή γλώσσας' => 'Language switcher',
+
+    // Premium international presence — 2026-10-07.
+    'Από την Ελλάδα, σε διεθνείς αγορές.' => 'From Greece to international markets.',
+    'Στοιχεία διεθνούς παρουσίας' => 'International presence details',
+    'Πρώτες εξαγωγές' => 'First exports',
+    'Ευρώπη' => 'Europe',
+    'Μεσόγειος' => 'Mediterranean',
+    'Μέση Ανατολή' => 'Middle East',
+    'Ελλάδα' => 'Greece',
 ];
