@@ -853,4 +853,13 @@ return [
     'Σύγχρονη γραμμή παραγωγής με μηχανές χύτευσης με έγχυση' => 'SPEK Frontend',
     'Πλοήγηση κινητού' => 'SPEK Frontend',
     'Επιλογή γλώσσας' => 'SPEK Frontend',
+
+    // Premium international presence — 2026-10-07.
+    'Από την Ελλάδα, σε διεθνείς αγορές.' => 'SPEK Company',
+    'Στοιχεία διεθνούς παρουσίας' => 'SPEK Company',
+    'Πρώτες εξαγωγές' => 'SPEK Company',
+    'Ευρώπη' => 'SPEK Company',
+    'Μεσόγειος' => 'SPEK Company',
+    'Μέση Ανατολή' => 'SPEK Company',
+    'Ελλάδα' => 'SPEK Company',
 ];
