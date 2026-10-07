@@ -966,17 +966,31 @@ function spek_partner_import_locator_coords(array $row): array
             'Attributes' => 'results.position',
             'Accept' => 'application/json',
             'Accept-Language' => 'el-GR,el;q=0.9,en;q=0.8',
+            'Referer' => home_url('/'),
+            'Origin' => home_url('/'),
         ],
     ]);
 
-    if (is_wp_error($response) || (int) wp_remote_retrieve_response_code($response) !== 200) {
-        return [];
+    if (is_wp_error($response)) {
+        return ['error' => $response->get_error_message(), 'source' => 'TomTom failed'];
     }
 
+    $response_code = (int) wp_remote_retrieve_response_code($response);
     $body = json_decode((string) wp_remote_retrieve_body($response), true);
+
+    if ($response_code !== 200) {
+        $api_message = is_array($body)
+            ? (string) ($body['detailedError']['message'] ?? $body['error']['message'] ?? $body['message'] ?? '')
+            : '';
+        return [
+            'error' => trim('TomTom HTTP ' . $response_code . ($api_message !== '' ? ': ' . sanitize_text_field($api_message) : '')),
+            'source' => 'TomTom failed',
+        ];
+    }
+
     $coords = $body['results'][0]['position']['coordinates'] ?? null;
     if (!is_array($coords) || count($coords) < 2) {
-        return [];
+        return ['error' => 'TomTom returned no coordinates for ' . $query, 'source' => 'TomTom failed'];
     }
 
     $lng = (float) $coords[0];
@@ -1030,7 +1044,7 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
     // For API-matched Google URLs, do not source coordinates from Google data.
     // The URL only contains place_id/query, so this naturally falls through to TomTom.
     $coords = spek_partner_import_locator_coords($coords_row);
-    if ($coords) {
+    if (!empty($coords['latitude']) && !empty($coords['longitude'])) {
         $stats['geocoded']++;
     }
 
@@ -1122,7 +1136,10 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
             'google_name' => (string) ($google['name'] ?? ''),
             'google_address' => (string) ($google['address'] ?? ''),
             'coords_source' => (string) ($coords['source'] ?? ''),
-            'note' => (string) ($google['note'] ?? ''),
+            'note' => trim(implode(' | ', array_filter([
+                (string) ($google['note'] ?? ''),
+                !empty($coords['error']) ? 'Locator: ' . (string) $coords['error'] : '',
+            ]))),
         ];
     }
 }
