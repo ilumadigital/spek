@@ -24,7 +24,7 @@ if (empty($videos)) {
 <section class="section product-media" id="product-videos">
     <div class="container">
         <div class="section-heading section-heading--compact">
-            <span class="eyebrow"><?php esc_html_e('Video', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('Βίντεο', 'spek-theme'); ?></span>
             <h2><?php esc_html_e('Βίντεο προϊόντος', 'spek-theme'); ?></h2>
         </div>
 
