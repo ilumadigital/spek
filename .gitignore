@@ -1,1 +1,4 @@
 spek_2026_catalogue.pdf
+
+# Keep the locally managed homepage hero video out of Git operations.
+assets/videos/spek_bg.mp4
