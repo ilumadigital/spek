@@ -15,7 +15,7 @@ if (is_singular('spek_product')) {
     if ($id && spek_i18n_raw_post_translation((int) $id, 'title') === '') { $en_url = ''; }
 }
 ?>
-<div class="language-switcher" aria-label="<?php esc_attr_e('Language switcher', 'spek-theme'); ?>">
+<div class="language-switcher" aria-label="<?php esc_attr_e('Επιλογή γλώσσας', 'spek-theme'); ?>">
     <a href="<?php echo esc_url($el_url); ?>" class="<?php echo $current === 'el' ? 'is-active' : ''; ?>" lang="el" hreflang="el" aria-label="<?php esc_attr_e('Ελληνικά', 'spek-theme'); ?>"<?php if ($current === 'el') : ?> aria-current="true"<?php endif; ?>>
         <img src="https://flagcdn.com/gr.svg" width="24" height="16" alt="<?php esc_attr_e('Ελληνικά', 'spek-theme'); ?>">
     </a>
