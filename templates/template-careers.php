@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Careers
+ * Template Name: Καριέρα
  *
  * @package SpekTheme
  */
@@ -22,7 +22,7 @@ $careers = new WP_Query(spek_language_args([
 
     <section class="page-hero careers-hero">
         <div class="container">
-            <span class="eyebrow"><?php esc_html_e('Careers', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('Καριέρα', 'spek-theme'); ?></span>
             <h1><?php esc_html_e('Καριέρα στη SPEK', 'spek-theme'); ?></h1>
             <p><?php esc_html_e('Ανακαλύψτε διαθέσιμες θέσεις εργασίας ή στείλτε μας το βιογραφικό σας για μελλοντικές ευκαιρίες.', 'spek-theme'); ?></p>
         </div>
