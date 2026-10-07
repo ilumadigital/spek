@@ -26,7 +26,7 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/';
 
             <div class="hero-actions">
                 <a href="<?php echo esc_url(home_url('/product-finder/')); ?>" class="button button-primary">
-                    <?php esc_html_e('Άνοιγμα Product Finder', 'spek-theme'); ?>
+                    <?php esc_html_e('Άνοιγμα οδηγού εύρεσης προϊόντος', 'spek-theme'); ?>
                 </a>
 
                 <a href="<?php echo esc_url(home_url('/products/')); ?>" class="button button-secondary">
