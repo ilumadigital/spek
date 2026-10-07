@@ -60,7 +60,7 @@ get_header();
                         alt="SPEK"
                         class="spek-brand-logo"
                     >
-                    <span>/ Contact</span>
+                    <span><?php esc_html_e('/ Επικοινωνία', 'spek-theme'); ?></span>
                 </span>
 
                 <h1><?php esc_html_e('Επικοινωνία με τη SPEK.', 'spek-theme'); ?></h1>
@@ -76,12 +76,12 @@ get_header();
                         class="spek-brand-logo"
                     >
                     <i></i>
-                    <small>Since 1990</small>
+                    <small><?php esc_html_e('Από το 1990', 'spek-theme'); ?></small>
                 </div>
             </div>
 
             <aside class="contact-phone-card" data-reveal style="--reveal-delay: 100ms;">
-                <span class="eyebrow"><?php esc_html_e('Direct Contact', 'spek-theme'); ?></span>
+                <span class="eyebrow"><?php esc_html_e('Άμεση επικοινωνία', 'spek-theme'); ?></span>
                 <h2><?php esc_html_e('Άμεση επικοινωνία.', 'spek-theme'); ?></h2>
 
                 <a class="contact-phone-card__link" href="tel:<?php echo esc_attr($phone_href); ?>">
@@ -99,7 +99,7 @@ get_header();
 
             <div class="contact-form-section__intro" data-reveal>
                 <div>
-                    <span class="eyebrow"><?php esc_html_e('Contact Form', 'spek-theme'); ?></span>
+                    <span class="eyebrow"><?php esc_html_e('Φόρμα επικοινωνίας', 'spek-theme'); ?></span>
                     <h2><?php esc_html_e('Στείλτε μας μήνυμα', 'spek-theme'); ?></h2>
                 </div>
 
@@ -226,7 +226,7 @@ get_header();
                             </div>
 
                             <div class="form-row">
-                                <label for="contact-email">Email</label>
+                                <label for="contact-email"><?php esc_html_e('Ηλ. ταχυδρομείο', 'spek-theme'); ?></label>
                                 <input
                                     id="contact-email"
                                     type="email"
@@ -334,7 +334,7 @@ get_header();
                     alt="SPEK"
                     class="spek-brand-logo spek-brand-logo--inverse"
                 >
-                <span>· Schimatari</span>
+                <span><?php esc_html_e('· Σχηματάρι', 'spek-theme'); ?></span>
             </span>
             <h2><?php esc_html_e('Η SPEK στο Σχηματάρι.', 'spek-theme'); ?></h2>
             <p><?php esc_html_e('Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στο Σχηματάρι.', 'spek-theme'); ?></p>
