@@ -108,6 +108,61 @@
         return div.innerHTML;
     }
 
+    function isCountryWideQuery(query) {
+        const value = normalize(query);
+        return ['ellada', 'greece', 'ελλαδα', 'ελλασ'].includes(value);
+    }
+
+    function isForeignPartner(partner) {
+        const value = normalize([
+            partner.title,
+            partner.address,
+            partner.area,
+            partner.postcode,
+            partner.search,
+        ].join(' '));
+
+        return [
+            'romania',
+            'oradea',
+            'bihor',
+            'skopje',
+            'macedonia',
+        ].some((marker) => value.includes(marker));
+    }
+
+    function cachedPartnerCoordinates(partner) {
+        try {
+            const raw = window.localStorage.getItem('spek_partner_coords_' + partner.id);
+            if (!raw) {
+                return null;
+            }
+
+            const parsed = JSON.parse(raw);
+            const lat = Number.parseFloat(parsed.lat);
+            const lng = Number.parseFloat(parsed.lng);
+
+            if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                return { lat, lng };
+            }
+        } catch (error) {
+            return null;
+        }
+
+        return null;
+    }
+
+    function cachePartnerCoordinates(partner) {
+        try {
+            window.localStorage.setItem(
+                'spek_partner_coords_' + partner.id,
+                JSON.stringify({ lat: partner.lat, lng: partner.lng })
+            );
+        } catch (error) {
+            // Local storage is only a performance cache; ignore failures.
+        }
+    }
+
     function getRadiusKm() {
         const value = Number.parseFloat(radiusSelect ? radiusSelect.value : '10');
         return Number.isFinite(value) ? value : 10;
@@ -156,7 +211,7 @@
             }
         }
 
-        return {
+        const partner = {
             id: card.dataset.partnerId || '',
             title: card.dataset.title || '',
             area: card.dataset.area || '',
@@ -169,6 +224,16 @@
             marker: null,
             card,
         };
+
+        if (partner.lat === null || partner.lng === null) {
+            const cached = cachedPartnerCoordinates(partner);
+            if (cached) {
+                partner.lat = cached.lat;
+                partner.lng = cached.lng;
+            }
+        }
+
+        return partner;
     });
 
     function clearMap() {
@@ -358,6 +423,42 @@
         return { lat, lng };
     }
 
+    async function ensurePartnerCoordinates(partner) {
+        if (partner.lat !== null && partner.lng !== null) {
+            return true;
+        }
+
+        const query = [partner.address, partner.postcode, partner.area]
+            .filter(Boolean)
+            .join(', ');
+
+        if (!query) {
+            return false;
+        }
+
+        try {
+            const result = await geocodeQuery(query);
+            if (!result) {
+                return false;
+            }
+
+            partner.lat = result.lat;
+            partner.lng = result.lng;
+            cachePartnerCoordinates(partner);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async function hydrateMissingPartnerCoordinates(items) {
+        for (const partner of items) {
+            if (partner.lat === null || partner.lng === null) {
+                await ensurePartnerCoordinates(partner);
+            }
+        }
+    }
+
     function radiusMatches(origin) {
         const radiusKm = getRadiusKm();
 
@@ -402,12 +503,24 @@
         setStatus(spekText('Γίνεται αναζήτηση...'));
 
         const textResults = textMatches(query);
+
+        if (isCountryWideQuery(query)) {
+            const countryMatches = partners.filter((partner) => !isForeignPartner(partner));
+            await hydrateMissingPartnerCoordinates(countryMatches);
+            showPartners(countryMatches, null);
+            return;
+        }
+
         let origin = null;
         let distanceResults = [];
 
         try {
             origin = await geocodeQuery(query);
-            distanceResults = radiusMatches(origin);
+
+            if (origin) {
+                await hydrateMissingPartnerCoordinates(partners);
+                distanceResults = radiusMatches(origin);
+            }
         } catch (error) {
             origin = null;
             distanceResults = [];
