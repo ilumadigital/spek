@@ -30,7 +30,7 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
             <?php if ($hero_image) : ?>
                 <img
                     src="<?php echo esc_url($hero_image); ?>"
-                    alt="<?php esc_attr_e('Οι εγκαταστάσεις της SPEK στο Τανάγρα', 'spek-theme'); ?>"
+                    alt="<?php esc_attr_e('Οι εγκαταστάσεις της SPEK στην Τανάγρα', 'spek-theme'); ?>"
                     loading="eager"
                     decoding="async"
                 >
@@ -58,7 +58,7 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
         </article>
         <article class="company-fact">
             <strong>8.100 m²</strong>
-            <span><?php esc_html_e('Ιδιόκτητη παραγωγική βάση στο Τανάγρα', 'spek-theme'); ?></span>
+            <span><?php esc_html_e('Ιδιόκτητη παραγωγική βάση στην Τανάγρα', 'spek-theme'); ?></span>
         </article>
         <article class="company-fact">
             <strong>1992</strong>
