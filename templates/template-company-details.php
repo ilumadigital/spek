@@ -56,7 +56,7 @@ get_header();
 
             <div class="company-details-intro" data-reveal>
                 <div>
-                    <span class="eyebrow"><?php esc_html_e('Corporate Identity', 'spek-theme'); ?></span>
+                    <span class="eyebrow"><?php esc_html_e('Εταιρική ταυτότητα', 'spek-theme'); ?></span>
                     <h2><?php esc_html_e('Εταιρική ταυτότητα, με σαφήνεια.', 'spek-theme'); ?></h2>
                 </div>
 
