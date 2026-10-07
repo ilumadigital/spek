@@ -19009,3 +19009,380 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
         font-size: 19px;
     }
 }
+
+
+/* Company global presence — premium restore */
+.spek-company-page .company-global.company-global--premium {
+    position: relative;
+    overflow: visible;
+    padding: clamp(88px, 8vw, 132px) 0;
+    color: var(--color-ink);
+    background: #ffffff;
+}
+
+.spek-company-page .company-global.company-global--premium::before {
+    display: none;
+}
+
+.spek-company-page .company-global--premium .company-global__panel {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 34px 34px 96px 34px;
+    padding: clamp(34px, 5vw, 74px);
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 84% 14%, rgba(92, 192, 247, 0.22), transparent 24%),
+        radial-gradient(circle at 12% 92%, rgba(35, 111, 181, 0.20), transparent 30%),
+        linear-gradient(135deg, #071a2a 0%, #0a2e4e 45%, #0b4e82 100%);
+    box-shadow:
+        0 42px 110px rgba(10, 44, 73, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    isolation: isolate;
+}
+
+.spek-company-page .company-global--premium .company-global__panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.24;
+    background:
+        linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
+    background-size: 74px 74px;
+    mask-image: linear-gradient(135deg, rgba(0,0,0,.9), transparent 74%);
+}
+
+.spek-company-page .company-global--premium .company-global__panel::after {
+    content: "";
+    position: absolute;
+    right: -9%;
+    bottom: -34%;
+    width: 46vw;
+    height: 46vw;
+    min-width: 520px;
+    min-height: 520px;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124, 214, 255, 0.13), transparent 68%);
+    filter: blur(6px);
+}
+
+.spek-company-page .company-global--premium .company-global__inner {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(420px, 0.85fr);
+    gap: clamp(52px, 6vw, 104px);
+    align-items: center;
+}
+
+.spek-company-page .company-global--premium .company-global__copy {
+    max-width: 760px;
+}
+
+.spek-company-page .company-global--premium .eyebrow {
+    color: #bfe8ff;
+}
+
+.spek-company-page .company-global--premium .eyebrow::before {
+    background: #ffffff;
+}
+
+.spek-company-page .company-global--premium h2 {
+    max-width: 760px;
+    margin: 18px 0 24px;
+    color: #ffffff;
+    font-size: clamp(42px, 4.4vw, 70px);
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+    text-wrap: balance;
+}
+
+.spek-company-page .company-global--premium .company-global__lead {
+    max-width: 710px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.76);
+    font-size: clamp(16px, 1.25vw, 19px);
+    line-height: 1.72;
+}
+
+.spek-company-page .company-global--premium .company-global__proof {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.spek-company-page .company-global--premium .company-global__proof-item {
+    display: grid;
+    gap: 3px;
+    flex: 0 0 auto;
+}
+
+.spek-company-page .company-global--premium .company-global__proof-item strong {
+    color: #ffffff;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.035em;
+}
+
+.spek-company-page .company-global--premium .company-global__proof-item span {
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.spek-company-page .company-global--premium .company-global__regions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.spek-company-page .company-global--premium .company-global__regions span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.80);
+    background: rgba(255, 255, 255, 0.055);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.spek-company-page .company-global--premium .company-global__visual {
+    position: relative;
+    min-width: 0;
+}
+
+.spek-company-page .company-global--premium .company-global__map {
+    position: relative;
+    width: min(100%, 520px);
+    min-height: 0;
+    aspect-ratio: 1;
+    margin-left: auto;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.07), transparent 46%),
+        rgba(255, 255, 255, 0.025);
+    box-shadow:
+        inset 0 0 90px rgba(146, 220, 255, 0.06),
+        0 32px 90px rgba(0, 0, 0, 0.14);
+    transform: translateY(var(--company-depth-y, 0px));
+    transition: transform 0.18s ease-out;
+}
+
+.spek-company-page .company-global--premium .company-global__map::before,
+.spek-company-page .company-global--premium .company-global__map::after {
+    display: none;
+}
+
+.spek-company-page .company-global--premium .company-global__glow {
+    position: absolute;
+    inset: 17%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(107, 202, 255, 0.18), transparent 70%);
+    filter: blur(18px);
+}
+
+.spek-company-page .company-global--premium .company-global__globe {
+    position: absolute;
+    inset: 7%;
+    width: 86%;
+    height: 86%;
+    overflow: visible;
+    fill: none;
+    stroke: rgba(203, 237, 255, 0.17);
+    stroke-width: 1.15;
+}
+
+.spek-company-page .company-global--premium .company-global__route {
+    stroke: rgba(196, 234, 255, 0.44);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-dasharray: 4 8;
+    animation: spekGlobalRoute 8s linear infinite;
+}
+
+.spek-company-page .company-global--premium .company-global__route--two {
+    animation-delay: -2.4s;
+}
+
+.spek-company-page .company-global--premium .company-global__route--three {
+    animation-delay: -4.8s;
+}
+
+.spek-company-page .company-global--premium .company-global__hub {
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 112px;
+    height: 112px;
+    padding: 24px 18px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 50%;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.17), rgba(255,255,255,.07)),
+        rgba(5, 31, 51, 0.56);
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255,255,255,.16);
+    transform: translate(-50%, -50%);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.spek-company-page .company-global--premium .company-global__hub img {
+    width: 64px;
+    height: auto;
+    filter: brightness(0) invert(1);
+}
+
+.spek-company-page .company-global--premium .company-global__hub span {
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.spek-company-page .company-global--premium .company-global__pin {
+    z-index: 5;
+    width: 11px;
+    height: 11px;
+    border: 2px solid rgba(255, 255, 255, 0.86);
+    background: #71cfff;
+    box-shadow: 0 0 0 8px rgba(113, 207, 255, 0.10);
+}
+
+.spek-company-page .company-global--premium .company-global__pin--one {
+    left: 16%;
+    top: 21%;
+}
+
+.spek-company-page .company-global--premium .company-global__pin--two {
+    left: auto;
+    right: 12%;
+    top: 24%;
+}
+
+.spek-company-page .company-global--premium .company-global__pin--three {
+    left: auto;
+    right: 14%;
+    top: auto;
+    bottom: 15%;
+}
+
+.spek-company-page .company-global--premium .company-global__region-label {
+    position: absolute;
+    z-index: 6;
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.78);
+    background: rgba(4, 31, 50, 0.58);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.spek-company-page .company-global--premium .company-global__region-label--eu {
+    left: 5%;
+    top: 8%;
+}
+
+.spek-company-page .company-global--premium .company-global__region-label--med {
+    right: 3%;
+    top: 9%;
+}
+
+.spek-company-page .company-global--premium .company-global__region-label--me {
+    right: -2%;
+    bottom: 9%;
+}
+
+@keyframes spekGlobalRoute {
+    to {
+        stroke-dashoffset: -48;
+    }
+}
+
+@media (max-width: 1100px) {
+    .spek-company-page .company-global--premium .company-global__inner {
+        grid-template-columns: 1fr;
+        gap: 46px;
+    }
+
+    .spek-company-page .company-global--premium .company-global__map {
+        width: min(100%, 560px);
+        margin-inline: auto;
+    }
+}
+
+@media (max-width: 680px) {
+    .spek-company-page .company-global.company-global--premium {
+        padding-block: 72px;
+    }
+
+    .spek-company-page .company-global--premium .company-global__panel {
+        padding: 28px 20px 34px;
+        border-radius: 24px 24px 58px 24px;
+    }
+
+    .spek-company-page .company-global--premium h2 {
+        margin-top: 14px;
+        font-size: clamp(36px, 10vw, 48px);
+    }
+
+    .spek-company-page .company-global--premium .company-global__proof {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .spek-company-page .company-global--premium .company-global__map {
+        width: 100%;
+    }
+
+    .spek-company-page .company-global--premium .company-global__hub {
+        width: 92px;
+        height: 92px;
+        padding: 20px 14px 13px;
+    }
+
+    .spek-company-page .company-global--premium .company-global__hub img {
+        width: 52px;
+    }
+
+    .spek-company-page .company-global--premium .company-global__region-label {
+        font-size: 8px;
+        padding-inline: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spek-company-page .company-global--premium .company-global__route {
+        animation: none !important;
+    }
+}
