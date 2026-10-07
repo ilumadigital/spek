@@ -115,11 +115,11 @@ while (have_posts()) :
                         </div>
 
                         <div class="catalogue-viewer__hint">
-                            <?php esc_html_e('Χρησιμοποίησε τα βελάκια του πληκτρολογίου ή swipe για ξεφύλλισμα.', 'spek-theme'); ?>
+                            <?php esc_html_e('Χρησιμοποίησε τα βελάκια του πληκτρολογίου ή σύρε στην οθόνη για ξεφύλλισμα.', 'spek-theme'); ?>
                         </div>
 
                         <div class="catalogue-viewer__fallback" data-pdf-fallback hidden>
-                            <p><?php esc_html_e('Ο διαδραστικός viewer δεν μπόρεσε να φορτωθεί. Μπορείς να ανοίξεις το PDF απευθείας.', 'spek-theme'); ?></p>
+                            <p><?php esc_html_e('Η διαδραστική προβολή δεν μπόρεσε να φορτωθεί. Μπορείς να ανοίξεις το PDF απευθείας.', 'spek-theme'); ?></p>
                             <a class="button button-primary" href="<?php echo esc_url($pdf_url); ?>" target="_blank" rel="noopener">
                                 <?php esc_html_e('Άνοιγμα PDF', 'spek-theme'); ?>
                             </a>
