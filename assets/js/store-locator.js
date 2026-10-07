@@ -316,7 +316,6 @@
     
         const params = new URLSearchParams({
             query: normalizedQuery,
-            countryCodesIso2: 'GR',
             maxResults: '1',
             geopoliticalView: 'Unified',
         });
