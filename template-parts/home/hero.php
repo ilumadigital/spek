@@ -1,6 +1,6 @@
 <?php
 /**
- * Minimal homepage hero with factory background image.
+ * Minimal homepage hero with autoplay background video.
  *
  * @package SpekTheme
  */
@@ -9,14 +9,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+$hero_video_base = get_template_directory_uri() . '/assets/videos/';
 $hero_image_base = get_template_directory_uri() . '/assets/images/';
-
-$hero_slides = [
-    [
-        'image' => 'spek-website-new-factory-blue.png',
-        'alt'   => __('Παραγωγική εγκατάσταση SPEK με την εταιρική οπτική ταυτότητα', 'spek-theme'),
-    ],
-];
+$hero_video_file = get_template_directory() . '/assets/videos/spek_bg.mp4';
+$hero_video_name = file_exists($hero_video_file) ? 'spek_bg.mp4' : 'hero-bg.mp4';
 ?>
 
 <div class="spek-hero-stage" data-home-hero-stage>
@@ -24,16 +20,19 @@ $hero_slides = [
 <section class="spek-hero-v2 spek-hero-v2--minimal" data-hero-slider data-hero-delay="6000" data-home-hero>
 
     <div class="spek-hero-v2__bg" aria-hidden="true">
-        <?php foreach ($hero_slides as $index => $slide) : ?>
-            <div class="spek-hero-v2__slide<?php echo $index === 0 ? ' is-active' : ''; ?>" data-hero-slide>
-                <img
-                    src="<?php echo esc_url($hero_image_base . $slide['image']); ?>"
-                    alt="<?php echo esc_attr($slide['alt']); ?>"
-                    loading="eager"
-                    decoding="async"
-                >
-            </div>
-        <?php endforeach; ?>
+        <div class="spek-hero-v2__slide is-active" data-hero-slide>
+            <video
+                class="spek-hero-v2__video"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+                poster="<?php echo esc_url($hero_image_base . 'spek-website-new-factory-blue.png'); ?>"
+            >
+                <source src="<?php echo esc_url($hero_video_base . $hero_video_name); ?>" type="video/mp4">
+            </video>
+        </div>
     </div>
 
     <div class="spek-hero-v2__shade" aria-hidden="true"></div>
@@ -95,13 +94,21 @@ $hero_slides = [
     height: 100%;
 }
 
-.spek-hero-v2--minimal .spek-hero-v2__slide img {
+.spek-hero-v2--minimal .spek-hero-v2__slide img,
+.spek-hero-v2--minimal .spek-hero-v2__slide video {
+    display: block;
     width: 100%;
     height: 100%;
+    max-width: none;
     object-fit: cover;
     object-position: center center;
     filter: saturate(0.98) contrast(1.015) brightness(1.01);
     transform: scale(1.005);
+}
+
+.spek-hero-v2--minimal .spek-hero-v2__video {
+    position: absolute;
+    inset: 0;
 }
 
 .spek-hero-v2--minimal .spek-hero-v2__shade {
