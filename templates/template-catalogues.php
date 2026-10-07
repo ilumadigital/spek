@@ -24,7 +24,7 @@ $catalogues = new WP_Query(spek_language_args([
         <div class="container">
             <span class="eyebrow"><?php esc_html_e('Κατάλογος', 'spek-theme'); ?></span>
             <h1><?php esc_html_e('Κατάλογος Προϊόντων', 'spek-theme'); ?></h1>
-            <p><?php esc_html_e('Ο επίσημος κατάλογος SPEK, διαθέσιμος για online προβολή και λήψη PDF.', 'spek-theme'); ?></p>
+            <p><?php esc_html_e('Ο επίσημος κατάλογος SPEK, διαθέσιμος για διαδικτυακή προβολή και λήψη PDF.', 'spek-theme'); ?></p>
         </div>
     </section>
 
@@ -98,9 +98,9 @@ $catalogues = new WP_Query(spek_language_args([
 
                                 <div class="catalogue-book-card__content">
                                     <div class="catalogue-book-card__meta">
-                                        <span><?php esc_html_e('PDF Catalogue', 'spek-theme'); ?></span>
+                                        <span><?php esc_html_e('Κατάλογος PDF', 'spek-theme'); ?></span>
                                         <i aria-hidden="true"></i>
-                                        <span><?php esc_html_e('A4 Preview', 'spek-theme'); ?></span>
+                                        <span><?php esc_html_e('Προεπισκόπηση A4', 'spek-theme'); ?></span>
                                     </div>
 
                                     <h2><?php the_title(); ?></h2>
