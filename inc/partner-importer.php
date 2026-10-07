@@ -583,9 +583,36 @@ function spek_partner_import_read_csv(string $path)
     return $rows;
 }
 
+/**
+ * Fold Greek diacritics before comparisons.
+ *
+ * WordPress remove_accents() does not reliably strip Greek tonos/dialytika on
+ * all installations, so importer matching must normalize them explicitly.
+ */
+function spek_partner_import_fold_accents($value): string
+{
+    $value = mb_strtolower(trim((string) $value), 'UTF-8');
+    $value = strtr($value, [
+        'ά' => 'α',
+        'έ' => 'ε',
+        'ή' => 'η',
+        'ί' => 'ι',
+        'ϊ' => 'ι',
+        'ΐ' => 'ι',
+        'ό' => 'ο',
+        'ύ' => 'υ',
+        'ϋ' => 'υ',
+        'ΰ' => 'υ',
+        'ώ' => 'ω',
+        'ς' => 'σ',
+    ]);
+
+    return remove_accents($value);
+}
+
 function spek_partner_import_normalize_header($value): string
 {
-    $value = remove_accents(mb_strtolower(trim((string) $value), 'UTF-8'));
+    $value = spek_partner_import_fold_accents($value);
     $value = str_replace(['/', '\\'], ' ', $value);
     $value = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $value);
     return trim((string) preg_replace('/\s+/u', ' ', (string) $value));
@@ -657,7 +684,7 @@ function spek_partner_import_is_google_maps_url(string $value): bool
 /** Normalize comparison text. */
 function spek_partner_import_normalize_text(string $value): string
 {
-    $value = remove_accents(mb_strtolower(html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'UTF-8'));
+    $value = spek_partner_import_fold_accents(html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
     $value = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $value);
     return trim((string) preg_replace('/\s+/u', ' ', (string) $value));
 }
