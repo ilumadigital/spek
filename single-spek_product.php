@@ -210,7 +210,7 @@ if (!empty($product_manufacturers) && !is_wp_error($product_manufacturers)) {
 
                 <header class="product-main-content__header">
                     <div>
-                        <span class="eyebrow"><?php esc_html_e('Product Details', 'spek-theme'); ?></span>
+                        <span class="eyebrow"><?php esc_html_e('Στοιχεία προϊόντος', 'spek-theme'); ?></span>
                         <h2><?php esc_html_e('Πληροφορίες προϊόντος', 'spek-theme'); ?></h2>
                     </div>
 
@@ -225,7 +225,7 @@ if (!empty($product_manufacturers) && !is_wp_error($product_manufacturers)) {
                 <div class="product-main-content__grid">
                     <article class="product-description">
                         <div class="product-description__header">
-                            <span class="eyebrow"><?php esc_html_e('Description', 'spek-theme'); ?></span>
+                            <span class="eyebrow"><?php esc_html_e('Περιγραφή', 'spek-theme'); ?></span>
                             <h3><?php esc_html_e('Περιγραφή προϊόντος', 'spek-theme'); ?></h3>
                         </div>
 
