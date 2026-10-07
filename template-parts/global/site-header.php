@@ -199,7 +199,7 @@ $is_contact = is_page('contact') || is_page_template('templates/template-contact
             </div>
         </div>
 
-        <nav class="mobile-menu__nav-wrap" aria-label="<?php esc_attr_e('Mobile πλοήγηση', 'spek-theme'); ?>">
+        <nav class="mobile-menu__nav-wrap" aria-label="<?php esc_attr_e('Πλοήγηση κινητού', 'spek-theme'); ?>">
             <ul class="mobile-menu__nav" id="mobile-primary-menu">
                 <li class="<?php echo $is_company ? 'is-current' : ''; ?>">
                     <a href="<?php echo esc_url(spek_page_url('company/')); ?>">
