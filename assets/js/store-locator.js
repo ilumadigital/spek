@@ -452,10 +452,12 @@
     }
 
     async function hydrateMissingPartnerCoordinates(items) {
-        for (const partner of items) {
-            if (partner.lat === null || partner.lng === null) {
-                await ensurePartnerCoordinates(partner);
-            }
+        const missing = items.filter((partner) => partner.lat === null || partner.lng === null);
+        const batchSize = 4;
+
+        for (let index = 0; index < missing.length; index += batchSize) {
+            const batch = missing.slice(index, index + batchSize);
+            await Promise.all(batch.map((partner) => ensurePartnerCoordinates(partner)));
         }
     }
 
@@ -544,12 +546,13 @@
         setStatus(spekText('Εντοπίζεται η θέση σας...'));
 
         navigator.geolocation.getCurrentPosition(
-            function (position) {
+            async function (position) {
                 const origin = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude,
                 };
 
+                await hydrateMissingPartnerCoordinates(partners);
                 const matches = radiusMatches(origin);
 
                 showPartners(matches, origin);
