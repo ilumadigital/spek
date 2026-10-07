@@ -11,8 +11,8 @@ if (!defined('ABSPATH')) {
 
 $phone_display = '+30 22620 75000';
 $phone_href    = '+302262075000';
-$address       = __('Θέση Αχλαδιά Τόλια, Βαθύ Αυλίδος, Ευβοίας 32009, Τ.Θ. 159, Ελλάδα', 'spek-theme');
-$maps_url      = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($address);
+$address       = __('Πάροδος Αυτοκινητόδρομος ΠΑΘΕ, Τανάγρα 320 09, Ελλάδα', 'spek-theme');
+$maps_url      = 'https://maps.app.goo.gl/QnfrJtBAXDYHMEeD8';
 $contact_image = get_template_directory_uri() . '/assets/images/spek-website-new-factory.png';
 $form_status   = isset($_GET['contact_status'])
     ? sanitize_key(wp_unslash((string) $_GET['contact_status']))
@@ -321,7 +321,7 @@ get_header();
         <div class="contact-hub-location__media" data-reveal>
             <img
                 src="<?php echo esc_url($contact_image); ?>"
-                alt="<?php esc_attr_e('Παραγωγική βάση SPEK στο Σχηματάρι', 'spek-theme'); ?>"
+                alt="<?php esc_attr_e('Παραγωγική βάση SPEK στο Τανάγρα', 'spek-theme'); ?>"
                 loading="lazy"
                 decoding="async"
             >
@@ -334,10 +334,10 @@ get_header();
                     alt="SPEK"
                     class="spek-brand-logo spek-brand-logo--inverse"
                 >
-                <span><?php esc_html_e('· Σχηματάρι', 'spek-theme'); ?></span>
+                <span><?php esc_html_e('· Τανάγρα', 'spek-theme'); ?></span>
             </span>
-            <h2><?php esc_html_e('Η SPEK στο Σχηματάρι.', 'spek-theme'); ?></h2>
-            <p><?php esc_html_e('Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στο Σχηματάρι.', 'spek-theme'); ?></p>
+            <h2><?php esc_html_e('Η SPEK στο Τανάγρα.', 'spek-theme'); ?></h2>
+            <p><?php esc_html_e('Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στο Τανάγρα.', 'spek-theme'); ?></p>
             <address><?php echo esc_html($address); ?></address>
 
             <div class="contact-hub-location__actions">
