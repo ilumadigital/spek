@@ -43,6 +43,9 @@ $partners_query = new WP_Query(spek_language_args([
             $latitude       = get_post_meta($partner_id, 'partner_latitude', true);
             $longitude      = get_post_meta($partner_id, 'partner_longitude', true);
 
+            $phone_values = preg_split('/\s*(?:\/|\||,|;)\s*/u', (string) $phone);
+            $phone_values = array_values(array_filter(array_map('trim', is_array($phone_values) ? $phone_values : [])));
+
             /*
              * Fallback:
              * If lat/lng are empty but the Google Maps URL contains coordinates,
@@ -127,12 +130,17 @@ $partners_query = new WP_Query(spek_language_args([
                         </div>
                     <?php endif; ?>
 
-                    <?php if ($phone) : ?>
+                    <?php if (!empty($phone_values)) : ?>
                         <div class="partner-card__detail">
                             <strong><?php esc_html_e('Τηλέφωνο', 'spek-theme'); ?></strong>
-                            <a href="tel:<?php echo esc_attr(preg_replace('/\s+/', '', $phone)); ?>">
-                                <?php echo esc_html($phone); ?>
-                            </a>
+                            <span>
+                                <?php foreach ($phone_values as $phone_index => $phone_value) : ?>
+                                    <?php if ($phone_index > 0) : ?> / <?php endif; ?>
+                                    <a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $phone_value)); ?>">
+                                        <?php echo esc_html($phone_value); ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            </span>
                         </div>
                     <?php endif; ?>
 
