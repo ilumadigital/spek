@@ -157,7 +157,7 @@ $notices = [
                     <select id="career-department" name="department">
                         <option value=""><?php esc_html_e('Δεν έχω προτίμηση', 'spek-theme'); ?></option>
                         <option value="production"><?php esc_html_e('Παραγωγή', 'spek-theme'); ?></option>
-                        <option value="warehouse_logistics"><?php esc_html_e('Αποθήκη & Logistics', 'spek-theme'); ?></option>
+                        <option value="warehouse_logistics"><?php esc_html_e('Αποθήκη & Εφοδιαστική', 'spek-theme'); ?></option>
                         <option value="technical"><?php esc_html_e('Τεχνικό / Μηχανικό', 'spek-theme'); ?></option>
                         <option value="quality"><?php esc_html_e('Ποιότητα', 'spek-theme'); ?></option>
                         <option value="sales"><?php esc_html_e('Πωλήσεις / Εξυπηρέτηση', 'spek-theme'); ?></option>
@@ -182,7 +182,7 @@ $notices = [
                 </div>
 
                 <div class="career-field">
-                    <label for="career-portfolio"><?php esc_html_e('Portfolio / προσωπική σελίδα', 'spek-theme'); ?> <small><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></small></label>
+                    <label for="career-portfolio"><?php esc_html_e('Δείγμα εργασιών / προσωπική σελίδα', 'spek-theme'); ?> <small><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></small></label>
                     <input id="career-portfolio" type="url" name="portfolio" placeholder="https://…" inputmode="url">
                 </div>
             </div>
