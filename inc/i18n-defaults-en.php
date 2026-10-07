@@ -698,4 +698,13 @@ return [
     'Με επιφύλαξη παντός δικαιώματος.' => 'All rights reserved.',
     'Πολιτική Απορρήτου' => 'Privacy Policy',
     'Κατασκευή από' => 'Handcrafted by',
+
+    // Remaining Greek-first terminology audit — 2026-10-07.
+    'Χρησιμοποίησε τα βελάκια του πληκτρολογίου ή σύρε στην οθόνη για ξεφύλλισμα.' => 'Use the keyboard arrows or swipe to browse.',
+    'Η διαδραστική προβολή δεν μπόρεσε να φορτωθεί. Μπορείς να ανοίξεις το PDF απευθείας.' => 'The interactive viewer could not be loaded. You can open the PDF directly.',
+    'Αποθήκη & Εφοδιαστική' => 'Warehouse & Logistics',
+    'Δείγμα εργασιών / προσωπική σελίδα' => 'Portfolio / personal website',
+    'Σύγχρονη γραμμή παραγωγής με μηχανές χύτευσης με έγχυση' => 'Modern production line with injection moulding machines',
+    'Πλοήγηση κινητού' => 'Mobile navigation',
+    'Επιλογή γλώσσας' => 'Language switcher',
 ];
