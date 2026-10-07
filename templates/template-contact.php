@@ -321,7 +321,7 @@ get_header();
         <div class="contact-hub-location__media" data-reveal>
             <img
                 src="<?php echo esc_url($contact_image); ?>"
-                alt="<?php esc_attr_e('Παραγωγική βάση SPEK στο Τανάγρα', 'spek-theme'); ?>"
+                alt="<?php esc_attr_e('Παραγωγική βάση SPEK στην Τανάγρα', 'spek-theme'); ?>"
                 loading="lazy"
                 decoding="async"
             >
@@ -336,8 +336,8 @@ get_header();
                 >
                 <span><?php esc_html_e('· Τανάγρα', 'spek-theme'); ?></span>
             </span>
-            <h2><?php esc_html_e('Η SPEK στο Τανάγρα.', 'spek-theme'); ?></h2>
-            <p><?php esc_html_e('Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στο Τανάγρα.', 'spek-theme'); ?></p>
+            <h2><?php esc_html_e('Η SPEK στην Τανάγρα.', 'spek-theme'); ?></h2>
+            <p><?php esc_html_e('Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στην Τανάγρα.', 'spek-theme'); ?></p>
             <address><?php echo esc_html($address); ?></address>
 
             <div class="contact-hub-location__actions">
