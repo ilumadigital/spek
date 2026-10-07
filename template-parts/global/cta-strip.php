@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 <section class="section cta-strip">
     <div class="container cta-strip__inner">
         <div>
-            <span class="eyebrow"><?php esc_html_e('Need help?', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('Χρειάζεστε βοήθεια;', 'spek-theme'); ?></span>
             <h2><?php esc_html_e('Χρειάζεστε βοήθεια στην επιλογή προϊόντος;', 'spek-theme'); ?></h2>
             <p><?php esc_html_e('Η ομάδα της SPEK μπορεί να σας καθοδηγήσει στην κατάλληλη λύση για την εφαρμογή σας.', 'spek-theme'); ?></p>
         </div>
