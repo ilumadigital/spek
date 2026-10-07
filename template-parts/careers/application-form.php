@@ -100,7 +100,7 @@ $notices = [
                 </div>
 
                 <div class="career-field">
-                    <label for="career-email"><?php esc_html_e('Email', 'spek-theme'); ?> <em>*</em></label>
+                    <label for="career-email"><?php esc_html_e('Ηλ. ταχυδρομείο', 'spek-theme'); ?> <em>*</em></label>
                     <input id="career-email" type="email" name="email" autocomplete="email" required>
                 </div>
 
@@ -130,11 +130,11 @@ $notices = [
                 <div class="career-employment__options">
                     <label>
                         <input type="radio" name="employment_type" value="full_time" required>
-                        <span><strong><?php esc_html_e('Πλήρης απασχόληση', 'spek-theme'); ?></strong><small><?php esc_html_e('Full time', 'spek-theme'); ?></small></span>
+                        <span><strong><?php esc_html_e('Πλήρης απασχόληση', 'spek-theme'); ?></strong></span>
                     </label>
                     <label>
                         <input type="radio" name="employment_type" value="part_time" required>
-                        <span><strong><?php esc_html_e('Μερική απασχόληση', 'spek-theme'); ?></strong><small><?php esc_html_e('Part time', 'spek-theme'); ?></small></span>
+                        <span><strong><?php esc_html_e('Μερική απασχόληση', 'spek-theme'); ?></strong></span>
                     </label>
                 </div>
             </fieldset>
