@@ -31,6 +31,7 @@ $required_files = [
     '/inc/product-image-importer.php',
     '/inc/product-image-package-importer.php',
     '/inc/partner-metaboxes.php',
+    '/inc/partner-importer.php',
     '/inc/product-query.php',
     '/inc/helpers.php',
     '/inc/ajax.php',
