@@ -51,7 +51,7 @@ $slides = [
     <div class="container">
         <div class="spek-visual-story__header" data-reveal>
             <div>
-                <span class="eyebrow"><?php esc_html_e('Inside SPEK', 'spek-theme'); ?></span>
+                <span class="eyebrow"><?php esc_html_e('Στη SPEK', 'spek-theme'); ?></span>
                 <h2 id="spek-visual-story-title"><?php esc_html_e('Εκεί όπου η τεχνογνωσία γίνεται προϊόν.', 'spek-theme'); ?></h2>
             </div>
 
