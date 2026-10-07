@@ -24,7 +24,7 @@ $related_query = new WP_Query($args);
 <section class="section related-products">
     <div class="container">
         <div class="section-heading">
-            <span class="eyebrow"><?php esc_html_e('Related Products', 'spek-theme'); ?></span>
+            <span class="eyebrow"><?php esc_html_e('Σχετικά προϊόντα', 'spek-theme'); ?></span>
             <h2><?php esc_html_e('Σχετικά προϊόντα', 'spek-theme'); ?></h2>
         </div>
         <div class="products-grid">
