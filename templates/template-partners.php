@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Partners / Store Locator
+ * Template Name: Partners / Εύρεση σημείων πώλησης
  *
  * @package SpekTheme
  */
@@ -21,7 +21,7 @@ get_header();
         <section class="page-hero page-hero--compact">
             <div class="container">
                 <div class="page-hero__content">
-                    <span class="eyebrow"><?php esc_html_e('Store Locator', 'spek-theme'); ?></span>
+                    <span class="eyebrow"><?php esc_html_e('Εύρεση σημείων πώλησης', 'spek-theme'); ?></span>
                     <h1><?php the_title(); ?></h1>
                     <?php if (has_excerpt()) : ?>
                         <p><?php echo esc_html(get_the_excerpt()); ?></p>
