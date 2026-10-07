@@ -26,7 +26,7 @@ while (have_posts()) :
                         <span aria-hidden="true">←</span>
                         <?php esc_html_e('Όλοι οι κατάλογοι', 'spek-theme'); ?>
                     </a>
-                    <span class="eyebrow"><?php esc_html_e('Online catalogue', 'spek-theme'); ?></span>
+                    <span class="eyebrow"><?php esc_html_e('Ηλεκτρονικός κατάλογος', 'spek-theme'); ?></span>
                     <h1><?php the_title(); ?></h1>
                     <div class="content-area"><?php the_content(); ?></div>
                 </div>
@@ -76,7 +76,7 @@ while (have_posts()) :
                             <div class="catalogue-viewer__tools">
                                 <span class="catalogue-viewer__page-status" data-pdf-page-status aria-live="polite">— / —</span>
 
-                                <div class="catalogue-viewer__tool-group" aria-label="<?php esc_attr_e('Zoom', 'spek-theme'); ?>">
+                                <div class="catalogue-viewer__tool-group" aria-label="<?php esc_attr_e('Μεγέθυνση', 'spek-theme'); ?>">
                                     <button type="button" data-pdf-zoom-out aria-label="<?php esc_attr_e('Σμίκρυνση', 'spek-theme'); ?>">−</button>
                                     <button type="button" data-pdf-zoom-reset aria-label="<?php esc_attr_e('Προσαρμογή στη σελίδα', 'spek-theme'); ?>">100%</button>
                                     <button type="button" data-pdf-zoom-in aria-label="<?php esc_attr_e('Μεγέθυνση', 'spek-theme'); ?>">+</button>
