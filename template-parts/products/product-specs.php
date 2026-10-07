@@ -105,7 +105,7 @@ foreach ($all_meta as $meta_key => $raw_values) {
 ?>
 
 <aside class="product-specs" id="technical-specs">
-    <span class="eyebrow"><?php esc_html_e('Technical Data', 'spek-theme'); ?></span>
+    <span class="eyebrow"><?php esc_html_e('Τεχνικά στοιχεία', 'spek-theme'); ?></span>
     <h2><?php esc_html_e('Χαρακτηριστικά & ιδιότητες', 'spek-theme'); ?></h2>
 
     <?php if ($has_specs) : ?>
