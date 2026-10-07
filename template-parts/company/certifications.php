@@ -42,7 +42,7 @@ if (!defined('ABSPATH')) {
         </div>
 
         <div class="company-closing" data-reveal>
-            <span><?php esc_html_e('SPEK / Since 1990', 'spek-theme'); ?></span>
+            <span><?php esc_html_e('SPEK / Από το 1990', 'spek-theme'); ?></span>
             <h2><?php esc_html_e('Πάνω από 35 χρόνια εξέλιξης. Και συνεχίζουμε.', 'spek-theme'); ?></h2>
             <p><?php esc_html_e('Η εμπειρία μάς έφερε μέχρι εδώ. Η διαρκής βελτίωση είναι αυτή που καθορίζει το επόμενο βήμα.', 'spek-theme'); ?></p>
         </div>
