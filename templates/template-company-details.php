@@ -10,13 +10,13 @@ if (!defined('ABSPATH')) {
 }
 
 $gr_name    = 'SPEK ΜΕΤΑΛΛΟΠΛΑΣΤΙΚΗ Α.Β.Ε.Ε.';
-$gr_office  = 'ΘΕΣΗ ΑΧΛΑΔΙΑ ΤΟΛΙΑ - Δ.Δ. ΒΑΘΥ ΔΗΜΟΥ ΑΥΛΙΔΟΣ ΕΥΒΟΙΑΣ, ΤΚ 32009 - ΣΧΗΜΑΤΑΡΙ, Τ.Θ. 159';
+$gr_office  = 'ΠΑΡΟΔΟΣ ΑΥΤΟΚΙΝΗΤΟΔΡΟΜΟΣ ΠΑΘΕ, ΤΑΝΑΓΡΑ 320 09, ΕΛΛΑΔΑ';
 $gr_vat     = '084016352';
 $gr_tax     = 'ΧΑΛΚΙΔΟΣ';
 $gr_gemi    = '8056001000';
 
 $en_name    = 'SPEK METALPLASTIC S.A.';
-$en_office  = 'THESI ACHLADIA TOLIA - P.O BOX No 159, PC 32009, SCHIMATARI GREECE';
+$en_office  = 'PATHE MOTORWAY SERVICE ROAD, TANAGRA 320 09, GREECE';
 $en_vat     = 'EL084016352';
 $en_tax     = 'CHALKIDOS';
 $en_gemi    = '8056001000';
