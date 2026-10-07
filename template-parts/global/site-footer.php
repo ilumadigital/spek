@@ -166,13 +166,13 @@ $footer_columns = [
 
     <div class="container site-footer__bottom">
         <p>
-            © <?php echo esc_html(date('Y')); ?> SPEK. <?php esc_html_e('All rights reserved.', 'spek-theme'); ?>
+            © <?php echo esc_html(date('Y')); ?> SPEK. <?php esc_html_e('Με επιφύλαξη παντός δικαιώματος.', 'spek-theme'); ?>
         </p>
 
         <div class="site-footer__bottom-links">
             <?php get_template_part('template-parts/global/language-switcher'); ?>
             <a href="<?php echo esc_url(spek_page_url('privacy-policy/')); ?>">
-                <?php esc_html_e('Privacy Policy', 'spek-theme'); ?>
+                <?php esc_html_e('Πολιτική Απορρήτου', 'spek-theme'); ?>
             </a>
 
             <a href="#page">
@@ -185,7 +185,7 @@ $footer_columns = [
                 target="_blank"
                 rel="noopener"
             >
-                Handcrafted by <strong>ILUMA Digital Agency</strong>
+                <?php esc_html_e('Κατασκευή από', 'spek-theme'); ?> <strong>ILUMA Digital Agency</strong>
             </a>
         </div>
     </div>
