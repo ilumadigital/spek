@@ -147,7 +147,7 @@ $partners_query = new WP_Query(spek_language_args([
 
                     <?php if ($email) : ?>
                         <div class="partner-card__detail">
-                            <strong><?php esc_html_e('Email', 'spek-theme'); ?></strong>
+                            <strong><?php esc_html_e('Ηλ. ταχυδρομείο', 'spek-theme'); ?></strong>
                             <a href="mailto:<?php echo esc_attr($email); ?>">
                                 <?php echo esc_html($email); ?>
                             </a>
@@ -172,7 +172,7 @@ $partners_query = new WP_Query(spek_language_args([
 
                         <?php if ($website) : ?>
                             <a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener" class="button button-small button-secondary">
-                                <?php esc_html_e('Website', 'spek-theme'); ?>
+                                <?php esc_html_e('Ιστοσελίδα', 'spek-theme'); ?>
                             </a>
                         <?php endif; ?>
                     </div>
@@ -184,7 +184,7 @@ $partners_query = new WP_Query(spek_language_args([
     <?php else : ?>
         <div class="empty-state">
             <h2><?php esc_html_e('Δεν υπάρχουν ακόμα καταχωρημένα σημεία πώλησης.', 'spek-theme'); ?></h2>
-            <p><?php esc_html_e('Προσθέστε συνεργάτες από το WordPress Admin ώστε να εμφανιστούν εδώ.', 'spek-theme'); ?></p>
+            <p><?php esc_html_e('Προσθέστε συνεργάτες από τη διαχείριση WordPress ώστε να εμφανιστούν εδώ.', 'spek-theme'); ?></p>
         </div>
     <?php endif; ?>
 </div>
