@@ -5,18 +5,69 @@
  */
 if (!defined('ABSPATH')) { exit; }
 
-function spek_product_export_url(string $format): string {
-    $args = [];
-    foreach (['product_search','product_sort','filter_category_group','filter_category','filter_application','filter_material','filter_series','home_category_group'] as $key) {
-        if (isset($_GET[$key])) {
-            $raw = wp_unslash($_GET[$key]);
-            $args[$key] = is_array($raw) ? array_map('sanitize_text_field', array_filter($raw, 'is_scalar')) : sanitize_text_field((string) $raw);
-        }
+/**
+ * Export controls live only in wp-admin > Products.
+ * The button submits the same admin list-form inputs and their current filters.
+ */
+function spek_product_admin_export_controls(string $post_type): void {
+    if ($post_type !== 'spek_product' || !current_user_can('edit_others_posts')) { return; }
+    wp_nonce_field('spek_product_export', '_export_nonce');
+    echo '<label for="spek_export_format" style="margin-left:8px">', esc_html__('Εξαγωγή προϊόντων', 'spek-theme'), '</label> ';
+    echo '<select id="spek_export_format" name="spek_export_format">';
+    foreach (['csv'=>'CSV','xlsx'=>'XLSX','xml'=>'XML','json'=>'JSON'] as $value => $label) {
+        echo '<option value="', esc_attr($value), '">', esc_html($label), '</option>';
     }
-    $args['spek_export'] = $format;
-    $args['_export_nonce'] = wp_create_nonce('spek_product_export');
-    return add_query_arg($args, get_post_type_archive_link('spek_product'));
+    echo '</select> ';
+    echo '<button type="submit" class="button button-secondary" name="action" value="spek_product_export" formaction="', esc_url(admin_url('admin-post.php')), '" formmethod="get">', esc_html__('Εξαγωγή αποτελεσμάτων', 'spek-theme'), '</button>';
 }
+add_action('restrict_manage_posts', 'spek_product_admin_export_controls', 30);
+
+function spek_product_export_query_args(): array {
+    $args = [
+        'post_type' => 'spek_product', 'post_status' => ['publish','draft','pending','future','private'],
+        'posts_per_page' => -1, 'nopaging' => true, 'fields' => 'ids', 'no_found_rows' => true,
+    ];
+    if (!empty($_GET['post_status']) && !is_array($_GET['post_status'])) {
+        $status = sanitize_key(wp_unslash((string) $_GET['post_status']));
+        if (in_array($status, ['publish','draft','pending','future','private','trash'], true)) { $args['post_status'] = $status; }
+    }
+    if (!empty($_GET['s']) && !is_array($_GET['s'])) {
+        $args['s'] = sanitize_text_field(wp_unslash((string) $_GET['s']));
+    }
+    if (!empty($_GET['m']) && !is_array($_GET['m'])) {
+        $month = sanitize_text_field(wp_unslash((string) $_GET['m']));
+        if (preg_match('/^\\d{6}$/', $month)) { $args['m'] = $month; }
+    }
+    $tax_query = [];
+    foreach (['product_category','product_application','product_material','product_series'] as $tax) {
+        if (empty($_GET[$tax]) || is_array($_GET[$tax])) { continue; }
+        $value = sanitize_text_field(wp_unslash((string) $_GET[$tax]));
+        if ($value === '0') { continue; }
+        $tax_query[] = ['taxonomy'=>$tax, 'field'=>ctype_digit($value) ? 'term_id' : 'slug', 'terms'=>ctype_digit($value) ? (int)$value : $value];
+    }
+    if ($tax_query) { $args['tax_query'] = $tax_query; }
+    if (!empty($_GET['orderby']) && !is_array($_GET['orderby'])) {
+        $order = sanitize_key(wp_unslash((string) $_GET['orderby']));
+        if (in_array($order, ['date','title','ID','modified','menu_order'], true)) { $args['orderby'] = $order; }
+    }
+    if (!empty($_GET['order']) && !is_array($_GET['order'])) {
+        $direction = strtoupper(sanitize_key(wp_unslash((string) $_GET['order'])));
+        if (in_array($direction, ['ASC','DESC'], true)) { $args['order'] = $direction; }
+    }
+    $image_status = isset($_GET['spek_image_status']) && !is_array($_GET['spek_image_status'])
+        ? sanitize_key(wp_unslash((string) $_GET['spek_image_status'])) : '';
+    if (in_array($image_status, ['missing','has_image'], true)) { $args['spek_export_image_status'] = $image_status; }
+    return $args;
+}
+
+function spek_product_export_image_where(string $where, WP_Query $query): string {
+    $status = $query->get('spek_export_image_status');
+    if (!in_array($status, ['missing','has_image'], true)) { return $where; }
+    global $wpdb;
+    $subquery = "SELECT 1 FROM {$wpdb->postmeta} pm INNER JOIN {$wpdb->posts} attachment ON attachment.ID = CAST(pm.meta_value AS UNSIGNED) AND attachment.post_type='attachment' AND attachment.post_status='inherit' WHERE pm.post_id={$wpdb->posts}.ID AND pm.meta_key='_thumbnail_id' AND CAST(pm.meta_value AS UNSIGNED)>0";
+    return $where . ($status === 'missing' ? " AND NOT EXISTS ($subquery)" : " AND EXISTS ($subquery)");
+}
+add_filter('posts_where', 'spek_product_export_image_where', 30, 2);
 
 function spek_product_export_rows(): array {
     global $wp_query;
@@ -118,9 +169,9 @@ function spek_product_export_columns(): array {
 }
 
 function spek_product_export_download(): void {
-    if (!isset($_GET['spek_export']) || is_array($_GET['spek_export'])) { return; }
-    if (!is_post_type_archive('spek_product') && !is_tax(['product_category','product_application','product_material','product_series'])) { return; }
-    $format = sanitize_key(wp_unslash((string) $_GET['spek_export']));
+    if (!current_user_can('edit_others_posts')) { wp_die('Permission denied', '', ['response'=>403]); }
+    if (!isset($_GET['spek_export_format']) || is_array($_GET['spek_export_format'])) { wp_die('Invalid export format', '', ['response'=>400]); }
+    $format = sanitize_key(wp_unslash((string) $_GET['spek_export_format']));
     if (!in_array($format, ['csv','xlsx','xml','json'], true)) { return; }
     $nonce = isset($_GET['_export_nonce']) && is_scalar($_GET['_export_nonce']) ? sanitize_text_field(wp_unslash((string) $_GET['_export_nonce'])) : '';
     if (!wp_verify_nonce($nonce, 'spek_product_export')) { wp_die(esc_html__('Ο σύνδεσμος εξαγωγής έληξε. Ανανεώστε τη σελίδα.', 'spek-theme'), '', ['response'=>403]); }
@@ -154,4 +205,4 @@ function spek_product_export_download(): void {
     }
     exit;
 }
-add_action('template_redirect', 'spek_product_export_download', 1);
+add_action('admin_post_spek_product_export', 'spek_product_export_download');
