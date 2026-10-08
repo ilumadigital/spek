@@ -33,6 +33,7 @@ $required_files = [
     '/inc/partner-metaboxes.php',
     '/inc/partner-importer.php',
     '/inc/product-query.php',
+    '/inc/product-export.php',
     '/inc/helpers.php',
     '/inc/ajax.php',
     '/inc/seo-schema.php',
