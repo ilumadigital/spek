@@ -70,14 +70,7 @@ function spek_product_export_image_where(string $where, WP_Query $query): string
 add_filter('posts_where', 'spek_product_export_image_where', 30, 2);
 
 function spek_product_export_rows(): array {
-    global $wp_query;
-    $args = $wp_query->query_vars;
-    $args['posts_per_page'] = -1;
-    $args['nopaging'] = true;
-    $args['paged'] = 1;
-    $args['offset'] = 0;
-    $args['fields'] = 'ids';
-    $args['no_found_rows'] = true;
+    $args = spek_product_export_query_args();
     $query = new WP_Query($args);
     $rows = [];
     foreach ($query->posts as $post_id) {
