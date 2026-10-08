@@ -130,6 +130,14 @@ function spek_enqueue_assets(): void
             ['spek-main', 'spek-multilingual'],
             filemtime(SPEK_THEME_DIR . '/assets/css/home-client-refresh.css')
         );
+        // Shared premium SPEK values flow (Home + Company), loaded LAST to
+        // override the previous four-box layout without affecting other pages.
+        wp_enqueue_style(
+            'spek-why-spek-flow',
+            SPEK_THEME_URI . '/assets/css/why-spek-flow.css',
+            ['spek-home-client-refresh'],
+            filemtime(SPEK_THEME_DIR . '/assets/css/why-spek-flow.css')
+        );
     }
 
     wp_enqueue_script(
