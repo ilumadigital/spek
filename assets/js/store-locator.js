@@ -498,7 +498,8 @@
         const query = searchInput ? searchInput.value.trim() : '';
 
         if (!query) {
-            hideAll(spekText('Συμπληρώστε περιοχή ή ΤΚ για να εμφανιστούν αποτελέσματα.'));
+            await hydrateMissingPartnerCoordinates(partners);
+            showPartners(partners, null);
             return;
         }
 
@@ -637,12 +638,13 @@
     }
 
     if (resetButton) {
-        resetButton.addEventListener('click', function () {
+        resetButton.addEventListener('click', async function () {
             if (searchInput) {
                 searchInput.value = '';
             }
 
-            hideAll();
+            await hydrateMissingPartnerCoordinates(partners);
+            showPartners(partners, null);
         });
     }
 
@@ -652,6 +654,12 @@
         }, 150);
     });
 
+    async function initialiseLocator() {
+        setStatus(spekText('Γίνεται φόρτωση σημείων πώλησης...'));
+        await hydrateMissingPartnerCoordinates(partners);
+        showPartners(partners, null);
+    }
+
     setupLockedLocatorScroll();
-    hideAll();
+    initialiseLocator();
 })();
