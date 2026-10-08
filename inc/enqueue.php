@@ -324,8 +324,33 @@ function spek_enqueue_admin_assets($hook): void
         'spek-admin',
         SPEK_THEME_URI . '/assets/css/admin.css',
         [],
-        SPEK_THEME_VERSION
+        filemtime(SPEK_THEME_DIR . '/assets/css/admin.css')
     );
+
+    // Load the WordPress media modal before our product-gallery handlers.
+    // The metabox HTML renders earlier than footer scripts, so inline binding
+    // there silently failed when wp.media was still undefined.
+    if (in_array($hook, ['post.php', 'post-new.php'], true)) {
+        wp_enqueue_media();
+        wp_enqueue_script(
+            'spek-product-admin-gallery',
+            SPEK_THEME_URI . '/assets/js/product-admin-gallery.js',
+            ['jquery', 'jquery-ui-sortable', 'media-views'],
+            filemtime(SPEK_THEME_DIR . '/assets/js/product-admin-gallery.js'),
+            true
+        );
+        wp_localize_script('spek-product-admin-gallery', 'spekProductGalleryI18n', [
+            'replace'         => __('Αλλαγή', 'spek-theme'),
+            'remove'          => __('Αφαίρεση', 'spek-theme'),
+            'up'              => __('Πριν', 'spek-theme'),
+            'down'            => __('Μετά', 'spek-theme'),
+            'galleryTitle'    => __('Επιλογή εικόνων gallery', 'spek-theme'),
+            'useSelected'     => __('Χρήση επιλεγμένων εικόνων', 'spek-theme'),
+            'replaceTitle'    => __('Αλλαγή εικόνας gallery', 'spek-theme'),
+            'useImage'        => __('Χρήση εικόνας', 'spek-theme'),
+            'alreadySelected' => __('Η εικόνα υπάρχει ήδη στο gallery.', 'spek-theme'),
+        ]);
+    }
 }
 
 add_action('admin_enqueue_scripts', 'spek_enqueue_admin_assets');
