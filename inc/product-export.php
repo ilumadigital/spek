@@ -99,7 +99,7 @@ function spek_product_export_xlsx(array $rows): ?string {
         }
         $sheet .= '</row>';
     }
-    $sheet .= '</sheetData><autoFilter ref="A1:M' . count($all) . '"/></worksheet>';
+    $sheet .= '</sheetData><autoFilter ref="A1:N' . count($all) . '"/></worksheet>';
     $filename = tempnam(get_temp_dir(), 'spekxlsx');
     if (!$filename) { return null; }
     $zip = new ZipArchive();
