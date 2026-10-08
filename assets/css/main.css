@@ -19386,3 +19386,12 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
         animation: none !important;
     }
 }
+
+/* Product catalogue filter-aware export */
+.products-export{display:flex;align-items:center;gap:12px;margin-left:auto;flex-wrap:wrap}
+.products-export__label{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.products-export__formats{display:flex;gap:6px;flex-wrap:wrap}
+.products-export__button{display:inline-flex;justify-content:center;align-items:center;min-width:54px;min-height:36px;padding:8px 11px;border:1px solid rgba(15,76,129,.2);border-radius:9px;background:#fff;color:#184d7b;text-decoration:none;font-size:11px;font-weight:800;transition:background .2s,border-color .2s}
+.products-export__button:hover,.products-export__button:focus-visible{background:#edf5fc;border-color:#184d7b}
+@media(max-width:900px){.products-export{width:100%;margin-left:0}}
+@media(max-width:560px){.products-export{align-items:flex-start;flex-direction:column;gap:7px}.products-export__formats{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.products-export__button{min-width:0}}
