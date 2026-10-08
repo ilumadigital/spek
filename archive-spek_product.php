@@ -161,6 +161,14 @@ $product_toolbar_is_english = function_exists('spek_is_english') && spek_is_engl
                             </select>
                         </label>
                     </div>
+                    <div class="products-export" aria-label="<?php echo esc_attr($product_toolbar_is_english ? 'Export products' : 'Εξαγωγή προϊόντων'); ?>">
+                        <span class="products-export__label"><?php echo esc_html($product_toolbar_is_english ? 'Export results' : 'Εξαγωγή αποτελεσμάτων'); ?></span>
+                        <div class="products-export__formats">
+                            <?php foreach (['csv' => 'CSV', 'xlsx' => 'XLSX', 'xml' => 'XML', 'json' => 'JSON'] as $format => $label) : ?>
+                                <a class="products-export__button" href="<?php echo esc_url(spek_product_export_url($format)); ?>" aria-label="<?php echo esc_attr(($product_toolbar_is_english ? 'Export all matching products as ' : 'Εξαγωγή όλων των αποτελεσμάτων σε ') . $label); ?>"><?php echo esc_html($label); ?></a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                 </div>
 
                 <?php if (have_posts()) : ?>
