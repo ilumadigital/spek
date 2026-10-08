@@ -51,3 +51,79 @@
     border: 1px solid #dcdcde;
     border-radius: 6px;
 }
+
+/* Product gallery editor in the classic WordPress product screen. */
+.spek-product-admin__gallery {
+    margin-top: 18px;
+}
+
+.spek-product-admin__gallery-label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.spek-product-gallery-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 14px;
+    padding: 0;
+    list-style: none;
+}
+
+.spek-product-gallery-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 142px;
+    margin: 0;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    box-sizing: border-box;
+    cursor: move;
+}
+
+.spek-product-gallery-item > img {
+    display: block;
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+}
+
+.spek-product-gallery-item__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    width: 100%;
+}
+
+.spek-product-gallery-item__controls .button {
+    min-height: 26px;
+    padding: 0 6px;
+    line-height: 24px;
+}
+
+.spek-product-gallery-item__controls .spek-product-gallery-remove {
+    color: #b32d2e;
+    border-color: #d6a8a8;
+}
+
+.spek-product-gallery-placeholder {
+    width: 142px;
+    min-height: 148px;
+    border: 2px dashed #2271b1;
+    border-radius: 6px;
+    background: #f0f6fc;
+    box-sizing: border-box;
+}
+
+.spek-product-gallery-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
