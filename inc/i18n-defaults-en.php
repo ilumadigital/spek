@@ -309,6 +309,8 @@ return [
     'Από την ίδρυση της SPEK έως σήμερα, κάθε περίοδος της ιστορίας μας σηματοδοτεί ένα νέο βήμα στην παραγωγή, την τεχνογνωσία και την εξωστρέφεια.' => 'From SPEK’s founding to today, every period in our history marks a new step in production, know-how and international growth.',
     'Από την ιδέα στο προϊόν' => 'From idea to product',
     'Από την ιδέα, στο προϊόν. Από την εμπειρία, στην εξέλιξη.' => 'From idea to product. From experience to evolution.',
+    'Από την ιδέα, στο προϊόν' => 'From idea to product',
+    'Από την εμπειρία, στην εξέλιξη' => 'From experience to evolution',
     'Από τις πρώτες ύλες μέχρι την τελική διάθεση, η SPEK οργανώνει τις διαδικασίες της με στόχο τη συνέπεια, την αξιοπιστία και τη συνεχή βελτίωση.' => 'From raw materials to final distribution, SPEK organises its processes around consistency, reliability and continuous improvement.',
     'Από το' => 'Since',
     'Από το 1990, η SPEK σχεδιάζει και παράγει αξιόπιστες λύσεις για υδραυλικές εφαρμογές και είδη υγιεινής, συνδυάζοντας εμπειρία, παραγωγική γνώση και διαρκή εξέλιξη.' => 'Since 1990, SPEK has designed and manufactured reliable solutions for plumbing and sanitary applications, combining experience, production know-how and continuous development.',
