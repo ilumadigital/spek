@@ -69,7 +69,7 @@ $categories = [
 
         <div class="section-heading" data-reveal>
             <span class="eyebrow"><?php esc_html_e('Γκάμα Προϊόντων', 'spek-theme'); ?></span>
-            <h2><?php esc_html_e('Προϊόντα για επαγγελματικές εφαρμογές.', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Προϊόντα για επαγγελματικές εφαρμογές', 'spek-theme'); ?></h2>
             <p>
                 <?php esc_html_e('Η γκάμα SPEK είναι οργανωμένη ανά κατηγορία, με σαφείς κωδικούς και τεχνικές πληροφορίες για εύκολη επιλογή.', 'spek-theme'); ?>
             </p>
