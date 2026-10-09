@@ -7655,78 +7655,105 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     user-select: none;
 }
 
-/* Pilot: more prominent factory photograph for the 2011–2015 period.
-   Other periods remain unchanged until they receive a 'year_image'. */
-.company-timeline__year--has-image {
+/* Pilot: factory photo panel for the 2011–2015 period only.
+   The picture is framed like the companion milestone card. */
+.company-timeline__year--has-image,
+.company-timeline__item--left .company-timeline__year.company-timeline__year--has-image,
+.company-timeline__item--right .company-timeline__year.company-timeline__year--has-image {
+    position: relative;
     display: flex;
     align-items: center;
-    min-height: 365px;
+    justify-content: center;
+    justify-self: stretch;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 340px;
+    padding: 26px 28px;
+    overflow: hidden;
+    border: 1px solid rgba(15, 76, 129, 0.14);
+    border-radius: 28px;
+    background: #1e5277;
     isolation: isolate;
+    box-shadow:
+        0 18px 50px rgba(17, 24, 32, 0.075),
+        0 3px 10px rgba(17, 24, 32, 0.025);
+}
+
+.company-timeline__year--has-image::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(135deg, rgba(15, 76, 129, 0.65), rgba(15, 76, 129, 0.44));
+    pointer-events: none;
 }
 
 .company-timeline__year-text {
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
-.company-timeline__year-image {
+.company-timeline__year--has-image .company-timeline__year-text {
+    color: #fff;
+    font-size: clamp(46px, 5.9vw, 80px);
+    line-height: 1.05;
+    letter-spacing: -0.052em;
+    text-shadow: 0 4px 22px rgba(3, 30, 53, 0.3);
+}
+
+.company-timeline__year-image,
+.company-timeline__item--left .company-timeline__year-image {
     position: absolute;
+    inset: 0;
     z-index: 0;
-    top: 50%;
-    right: -16px;
-    width: clamp(480px, 45vw, 660px);
-    height: 385px;
+    width: 100%;
+    height: 100%;
     max-width: none;
+    border-radius: 0;
     object-fit: cover;
     object-position: center;
-    opacity: 0.7;
-    filter: blur(0.6px) saturate(0.8) contrast(0.98);
-    transform: translateY(-50%);
-    -webkit-mask-image: radial-gradient(ellipse 76% 75% at 50% 50%, #000 44%, rgba(0, 0, 0, 0.85) 62%, transparent 100%);
-    mask-image: radial-gradient(ellipse 76% 75% at 50% 50%, #000 44%, rgba(0, 0, 0, 0.85) 62%, transparent 100%);
+    opacity: 1;
+    filter: saturate(0.92) contrast(0.98);
+    transform: none;
     pointer-events: none;
 }
 
-.company-timeline__item--left .company-timeline__year-image {
-    right: auto;
-    left: -16px;
-}
-
 @media (max-width: 1000px) and (min-width: 761px) {
-    .company-timeline__year--has-image {
-        min-height: 265px;
+    .company-timeline__year--has-image,
+    .company-timeline__item--left .company-timeline__year.company-timeline__year--has-image,
+    .company-timeline__item--right .company-timeline__year.company-timeline__year--has-image {
+        min-height: 270px;
+        padding: 20px 16px;
     }
 
-    .company-timeline__year-image {
-        width: clamp(345px, 43vw, 465px);
-        height: 275px;
+    .company-timeline__year--has-image .company-timeline__year-text {
+        font-size: clamp(36px, 4.4vw, 58px);
     }
 }
 
 @media (max-width: 760px) {
-    .company-timeline__year--has-image {
-        min-height: 158px;
+    .company-timeline__year--has-image,
+    .company-timeline__item--left .company-timeline__year.company-timeline__year--has-image,
+    .company-timeline__item--right .company-timeline__year.company-timeline__year--has-image {
+        align-self: stretch;
+        min-height: 190px;
+        padding: 18px 20px;
+        border-radius: 22px;
     }
 
-    .company-timeline__item .company-timeline__year--has-image {
-        color: #174f7d;
-    }
-
-    .company-timeline__year-image,
-    .company-timeline__item--left .company-timeline__year-image {
-        right: auto;
-        left: -10px;
-        width: min(88vw, 370px);
-        height: 200px;
-        opacity: 0.62;
+    .company-timeline__year--has-image .company-timeline__year-text {
+        font-size: clamp(30px, 7.6vw, 52px);
+        color: #fff;
     }
 }
 
 @media (max-width: 420px) {
-    .company-timeline__year-image,
-    .company-timeline__item--left .company-timeline__year-image {
-        width: min(85vw, 315px);
-        height: 175px;
+    .company-timeline__year--has-image,
+    .company-timeline__item--left .company-timeline__year.company-timeline__year--has-image,
+    .company-timeline__item--right .company-timeline__year.company-timeline__year--has-image {
+        min-height: 160px;
+        border-radius: 20px;
     }
 }
 
