@@ -480,6 +480,54 @@
     }
 
 
+    // The home hero deliberately has no image poster or background image.
+    // Keep the muted HTML5 video playing inline on iOS/Android where allowed.
+    function setupHomeHeroVideo() {
+        const video = document.querySelector('.front-page .spek-hero-v2--contained .spek-hero-v2__video');
+        if (!video) {
+            return;
+        }
+
+        video.muted = true;
+        video.defaultMuted = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+
+        function playHeroVideo() {
+            if (document.hidden || prefersReducedMotion || !video.paused) {
+                return;
+            }
+
+            const attempt = video.play();
+            if (attempt && typeof attempt.catch === 'function') {
+                // Low Power Mode and data-saving/browser policies can block autoplay.
+                // In that case leave the corporate blue gradient, never load an image.
+                attempt.catch(() => {});
+            }
+        }
+
+        video.addEventListener('loadeddata', playHeroVideo, { once: true });
+        video.addEventListener('canplay', playHeroVideo, { once: true });
+        window.addEventListener('pageshow', playHeroVideo);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                video.pause();
+            } else {
+                playHeroVideo();
+            }
+        });
+
+        // A user gesture can unlock playback where background autoplay is restricted.
+        document.addEventListener('touchstart', playHeroVideo, { once: true, passive: true });
+        document.addEventListener('pointerdown', playHeroVideo, { once: true, passive: true });
+
+        playHeroVideo();
+    }
+
     function setupHomeMotion() {
         const frontPage = document.querySelector('.front-page');
 
@@ -907,6 +955,7 @@
     setupParallax();
     setupMediaSliders();
     setupHeroBackgroundSlider();
+    setupHomeHeroVideo();
     setupHomeMotion();
     setupCompanyPageMotion();
     setupProductGalleryThumbnails();
