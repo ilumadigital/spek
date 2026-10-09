@@ -359,7 +359,7 @@ body .front-page .spek-hero-v2--cinematic .spek-hero-v2__inner {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .spek-hero-v2--cinematic .spek-hero-v2__video {
+    .spek-hero-v2--cinematic .spek-hero-v2__slide .spek-hero-v2__video {
         display: none;
     }
 }
