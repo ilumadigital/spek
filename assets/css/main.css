@@ -7663,7 +7663,7 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
 .company-timeline__card {
     position: relative;
     z-index: 2;
-    padding: 38px 38px 34px;
+    padding: 44px 42px 38px;
     overflow: hidden;
     border: 1px solid rgba(232, 224, 214, 0.85);
     border-radius: 28px;
@@ -7687,7 +7687,7 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     content: "";
     position: absolute;
     top: 0;
-    left: 38px;
+    left: 42px;
     width: 64px;
     height: 3px;
     border-radius: 0 0 4px 4px;
@@ -7725,57 +7725,6 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
 }
 
 
-/* Large chapter number */
-
-.company-timeline__chapter-number {
-    position: absolute;
-    top: 14px;
-    right: 25px;
-    color: rgba(15, 76, 129, 0.045);
-    font-size: 108px;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.08em;
-    pointer-events: none;
-}
-
-
-/* ---------------------------------------------------------
-   Card header
-   --------------------------------------------------------- */
-
-.company-timeline__card-header {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 22px;
-}
-
-.company-timeline__label {
-    color: var(--color-accent);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-.company-timeline__period {
-    display: inline-flex;
-    align-items: center;
-    min-height: 31px;
-    padding: 0 12px;
-    color: var(--color-ink-soft);
-    border: 1px solid rgba(15, 76, 129, 0.1);
-    border-radius: 999px;
-    background: rgba(232, 241, 248, 0.6);
-    font-size: 12px;
-    font-weight: 700;
-}
-
-
 /* ---------------------------------------------------------
    Card content
    --------------------------------------------------------- */
@@ -7783,19 +7732,20 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
 .company-timeline__card h3 {
     position: relative;
     z-index: 2;
-    max-width: 390px;
-    margin-bottom: 16px;
-    font-size: clamp(25px, 2.3vw, 34px);
-    line-height: 1.08;
-    letter-spacing: -0.035em;
+    max-width: 100%;
+    margin: 0 0 18px;
+    font-size: clamp(26px, 2.2vw, 34px);
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    overflow-wrap: break-word;
 }
 
 .company-timeline__description {
     position: relative;
     z-index: 2;
-    margin-bottom: 28px;
+    margin: 0 0 24px;
     font-size: 16px;
-    line-height: 1.7;
+    line-height: 1.68;
 }
 
 
@@ -7807,8 +7757,8 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     position: relative;
     z-index: 2;
     display: grid;
-    gap: 10px;
-    padding-top: 22px;
+    gap: 12px;
+    padding-top: 20px;
     border-top: 1px solid rgba(232, 224, 214, 0.8);
 }
 
@@ -7888,11 +7838,11 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     }
 
     .company-timeline__card {
-        padding: 32px 30px 30px;
+        padding: 34px 30px 32px;
     }
 
-    .company-timeline__chapter-number {
-        font-size: 88px;
+    .company-timeline__card::before {
+        left: 30px;
     }
 
     .company-timeline__year {
@@ -7977,7 +7927,7 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     .company-timeline__item--right .company-timeline__card {
         order: 2;
         width: 100%;
-        padding: 29px 24px 26px;
+        padding: 30px 24px 28px;
         border-radius: 22px;
     }
 
@@ -7986,27 +7936,22 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
         width: 52px;
     }
 
-    .company-timeline__card-header {
-        align-items: flex-start;
-    }
-
-    .company-timeline__period {
-        display: none;
-    }
-
-    .company-timeline__chapter-number {
-        top: 17px;
-        right: 20px;
-        font-size: 70px;
-    }
-
     .company-timeline__card h3 {
-        max-width: 85%;
-        font-size: 26px;
+        max-width: 100%;
+        margin-bottom: 16px;
+        font-size: clamp(23px, 6.5vw, 28px);
+        line-height: 1.16;
     }
 
     .company-timeline__description {
+        margin-bottom: 20px;
         font-size: 15px;
+        line-height: 1.65;
+    }
+
+    .company-timeline__milestones {
+        gap: 11px;
+        padding-top: 18px;
     }
 
     .company-timeline__milestone {
@@ -8033,12 +7978,14 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
         left: -23px;
     }
 
-    .company-timeline__card {
+    .company-timeline__card,
+    .company-timeline__item--left .company-timeline__card,
+    .company-timeline__item--right .company-timeline__card {
         padding-inline: 21px;
     }
 
-    .company-timeline__chapter-number {
-        font-size: 62px;
+    .company-timeline__card::before {
+        left: 21px;
     }
 }
 
