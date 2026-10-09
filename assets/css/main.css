@@ -1698,6 +1698,10 @@ input[type="submit"]:hover {
     align-items: start;
 }
 
+.products-content {
+    min-width: 0;
+}
+
 .products-sidebar {
     position: sticky;
     top: 120px;
@@ -3243,7 +3247,6 @@ input[type="submit"]:hover {
     .home-hero__grid,
     .finder-preview__grid,
     .store-preview__grid,
-    .products-layout,
     .single-product-hero__grid,
     .product-main-content__grid,
     .contact-grid {
