@@ -7655,12 +7655,12 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     user-select: none;
 }
 
-/* Pilot image treatment, scoped to the 2011–2015 year label.
-   Future milestones can opt in by setting 'year_image' in the chapter data. */
+/* Pilot: more prominent factory photograph for the 2011–2015 period.
+   Other periods remain unchanged until they receive a 'year_image'. */
 .company-timeline__year--has-image {
     display: flex;
     align-items: center;
-    min-height: 220px;
+    min-height: 365px;
     isolation: isolate;
 }
 
@@ -7673,39 +7673,39 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     position: absolute;
     z-index: 0;
     top: 50%;
-    right: -14px;
-    width: clamp(300px, 31vw, 445px);
-    height: 225px;
+    right: -16px;
+    width: clamp(480px, 45vw, 660px);
+    height: 385px;
     max-width: none;
     object-fit: cover;
     object-position: center;
-    opacity: 0.4;
-    filter: blur(1.5px) saturate(0.72) contrast(0.94);
+    opacity: 0.7;
+    filter: blur(0.6px) saturate(0.8) contrast(0.98);
     transform: translateY(-50%);
-    -webkit-mask-image: radial-gradient(ellipse 73% 65% at 50% 50%, #000 33%, rgba(0,0,0,.72) 60%, transparent 100%);
-    mask-image: radial-gradient(ellipse 73% 65% at 50% 50%, #000 33%, rgba(0,0,0,.72) 60%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 76% 75% at 50% 50%, #000 44%, rgba(0, 0, 0, 0.85) 62%, transparent 100%);
+    mask-image: radial-gradient(ellipse 76% 75% at 50% 50%, #000 44%, rgba(0, 0, 0, 0.85) 62%, transparent 100%);
     pointer-events: none;
 }
 
 .company-timeline__item--left .company-timeline__year-image {
     right: auto;
-    left: -14px;
+    left: -16px;
 }
 
 @media (max-width: 1000px) and (min-width: 761px) {
     .company-timeline__year--has-image {
-        min-height: 180px;
+        min-height: 265px;
     }
 
     .company-timeline__year-image {
-        width: clamp(220px, 33vw, 320px);
-        height: 180px;
+        width: clamp(345px, 43vw, 465px);
+        height: 275px;
     }
 }
 
 @media (max-width: 760px) {
     .company-timeline__year--has-image {
-        min-height: 114px;
+        min-height: 158px;
     }
 
     .company-timeline__item .company-timeline__year--has-image {
@@ -7715,21 +7715,20 @@ body.front-page .site-header.spek-smart-header:not(.is-scrolled):not(.is-menu-op
     .company-timeline__year-image,
     .company-timeline__item--left .company-timeline__year-image {
         right: auto;
-        left: -9px;
-        width: min(75vw, 290px);
-        height: 135px;
-        opacity: 0.3;
+        left: -10px;
+        width: min(88vw, 370px);
+        height: 200px;
+        opacity: 0.62;
     }
 }
 
 @media (max-width: 420px) {
     .company-timeline__year-image,
     .company-timeline__item--left .company-timeline__year-image {
-        width: min(72vw, 230px);
-        height: 115px;
+        width: min(85vw, 315px);
+        height: 175px;
     }
 }
-
 
 
 /* ---------------------------------------------------------
