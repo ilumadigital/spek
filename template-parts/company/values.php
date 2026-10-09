@@ -21,7 +21,7 @@ $values = [
         <div class="company-values__grid">
             <div class="company-values__statement" data-reveal>
                 <span class="eyebrow"><?php esc_html_e('Η φιλοσοφία μας', 'spek-theme'); ?></span>
-                <h2><?php esc_html_e('Σχεδιάζουμε για να λειτουργεί καλύτερα.', 'spek-theme'); ?></h2>
+                <h2><?php esc_html_e('Σχεδιάζουμε για να λειτουργεί καλύτερα', 'spek-theme'); ?></h2>
                 <p><?php esc_html_e('Η ουσία κάθε προϊόντος βρίσκεται στη λειτουργία του. Γι’ αυτό ξεκινάμε από την πραγματική ανάγκη, επιδιώκοντας απλές, αξιόπιστες και ουσιαστικές λύσεις.', 'spek-theme'); ?></p>
             </div>
 
@@ -45,7 +45,7 @@ $values = [
                 <div class="company-global__copy">
                     <span class="eyebrow"><?php esc_html_e('Διεθνής παρουσία', 'spek-theme'); ?></span>
 
-                    <h2><?php esc_html_e('Από την Ελλάδα, σε διεθνείς αγορές.', 'spek-theme'); ?></h2>
+                    <h2><?php esc_html_e('Από την Ελλάδα, σε διεθνείς αγορές', 'spek-theme'); ?></h2>
 
                     <p class="company-global__lead">
                         <?php esc_html_e('Η εξωστρέφεια αποτελεί μέρος της πορείας μας από το 1992. Από την ελληνική αγορά, η SPEK ανέπτυξε σταδιακά συνεργασίες και εξαγωγική δραστηριότητα σε αγορές της Ευρώπης, της Μεσογείου και της Μέσης Ανατολής.', 'spek-theme'); ?>
