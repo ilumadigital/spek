@@ -161,7 +161,6 @@ $product_toolbar_is_english = function_exists('spek_is_english') && spek_is_engl
                             </select>
                         </label>
                     </div>
-                    </div>
                 </div>
 
                 <?php if (have_posts()) : ?>
