@@ -29,7 +29,7 @@ if (!defined('ABSPATH')) {
         <div class="store-preview__content" data-reveal style="--reveal-delay: 120ms;">
             <span class="eyebrow"><?php esc_html_e('Συνεργάτες', 'spek-theme'); ?></span>
 
-            <h2><?php esc_html_e('Βρείτε συνεργάτη ή σημείο πώλησης SPEK.', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Βρείτε συνεργάτη ή σημείο πώλησης SPEK', 'spek-theme'); ?></h2>
 
             <p>
                 <?php esc_html_e('Αναζητήστε το δίκτυο συνεργατών και σημείων πώλησης της SPEK ανά περιοχή.', 'spek-theme'); ?>
