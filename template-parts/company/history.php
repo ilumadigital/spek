@@ -144,25 +144,6 @@ $chapters = [
 
                     <div class="company-timeline__card">
 
-                        <span class="company-timeline__chapter-number" aria-hidden="true">
-                            <?php echo esc_html($chapter['number']); ?>
-                        </span>
-
-                        <div class="company-timeline__card-header">
-                            <span class="company-timeline__label">
-                                <?php
-                                printf(
-                                    esc_html__('Κεφάλαιο %s', 'spek-theme'),
-                                    esc_html($chapter['number'])
-                                );
-                                ?>
-                            </span>
-
-                            <span class="company-timeline__period">
-                                <?php echo esc_html($chapter['years']); ?>
-                            </span>
-                        </div>
-
                         <h3>
                             <?php echo esc_html($chapter['title']); ?>
                         </h3>
