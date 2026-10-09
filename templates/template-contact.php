@@ -63,7 +63,7 @@ get_header();
                     <span><?php esc_html_e('/ Επικοινωνία', 'spek-theme'); ?></span>
                 </span>
 
-                <h1><?php esc_html_e('Επικοινωνία με τη SPEK.', 'spek-theme'); ?></h1>
+                <h1><?php esc_html_e('Επικοινωνία με τη SPEK', 'spek-theme'); ?></h1>
 
                 <p>
                     <?php esc_html_e('Επιλέξτε τον σωστό τρόπο επικοινωνίας ανάλογα με το αίτημά σας. Για τεχνικά θέματα, εμπορική συνεργασία, δίκτυο συνεργατών ή εταιρικές πληροφορίες.', 'spek-theme'); ?>
@@ -82,7 +82,7 @@ get_header();
 
             <aside class="contact-phone-card" data-reveal style="--reveal-delay: 100ms;">
                 <span class="eyebrow"><?php esc_html_e('Άμεση επικοινωνία', 'spek-theme'); ?></span>
-                <h2><?php esc_html_e('Άμεση επικοινωνία.', 'spek-theme'); ?></h2>
+                <h2><?php esc_html_e('Άμεση επικοινωνία', 'spek-theme'); ?></h2>
 
                 <a class="contact-phone-card__link" href="tel:<?php echo esc_attr($phone_href); ?>">
                     <small><?php esc_html_e('Τηλέφωνο', 'spek-theme'); ?></small>
@@ -336,7 +336,7 @@ get_header();
                 >
                 <span><?php esc_html_e('· Σχηματάρι', 'spek-theme'); ?></span>
             </span>
-            <h2><?php esc_html_e('Η SPEK στο Σχηματάρι.', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Η SPEK στο Σχηματάρι', 'spek-theme'); ?></h2>
             <p><?php esc_html_e('Η παραγωγική βάση και η εταιρική λειτουργία της SPEK συγκεντρώνονται σε ιδιόκτητες εγκαταστάσεις στο Σχηματάρι.', 'spek-theme'); ?></p>
             <address><?php echo esc_html($address); ?></address>
 
