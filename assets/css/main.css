@@ -10972,6 +10972,14 @@ body .front-page .container {
     letter-spacing: -0.055em;
 }
 
+.spek-company-page .company-intro__headline-line {
+    display: block;
+}
+
+.spek-company-page .company-intro__headline-line + .company-intro__headline-line {
+    margin-top: 0.18em;
+}
+
 .spek-company-page .company-intro__copy {
     max-width: 900px;
 }
