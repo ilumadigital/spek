@@ -44,6 +44,7 @@ $chapters = [
     [
         'number' => '04',
         'years' => '2011–2015',
+        'year_image' => 'spek-website-new-factory.png',
         'title' => __('Νέα παραγωγική βάση', 'spek-theme'),
         'text' => __('Η μεταφορά στις νέες ιδιόκτητες εγκαταστάσεις ανοίγει έναν νέο κύκλο για τη SPEK. Δημιουργείται νέο κέντρο διανομής, αποκτάται σύγχρονος μηχανολογικός εξοπλισμός και ενισχύονται οι διαδικασίες ποιότητας και ανακύκλωσης.', 'spek-theme'),
         'milestones' => [
@@ -138,8 +139,18 @@ $chapters = [
                         <span></span>
                     </div>
 
-                    <div class="company-timeline__year">
-                        <?php echo esc_html($chapter['years']); ?>
+                    <div class="company-timeline__year<?php echo !empty($chapter['year_image']) ? ' company-timeline__year--has-image' : ''; ?>">
+                        <?php if (!empty($chapter['year_image'])) : ?>
+                            <img
+                                class="company-timeline__year-image"
+                                src="<?php echo esc_url(SPEK_THEME_URI . '/assets/images/' . $chapter['year_image']); ?>"
+                                alt=""
+                                aria-hidden="true"
+                                loading="lazy"
+                                decoding="async"
+                            />
+                        <?php endif; ?>
+                        <span class="company-timeline__year-text"><?php echo esc_html($chapter['years']); ?></span>
                     </div>
 
                     <div class="company-timeline__card">
