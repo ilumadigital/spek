@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
         <div data-reveal>
             <span class="eyebrow"><?php esc_html_e('B2B Υποστήριξη', 'spek-theme'); ?></span>
 
-            <h2><?php esc_html_e('Επαγγελματική υποστήριξη από τη SPEK.', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Επαγγελματική υποστήριξη από τη SPEK', 'spek-theme'); ?></h2>
 
             <p>
                 <?php esc_html_e('Για πληροφορίες προϊόντων, τεχνικό κατάλογο, διαθεσιμότητα και εμπορική συνεργασία, επικοινωνήστε με την ομάδα μας.', 'spek-theme'); ?>
