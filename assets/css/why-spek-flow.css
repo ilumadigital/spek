@@ -410,3 +410,67 @@
   .why-spek--flow .why-spek__value-picture { transition: none; }
   .why-spek--flow .why-spek__value:hover .why-spek__value-picture { transform: none; }
 }
+
+/* 2026-10-09: legibility correction for the four Greek headings.
+   Letter badges no longer overlap copy; long titles are allowed to wrap. */
+.why-spek--flow .why-spek__value-copy,
+.why-spek--flow .why-spek__value:nth-child(even) .why-spek__value-copy {
+  box-sizing: border-box;
+  width: 90%;
+  min-height: 244px;
+  height: auto;
+  padding: 33px 24px 27px;
+  overflow: visible;
+}
+.why-spek--flow .why-spek__value:nth-child(odd) .why-spek__value-copy { right: 0; }
+.why-spek--flow .why-spek__value:nth-child(even) .why-spek__value-copy { left: 0; bottom: 0; }
+.why-spek--flow .why-spek__value-letter {
+  width: 64px;
+  height: 64px;
+  font-size: 43px;
+  transform: none;
+}
+.why-spek--flow .why-spek__value:nth-child(odd) .why-spek__value-letter { top: -12px; left: -5px; }
+.why-spek--flow .why-spek__value:nth-child(even) .why-spek__value-letter { top: auto; bottom: 215px; left: -5px; }
+.why-spek--flow .why-spek__value-copy h3,
+.why-spek--flow .why-spek__value h3 {
+  margin: 0 0 10px;
+  font-size: clamp(16px, 1.33vw, 21px);
+  line-height: 1.38;
+  letter-spacing: -.025em;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  white-space: normal;
+  max-width: 100%;
+}
+.why-spek--flow .why-spek__value-copy p {
+  font-size: clamp(12px,.86vw,14px);
+  line-height: 1.6;
+}
+@media(max-width: 1200px) {
+  .why-spek--flow .why-spek__value-copy,
+  .why-spek--flow .why-spek__value:nth-child(even) .why-spek__value-copy {
+    width: 89%;
+    min-height: 222px;
+    padding: 33px 22px 24px;
+  }
+  .why-spek--flow .why-spek__value:nth-child(even) .why-spek__value-letter { bottom: 200px; top: auto; }
+}
+@media(max-width: 680px) {
+  .why-spek--flow .why-spek__value,
+  .why-spek--flow .why-spek__value:hover { height: 398px; min-height: 398px; }
+  .why-spek--flow .why-spek__value-copy,
+  .why-spek--flow .why-spek__value:nth-child(even) .why-spek__value-copy {
+    width: 88%;
+    min-height: 213px;
+    padding: 30px 19px 22px;
+  }
+  .why-spek--flow .why-spek__value:nth-child(odd) .why-spek__value-letter { top: -6px; left: -4px; }
+  .why-spek--flow .why-spek__value:nth-child(even) .why-spek__value-letter {
+    top: auto;
+    bottom: 188px;
+    left: -4px;
+  }
+  .why-spek--flow .why-spek__value-copy h3 { font-size: 18px; line-height: 1.35; }
+}
