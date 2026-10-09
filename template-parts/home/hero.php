@@ -32,8 +32,8 @@ $hero_is_en = function_exists('spek_is_english') && spek_is_english();
                 <div class="spek-hero-v2__content">
                     <h1 id="spek-home-hero-title">
                         <?php echo esc_html($hero_is_en
-                            ? 'The right flow starts with the details.'
-                            : 'Η σωστή ροή ξεκινά από τη λεπτομέρεια.'
+                            ? 'The right flow starts with the details'
+                            : 'Η σωστή ροή ξεκινά από τη λεπτομέρεια'
                         ); ?>
                     </h1>
 
