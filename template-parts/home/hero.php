@@ -10,7 +10,6 @@ if (!defined('ABSPATH')) {
 }
 
 $hero_video_base = get_template_directory_uri() . '/assets/videos/';
-$hero_image_base = get_template_directory_uri() . '/assets/images/';
 $hero_video_file = get_template_directory() . '/assets/videos/spek_bg.mp4';
 $hero_video_name = file_exists($hero_video_file) ? 'spek_bg.mp4' : 'hero-bg.mp4';
 $hero_is_en = function_exists('spek_is_english') && spek_is_english();
@@ -19,11 +18,9 @@ $hero_is_en = function_exists('spek_is_english') && spek_is_english();
 <div class="spek-hero-stage" data-home-hero-stage>
     <section class="spek-hero-v2 spek-hero-v2--contained" data-home-hero aria-labelledby="spek-home-hero-title">
         <div class="spek-hero-v2__shell">
-            <div class="spek-hero-v2__bg" aria-hidden="true"
-                 style="background-image: url('<?php echo esc_url($hero_image_base . 'spek-website-new-factory-blue.png'); ?>');">
+            <div class="spek-hero-v2__bg" aria-hidden="true">
                 <div class="spek-hero-v2__slide is-active">
-                    <video class="spek-hero-v2__video" autoplay muted loop playsinline preload="metadata"
-                           poster="<?php echo esc_url($hero_image_base . 'spek-website-new-factory-blue.png'); ?>">
+                    <video class="spek-hero-v2__video" autoplay muted loop playsinline webkit-playsinline preload="auto">
                         <source src="<?php echo esc_url($hero_video_base . $hero_video_name); ?>" type="video/mp4">
                     </video>
                 </div>
@@ -100,7 +97,8 @@ body .front-page .spek-hero-v2--contained .spek-hero-v2__shell {
     width: min(calc(100% - 54px), 1580px);
     max-width: 1580px;
     height: auto;
-    min-height: clamp(455px, 34vw, 560px);
+    min-height: clamp(580px, 80vh, 920px);
+    min-height: clamp(580px, 80svh, 920px);
     margin: 0 auto;
     overflow: hidden;
     isolation: isolate;
@@ -132,9 +130,6 @@ body .front-page .spek-hero-v2--contained .spek-hero-v2__shell {
     border: 0;
     border-radius: 0;
     background-color: #113956;
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
     box-shadow: none;
     transform: none;
     transition: none;
@@ -187,7 +182,8 @@ body .front-page .spek-hero-v2--contained .spek-hero-v2__inner {
     width: 100%;
     max-width: none;
     height: auto;
-    min-height: clamp(455px, 34vw, 560px);
+    min-height: clamp(580px, 80vh, 920px);
+    min-height: clamp(580px, 80svh, 920px);
     margin: 0;
     padding: 55px clamp(42px, 6.4vw, 112px);
 }
@@ -281,12 +277,17 @@ body .front-page .spek-hero-v2--contained .spek-hero-v2__inner {
 @media (max-width: 900px) {
     body .front-page .spek-hero-v2--contained .spek-hero-v2__shell {
         width: calc(100% - 32px);
-        min-height: 500px;
+        min-height: max(600px, 80vh);
+        min-height: max(600px, 80svh);
         border-radius: 26px;
     }
     body .front-page .spek-hero-v2--contained .spek-hero-v2__inner {
-        min-height: 500px;
+        min-height: max(600px, 80vh);
+        min-height: max(600px, 80svh);
         padding: 46px 44px;
+    }
+    .spek-hero-v2--contained .spek-hero-v2__slide .spek-hero-v2__video {
+        object-position: 62% center;
     }
     .spek-hero-v2--contained .spek-hero-v2__content {
         max-width: 685px;
@@ -306,12 +307,17 @@ body .front-page .spek-hero-v2--contained .spek-hero-v2__inner {
     }
     body .front-page .spek-hero-v2--contained .spek-hero-v2__shell {
         width: calc(100% - 20px);
-        min-height: 500px;
+        min-height: max(580px, 80vh);
+        min-height: max(580px, 80svh);
         border-radius: 22px;
     }
     body .front-page .spek-hero-v2--contained .spek-hero-v2__inner {
-        min-height: 500px;
+        min-height: max(580px, 80vh);
+        min-height: max(580px, 80svh);
         padding: 38px 20px;
+    }
+    .spek-hero-v2--contained .spek-hero-v2__slide .spek-hero-v2__video {
+        object-position: 64% center;
     }
     .spek-hero-v2--contained .spek-hero-v2__content {
         width: 100%;
