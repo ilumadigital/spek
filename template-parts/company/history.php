@@ -112,7 +112,7 @@ $chapters = [
             </span>
 
             <h2>
-                <?php esc_html_e('Μια πορεία διαρκούς εξέλιξης.', 'spek-theme'); ?>
+                <?php esc_html_e('Μια πορεία διαρκούς εξέλιξης', 'spek-theme'); ?>
             </h2>
 
             <p>
