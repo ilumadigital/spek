@@ -18,7 +18,7 @@ $iluma_image_base = get_template_directory_uri() . '/assets/images/';
         <div class="finder-preview__content" data-reveal>
             <span class="eyebrow"><?php esc_html_e('Εύρεση Προϊόντος', 'spek-theme'); ?></span>
 
-            <h2><?php esc_html_e('Βρείτε το κατάλληλο προϊόν σε λίγα βήματα.', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Βρείτε το κατάλληλο προϊόν σε λίγα βήματα', 'spek-theme'); ?></h2>
 
             <p>
                 <?php esc_html_e('Επιλέξτε κατηγορία και εφαρμογή για να δείτε τα προϊόντα SPEK που αντιστοιχούν στα κριτήριά σας.', 'spek-theme'); ?>
