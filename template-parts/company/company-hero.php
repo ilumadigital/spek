@@ -76,7 +76,10 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
         <div class="company-intro__grid">
             <div data-reveal>
                 <span class="eyebrow"><?php esc_html_e('Η SPEK σήμερα', 'spek-theme'); ?></span>
-                <h2><?php esc_html_e('Από την ιδέα, στο προϊόν. Από την εμπειρία, στην εξέλιξη.', 'spek-theme'); ?></h2>
+                <h2 class="company-intro__headline">
+                    <span class="company-intro__headline-line"><?php esc_html_e('Από την ιδέα, στο προϊόν', 'spek-theme'); ?></span>
+                    <span class="company-intro__headline-line"><?php esc_html_e('Από την εμπειρία, στην εξέλιξη', 'spek-theme'); ?></span>
+                </h2>
             </div>
             <div class="company-intro__copy" data-reveal>
                 <p><?php esc_html_e('Η SPEK ΜΕΤΑΛΛΟΠΛΑΣΤΙΚΗ ΑΒΕΕ δραστηριοποιείται στη μελέτη, την κατασκευή και την παραγωγή εξαρτημάτων, μηχανισμών και συστημάτων για εφαρμογές ειδών υγιεινής και υδραυλικών εγκαταστάσεων.', 'spek-theme'); ?></p>
