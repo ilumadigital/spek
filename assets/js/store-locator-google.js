@@ -215,7 +215,24 @@
         if (window.markerClusterer && window.markerClusterer.MarkerClusterer) {
             clusterer = new window.markerClusterer.MarkerClusterer({
                 map: map,
-                markers: markers
+                markers: markers,
+                renderer: {
+                    render: function (cluster) {
+                        const number = cluster.count;
+                        const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">'
+                            + '<circle cx="25" cy="25" r="24" fill="#0f4c81" stroke="#fff" stroke-width="3"/>'
+                            + '</svg>';
+                        return new google.maps.Marker({
+                            position: cluster.position,
+                            label: {text: String(number), color: '#ffffff', fontSize: '13px', fontWeight: '700'},
+                            icon: {
+                                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+                                scaledSize: new google.maps.Size(50, 50)
+                            },
+                            zIndex: 1000 + number
+                        });
+                    }
+                }
             });
         } else {
             markers.forEach(function (marker) { marker.setMap(map); });
@@ -428,6 +445,14 @@
             await loadMapsSDK();
             // Maps importLibrary resolves once the async SDK is ready.
             await google.maps.importLibrary('maps');
+            await google.maps.importLibrary('marker');
+            // The geocoding service is only invoked after a visitor searches.
+            // A missing/disabled Geocoding API must not hide the partner list.
+            try {
+                await google.maps.importLibrary('geocoding');
+            } catch (error) {
+                // Local text filtering still works without geocoding.
+            }
             map = new google.maps.Map(mapElement, {
                 center: initialCenter,
                 zoom: initialZoom,
