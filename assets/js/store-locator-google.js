@@ -306,28 +306,26 @@
             });
     }
 
-    function geocode(query) {
+    async function geocode(query) {
         if (geocodeCache.has(norm(query))) {
-            return Promise.resolve(geocodeCache.get(norm(query)));
+            return geocodeCache.get(norm(query));
         }
-        return new Promise(function (resolve) {
-            if (!google.maps.Geocoder) {
-                resolve(null);
-                return;
+        try {
+            // Geocoding is optional and should never block initial map display.
+            const library = await google.maps.importLibrary('geocoding');
+            const coder = new library.Geocoder();
+            const result = await coder.geocode({address: query, region: 'gr'});
+            if (!result.results || !result.results.length) {
+                return null;
             }
-            const coder = new google.maps.Geocoder();
-            coder.geocode({address: query, region: 'gr'}, function (results, status) {
-                if (status !== 'OK' || !results || !results.length) {
-                    resolve(null);
-                    return;
-                }
-                const latLng = results[0].geometry.location;
-                const origin = {lat: latLng.lat(), lng: latLng.lng()};
-                // Cache for this browser page only, no persistent Google data.
-                geocodeCache.set(norm(query), origin);
-                resolve(origin);
-            });
-        });
+            const location = result.results[0].geometry.location;
+            const origin = {lat: location.lat(), lng: location.lng()};
+            geocodeCache.set(norm(query), origin);
+            return origin;
+        } catch (error) {
+            // The WordPress text filter remains functional if Geocoding is disabled.
+            return null;
+        }
     }
 
     async function runSearch() {
@@ -423,35 +421,112 @@
         }, {passive: false});
     }
 
+    let sdkLoadPromise = null;
+    let failed = false;
+
+    function showMapFailure(message) {
+        if (failed) {
+            return;
+        }
+        failed = true;
+        mapElement.textContent = message;
+        mapElement.classList.add('spek-map-error');
+        partners.forEach(function (partner) {
+            partner.card.classList.remove('is-hidden');
+        });
+        if (emptyElement) {
+            emptyElement.hidden = true;
+        }
+        setStatus('Η λίστα συνεργατών είναι διαθέσιμη, αλλά ο χάρτης δεν φορτώθηκε.');
+    }
+
     function loadMapsSDK() {
-        return new Promise(function (resolve, reject) {
-            if (window.google && window.google.maps) {
-                resolve();
-                return;
+        if (window.google && window.google.maps &&
+            typeof window.google.maps.importLibrary === 'function') {
+            return Promise.resolve();
+        }
+        if (sdkLoadPromise) {
+            return sdkLoadPromise;
+        }
+
+        sdkLoadPromise = new Promise(function (resolve, reject) {
+            // Google recommends the callback, not the script 'load' event,
+            // when using loading=async. Otherwise importLibrary can be called
+            // before the Maps SDK is ready.
+            const callbackName = '__spekGoogleMapsReady';
+            let settled = false;
+            const timeout = window.setTimeout(function () {
+                finish(new Error('Google Maps SDK timed out after 20 seconds'));
+            }, 20000);
+
+            function finish(error) {
+                if (settled) {
+                    return;
+                }
+                settled = true;
+                window.clearTimeout(timeout);
+                try {
+                    delete window[callbackName];
+                } catch (ignored) {
+                    window[callbackName] = undefined;
+                }
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
             }
+
+            window[callbackName] = function () {
+                if (!window.google || !window.google.maps ||
+                    typeof window.google.maps.importLibrary !== 'function') {
+                    finish(new Error('Google Maps callback fired without the Maps library'));
+                    return;
+                }
+                finish();
+            };
+
+            // Auth failures may occur after the SDK script has loaded. Surface
+            // a practical message without hiding the partner list.
+            const oldAuthFailure = window.gm_authFailure;
+            window.gm_authFailure = function () {
+                const error = new Error('Google Maps API key was rejected: check website referrers, API restrictions and billing');
+                showMapFailure('Η Google απέρριψε το κλειδί χάρτη. Ελέγξτε ότι επιτρέπεται το https://spek.iluma.gr/*, ότι είναι ενεργό το Maps JavaScript API και το Billing.');
+                if (typeof oldAuthFailure === 'function') {
+                    oldAuthFailure();
+                }
+                finish(error);
+            };
+
             const script = document.createElement('script');
-            script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key)
-                + '&v=weekly&loading=async';
+            script.dataset.spekGoogleMaps = '1';
+            const params = new URLSearchParams({
+                key: key,
+                v: 'weekly',
+                loading: 'async',
+                callback: callbackName,
+                language: 'el',
+                region: 'GR'
+            });
+            script.src = 'https://maps.googleapis.com/maps/api/js?' + params.toString();
             script.async = true;
-            script.onload = resolve;
-            script.onerror = function () { reject(new Error('Google Maps SDK load failed')); };
+            script.onerror = function () {
+                finish(new Error('Google Maps SDK network request failed'));
+            };
             document.head.appendChild(script);
         });
+        return sdkLoadPromise;
     }
 
     async function init() {
         try {
             setStatus(text('Γίνεται φόρτωση σημείων πώλησης...'));
             await loadMapsSDK();
-            // Maps importLibrary resolves once the async SDK is ready.
+            // The Google callback confirms the SDK is ready. Load only the
+            // required maps library; Geocoding is requested on actual search.
             await google.maps.importLibrary('maps');
-            await google.maps.importLibrary('marker');
-            // The geocoding service is only invoked after a visitor searches.
-            // A missing/disabled Geocoding API must not hide the partner list.
-            try {
-                await google.maps.importLibrary('geocoding');
-            } catch (error) {
-                // Local text filtering still works without geocoding.
+            if (failed) {
+                return;
             }
             map = new google.maps.Map(mapElement, {
                 center: initialCenter,
@@ -520,15 +595,9 @@
             setupWheelScroll();
             showPartners(partners, null);
         } catch (error) {
-            mapElement.textContent = 'Ο χάρτης Google Maps δεν μπόρεσε να φορτωθεί. Ελέγξτε το API key και τους περιορισμούς domain.';
-            mapElement.classList.add('spek-map-error');
-            partners.forEach(function (partner) { partner.card.classList.remove('is-hidden'); });
-            if (emptyElement) {
-                emptyElement.hidden = true;
-            }
-            setStatus('Η λίστα συνεργατών είναι διαθέσιμη, αλλά ο χάρτης δεν φορτώθηκε.');
+            showMapFailure('Ο χάρτης Google Maps δεν φορτώθηκε. Ελέγξτε τη σύνδεση, το API key, τους περιορισμούς domain και το Billing του Google Cloud.');
             if (window.console && window.console.error) {
-                window.console.error('SPEK Google Maps:', error);
+                window.console.error('SPEK Google Maps initialization:', error);
             }
         }
     }
