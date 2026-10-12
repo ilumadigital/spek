@@ -1237,6 +1237,18 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         $stats['geocoded']++;
     }
 
+    // An identical suggestion already approved/rejected by an admin must
+    // never be reopened on the next Excel import.
+    if ($post_id && $suggested_maps_url !== '') {
+        $previously_handled = [
+            (string) get_post_meta($post_id, '_spek_partner_review_accepted_url', true),
+            (string) get_post_meta($post_id, '_spek_partner_review_rejected_url', true),
+        ];
+        if (in_array($suggested_maps_url, $previously_handled, true)) {
+            $suggested_maps_url = '';
+        }
+    }
+
     $phones = spek_partner_import_phones((string) $row['phone']);
     $meta = [
         'partner_address' => sanitize_text_field((string) $row['address']),
@@ -1317,8 +1329,7 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         $import_status = (string) ($google['status'] ?? '');
         if ($suggested_maps_url !== '' || in_array($import_status, ['review', 'error', 'no_key'], true)) {
             if ($review_state === '' || ($suggested_maps_url !== ''
-                && $suggested_maps_url !== $existing_maps_url
-                && (string) get_post_meta($post_id, '_spek_partner_review_accepted_url', true) !== $suggested_maps_url)) {
+                && $suggested_maps_url !== $existing_maps_url)) {
                 update_post_meta($post_id, '_spek_partner_review_resolution', 'pending');
             }
         }
