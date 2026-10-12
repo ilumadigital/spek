@@ -487,6 +487,10 @@ function spek_partner_review_render_page(): void
                 $status = $item['status'];
                 $saved_by = (int) get_post_meta($id, '_spek_partner_reviewed_by', true);
                 $reviewed = (string) get_post_meta($id, '_spek_partner_reviewed_at', true);
+                $google_name = (string) get_post_meta($id, '_spek_partner_google_candidate_name', true);
+                $google_address = (string) get_post_meta($id, '_spek_partner_google_candidate_address', true);
+                $google_score = (string) get_post_meta($id, '_spek_partner_google_match_score', true);
+                $google_note = (string) get_post_meta($id, '_spek_partner_google_match_note', true);
                 ?>
                 <article class="spek-review-card">
                     <div class="spek-review-card__header">
@@ -499,6 +503,11 @@ function spek_partner_review_render_page(): void
                                 get_post_meta($id, 'partner_area', true),
                             ]))); ?></p>
                             <?php if ($suggestion !== '') : ?><p class="spek-review-note">Προτεινόμενη τοποθεσία Google — χρειάζεται έλεγχο</p><?php endif; ?>
+                            <?php if ($google_name !== '' || $google_address !== '') : ?>
+                                <p><strong>Google:</strong> <?php echo esc_html(implode(' · ', array_filter([$google_name, $google_address]))); ?>
+                                <?php if ($google_score !== '') : ?> · <?php echo esc_html($google_score); ?>% βεβαιότητα<?php endif; ?></p>
+                            <?php endif; ?>
+                            <?php if ($google_note !== '' && $status === 'pending') : ?><p class="spek-review-note"><?php echo esc_html($google_note); ?></p><?php endif; ?>
                             <?php if ($status === 'missing') : ?><p class="spek-review-note">Απουσιάζουν έγκυρες συντεταγμένες. Δεν εμφανίζεται pin στον χάρτη.</p><?php endif; ?>
                             <?php if ($reviewed !== '') : ?><p class="description"><?php echo esc_html($reviewed); ?><?php if ($saved_by) : ?> · <?php echo esc_html(get_the_author_meta('display_name', $saved_by)); ?><?php endif; ?></p><?php endif; ?>
                         </div>
