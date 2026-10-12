@@ -1193,6 +1193,14 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
             $stats['google_matched']++;
         } else {
             $stats['needs_review']++;
+            // Save only a proposed Google link for human review, not a
+            // confirmed place ID or location. Place IDs may be retained.
+            if (!empty($google['place_id'])) {
+                $suggested_query = (string) ($google['name'] ?? $name);
+                $suggested_maps_url = 'https://www.google.com/maps/search/?api=1&query='
+                    . rawurlencode($suggested_query)
+                    . '&query_place_id=' . rawurlencode((string) $google['place_id']);
+            }
         }
     }
 
