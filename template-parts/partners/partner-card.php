@@ -42,6 +42,7 @@ $partners_query = new WP_Query(spek_language_args([
             $maps_url       = get_post_meta($partner_id, 'partner_maps_url', true);
             $latitude       = get_post_meta($partner_id, 'partner_latitude', true);
             $longitude      = get_post_meta($partner_id, 'partner_longitude', true);
+            $google_place_id = get_post_meta($partner_id, '_spek_partner_google_place_id', true);
 
             $phone_values = preg_split('/\s*(?:\/|\||,|;)\s*/u', (string) $phone);
             $phone_values = array_values(array_filter(array_map('trim', is_array($phone_values) ? $phone_values : [])));
@@ -100,6 +101,7 @@ $partners_query = new WP_Query(spek_language_args([
                 data-lat="<?php echo esc_attr($latitude); ?>"
                 data-lng="<?php echo esc_attr($longitude); ?>"
                 data-maps-url="<?php echo esc_url($maps_url); ?>"
+                data-place-id="<?php echo esc_attr($google_place_id); ?>"
                 data-search="<?php echo esc_attr($search_text); ?>"
             >
                 <div class="partner-card__header">
