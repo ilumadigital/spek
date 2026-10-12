@@ -325,6 +325,7 @@ function spek_partner_admin_columns($columns)
     $new_columns['title'] = __('Επωνυμία', 'spek-theme');
     $new_columns['partner_area'] = __('Περιοχή', 'spek-theme');
     $new_columns['partner_address'] = __('Διεύθυνση', 'spek-theme');
+    $new_columns['partner_review'] = __('Έλεγχος', 'spek-theme');
     $new_columns['partner_phone'] = __('Τηλέφωνο', 'spek-theme');
     $new_columns['partner_email'] = __('Email', 'spek-theme');
     $new_columns['date'] = $columns['date'];
@@ -336,6 +337,17 @@ add_filter('manage_spek_partner_posts_columns', 'spek_partner_admin_columns');
 
 function spek_partner_admin_column_content($column, $post_id): void
 {
+    if ($column === 'partner_review' && function_exists('spek_partner_review_status')) {
+        $status = spek_partner_review_status((int) $post_id);
+        $label = spek_partner_review_label($status);
+        $url = add_query_arg([
+            'post_type' => 'spek_partner',
+            'page' => 'spek-partner-review',
+            's' => get_the_title($post_id),
+        ], admin_url('edit.php'));
+        echo '<a href="' . esc_url($url) . '">' . esc_html($label) . '</a>';
+    }
+
     if ($column === 'partner_area') {
         echo esc_html(get_post_meta($post_id, 'partner_area', true) ?: '—');
     }
