@@ -65,7 +65,7 @@
         const patterns = [
             /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,
             /[?&](?:q|query|ll|destination)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
-            /@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/,
+            // Never treat the Google Maps camera center as a store's pin.
         ];
 
         for (const pattern of patterns) {
