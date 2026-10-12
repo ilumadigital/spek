@@ -283,9 +283,16 @@ function spek_enqueue_assets(): void
             : '';
 
         if ($google_browser_key !== '') {
+            wp_enqueue_style(
+                'spek-google-locator',
+                SPEK_THEME_URI . '/assets/css/store-locator-google.css',
+                ['spek-main'],
+                filemtime(SPEK_THEME_DIR . '/assets/css/store-locator-google.css')
+            );
+
             wp_enqueue_script(
                 'spek-google-markerclusterer',
-                'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js',
+                'https://unpkg.com/@googlemaps/markerclusterer@2.6.2/dist/index.min.js',
                 [],
                 null,
                 true
