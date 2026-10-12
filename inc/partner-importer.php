@@ -292,12 +292,23 @@ function spek_ajax_partner_import_init(): void
     }
 
     $rows = [];
+    $seen_rows = [];
     foreach ($parsed as $index => $raw_row) {
         $row = spek_partner_import_map_row($raw_row, $column_map);
         if (trim((string) ($row['name'] ?? '')) === '') {
             continue;
         }
         $row['_source_row'] = $index + 2;
+        // Exact duplicates in one upload should not create the same shop twice.
+        // A name without an address/postcode is NOT sufficient to deduplicate.
+        if ($row['address'] !== '' || $row['postcode'] !== '') {
+            $identity = spek_partner_import_key($row);
+            if (isset($seen_rows[$identity])) {
+                $row['_duplicate_source_row'] = $seen_rows[$identity];
+            } else {
+                $seen_rows[$identity] = $row['_source_row'];
+            }
+        }
         $rows[] = $row;
     }
 
@@ -659,9 +670,13 @@ function spek_partner_import_map_row(array $row, array $map): array
         }
     }
 
-    // Some legacy files contain the Google Maps link in the street column.
-    if (spek_partner_import_is_google_maps_url($data['address']) && $data['maps_url'] === '') {
-        $data['maps_url'] = $data['address'];
+    // Accept older Google URLs missing https:// and misplaced in the street column.
+    $street_maps_url = spek_partner_import_normalize_maps_url($data['address']);
+    $data['maps_url'] = spek_partner_import_normalize_maps_url($data['maps_url']);
+    if ($street_maps_url !== '') {
+        if ($data['maps_url'] === '') {
+            $data['maps_url'] = $street_maps_url;
+        }
         $data['address'] = '';
     }
 
@@ -669,6 +684,36 @@ function spek_partner_import_map_row(array $row, array $map): array
     $data['email'] = sanitize_email($data['email']);
 
     return $data;
+}
+
+/** Accept only verified Google Maps URLs; normalize scheme-less Excel links. */
+function spek_partner_import_normalize_maps_url(string $raw): string
+{
+    $raw = trim(html_entity_decode($raw, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    if ($raw === '') {
+        return '';
+    }
+    if (preg_match('~^(?:(?:www\.)?google\.com/maps|maps\.google\.com/|maps\.app\.goo\.gl/)~i', $raw)) {
+        $raw = 'https://' . $raw;
+    }
+    return spek_partner_import_is_google_maps_url($raw) ? esc_url_raw($raw) : '';
+}
+
+/** Explicit /maps/place/ URLs can point to a different business. */
+function spek_partner_import_google_url_warning(string $url, string $business_name): string
+{
+    $path = (string) wp_parse_url($url, PHP_URL_PATH);
+    if (!preg_match('~/(?:maps/)?place/([^/@?]+)~u', $path, $matches)) {
+        return '';
+    }
+    $place_name = str_replace('+', ' ', rawurldecode($matches[1]));
+    if (spek_partner_import_similarity($business_name, $place_name) < 45) {
+        return sprintf(
+            'Google Maps URL προς «%s» — διαφορετική επωνυμία από το Excel. Χρειάζεται επιβεβαίωση.',
+            sanitize_text_field($place_name)
+        );
+    }
+    return '';
 }
 
 function spek_partner_import_is_google_maps_url(string $value): bool
@@ -720,19 +765,25 @@ function spek_partner_import_key(array $row): string
     ]));
 }
 
-/** Find an existing partner without merging same brand at different addresses. */
+/**
+ * Match the complete shop identity, never just same name + postal code.
+ * -1 means ambiguous existing duplicates; the importer must not guess.
+ */
 function spek_partner_import_find_existing(array $row): int
 {
     $key = spek_partner_import_key($row);
     $ids = get_posts([
         'post_type' => 'spek_partner',
         'post_status' => 'any',
-        'posts_per_page' => 2,
+        'posts_per_page' => 3,
         'fields' => 'ids',
         'meta_key' => '_spek_partner_import_key',
         'meta_value' => $key,
         'no_found_rows' => true,
     ]);
+    if (count($ids) > 1) {
+        return -1;
+    }
     if (count($ids) === 1) {
         return (int) $ids[0];
     }
@@ -740,28 +791,30 @@ function spek_partner_import_find_existing(array $row): int
     $candidates = get_posts([
         'post_type' => 'spek_partner',
         'post_status' => 'any',
-        'posts_per_page' => 25,
+        'posts_per_page' => 100,
         's' => (string) $row['name'],
         'no_found_rows' => true,
     ]);
 
-    $target_name = spek_partner_import_normalize_text((string) $row['name']);
-    $target_address = spek_partner_import_normalize_text((string) $row['address']);
-    $target_postcode = preg_replace('/\D+/', '', (string) $row['postcode']);
-
+    $target = [
+        spek_partner_import_normalize_text((string) $row['name']),
+        spek_partner_import_normalize_text((string) $row['address']),
+        spek_partner_import_normalize_text((string) $row['area']),
+        preg_replace('/\D+/', '', (string) $row['postcode']),
+    ];
+    $matches = [];
     foreach ($candidates as $candidate) {
-        if (spek_partner_import_normalize_text((string) $candidate->post_title) !== $target_name) {
-            continue;
-        }
-        $existing_address = spek_partner_import_normalize_text((string) get_post_meta($candidate->ID, 'partner_address', true));
-        $existing_postcode = preg_replace('/\D+/', '', (string) get_post_meta($candidate->ID, 'partner_postcode', true));
-
-        if (($target_postcode !== '' && $existing_postcode === $target_postcode) || ($target_address !== '' && $existing_address === $target_address)) {
-            return (int) $candidate->ID;
+        $existing = [
+            spek_partner_import_normalize_text((string) $candidate->post_title),
+            spek_partner_import_normalize_text((string) get_post_meta($candidate->ID, 'partner_address', true)),
+            spek_partner_import_normalize_text((string) get_post_meta($candidate->ID, 'partner_area', true)),
+            preg_replace('/\D+/', '', (string) get_post_meta($candidate->ID, 'partner_postcode', true)),
+        ];
+        if ($target === $existing) {
+            $matches[] = (int) $candidate->ID;
         }
     }
-
-    return 0;
+    return count($matches) > 1 ? -1 : ($matches[0] ?? 0);
 }
 
 /** Parse phones, extracting one mobile while preserving all fixed-line numbers. */
@@ -1017,7 +1070,28 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         return;
     }
 
+    if (!empty($row['_duplicate_source_row'])) {
+        $stats['skipped']++;
+        $stats['needs_review']++;
+        $review[] = [
+            'row' => $source_row, 'name' => $name, 'action' => 'skip duplicate',
+            'google_status' => 'review', 'score' => null,
+            'note' => 'Διπλή εγγραφή στο Excel (πρώτη εμφάνιση: γραμμή ' . (int) $row['_duplicate_source_row'] . ').',
+        ];
+        return;
+    }
+
     $post_id = spek_partner_import_find_existing($row);
+    if ($post_id === -1) {
+        $stats['skipped']++;
+        $stats['needs_review']++;
+        $review[] = [
+            'row' => $source_row, 'name' => $name, 'action' => 'skip ambiguous',
+            'google_status' => 'review', 'score' => null,
+            'note' => 'Πολλαπλές υπάρχουσες εγγραφές έχουν ίδια πλήρη ταυτότητα. Χρειάζεται χειροκίνητος έλεγχος.',
+        ];
+        return;
+    }
     if ($post_id && !$update_existing) {
         $stats['skipped']++;
         $review[] = ['row' => $source_row, 'name' => $name, 'action' => 'skip existing', 'google_status' => '—', 'score' => null, 'note' => 'Υπάρχει ήδη και η ενημέρωση υπαρχόντων είναι απενεργοποιημένη.'];
