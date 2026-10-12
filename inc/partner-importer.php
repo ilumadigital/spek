@@ -1164,7 +1164,10 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
     $existing_place_id = $post_id ? (string) get_post_meta($post_id, '_spek_partner_google_place_id', true) : '';
 
     if ($maps_url !== '') {
-        $url_warning = spek_partner_import_google_url_warning($maps_url, $name);
+        // A WordPress admin may already have explicitly approved this URL.
+        $url_warning = $post_id && $maps_url === $existing_maps_url
+            ? ''
+            : spek_partner_import_google_url_warning($maps_url, $name);
         if ($url_warning !== '') {
             // Do not overwrite an already verified link with a mismatched place.
             $suggested_maps_url = $maps_url;
@@ -1226,7 +1229,10 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         'partner_latitude' => isset($coords['latitude']) ? sanitize_text_field((string) $coords['latitude']) : '',
         'partner_longitude' => isset($coords['longitude']) ? sanitize_text_field((string) $coords['longitude']) : '',
         '_spek_partner_import_key' => spek_partner_import_key($row),
-        '_spek_partner_google_place_id' => sanitize_text_field((string) ($google['place_id'] ?? '')),
+        // A suggested/unverified Google result must never become a confirmed ID.
+        '_spek_partner_google_place_id' => in_array((string) ($google['status'] ?? ''), ['matched', 'existing'], true)
+            ? sanitize_text_field((string) ($google['place_id'] ?? ''))
+            : '',
         '_spek_partner_suggested_maps_url' => esc_url_raw($suggested_maps_url),
         '_spek_partner_google_match_status' => sanitize_key((string) ($google['status'] ?? '')),
         '_spek_partner_google_match_score' => isset($google['score']) && $google['score'] !== null ? (string) (int) $google['score'] : '',
@@ -1284,10 +1290,11 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         }
         update_post_meta($post_id, '_spek_partner_imported_at', current_time('mysql'));
 
-        if (trim((string) $row['region']) !== '') {
-            $term = term_exists((string) $row['region'], 'partner_region');
+        $region = trim((string) $row['region']);
+        if ($region !== '' && !in_array(mb_strtolower($region, 'UTF-8'), ['unknown', 'n/a', '-', 'null'], true)) {
+            $term = term_exists($region, 'partner_region');
             if (!$term) {
-                $term = wp_insert_term(sanitize_text_field((string) $row['region']), 'partner_region');
+                $term = wp_insert_term(sanitize_text_field($region), 'partner_region');
             }
             if (!is_wp_error($term)) {
                 $term_id = is_array($term) ? (int) $term['term_id'] : (int) $term;
