@@ -275,40 +275,68 @@ function spek_enqueue_assets(): void
     }
 
     if (is_page_template('templates/template-partners.php')) {
-        wp_enqueue_style(
-            'leaflet',
-            'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
-            [],
-            '1.9.4'
-        );
-
-        wp_enqueue_script(
-            'leaflet',
-            'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
-            [],
-            '1.9.4',
-            true
-        );
-
-        wp_enqueue_script(
-            'spek-store-locator',
-            SPEK_THEME_URI . '/assets/js/store-locator.js',
-            ['leaflet', 'spek-main'],
-            SPEK_THEME_VERSION,
-            true
-        );
-        
-        $tomtom_api_key = defined('SPEK_TOMTOM_API_KEY')
-            ? SPEK_TOMTOM_API_KEY
+        // Browser-only key, restricted in Google Cloud to the SPEK domain and
+        // Maps JavaScript API (+ Geocoding API for geographic text search).
+        // Keep the existing SPEK_GOOGLE_MAPS_API_KEY for server-side Places.
+        $google_browser_key = defined('SPEK_GOOGLE_MAPS_BROWSER_KEY')
+            ? trim((string) SPEK_GOOGLE_MAPS_BROWSER_KEY)
             : '';
-        
-        wp_localize_script(
-            'spek-store-locator',
-            'spekMapConfig',
-            [
+
+        if ($google_browser_key !== '') {
+            wp_enqueue_script(
+                'spek-google-markerclusterer',
+                'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js',
+                [],
+                null,
+                true
+            );
+
+            wp_enqueue_script(
+                'spek-store-locator',
+                SPEK_THEME_URI . '/assets/js/store-locator-google.js',
+                ['spek-main', 'spek-google-markerclusterer'],
+                filemtime(SPEK_THEME_DIR . '/assets/js/store-locator-google.js'),
+                true
+            );
+
+            // Browser key is public by design: secure it with HTTP referrer and
+            // API restrictions in Google Cloud, never put the server key here.
+            wp_localize_script('spek-store-locator', 'spekMapConfig', [
+                'googleBrowserKey' => $google_browser_key,
+            ]);
+        } else {
+            // Safe fallback until the website owner adds the new browser key.
+            wp_enqueue_style(
+                'leaflet',
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+                [],
+                '1.9.4'
+            );
+
+            wp_enqueue_script(
+                'leaflet',
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+                [],
+                '1.9.4',
+                true
+            );
+
+            wp_enqueue_script(
+                'spek-store-locator',
+                SPEK_THEME_URI . '/assets/js/store-locator.js',
+                ['leaflet', 'spek-main'],
+                filemtime(SPEK_THEME_DIR . '/assets/js/store-locator.js'),
+                true
+            );
+
+            $tomtom_api_key = defined('SPEK_TOMTOM_API_KEY')
+                ? SPEK_TOMTOM_API_KEY
+                : '';
+
+            wp_localize_script('spek-store-locator', 'spekMapConfig', [
                 'tomtomKey' => $tomtom_api_key,
-            ]
-        );
+            ]);
+        }
     }
 }
 
