@@ -111,6 +111,17 @@ function spek_render_partner_data_metabox($post): void
             <?php esc_html_e('Το πεδίο τίτλου επάνω χρησιμοποιείται ως', 'spek-theme'); ?> <strong><?php esc_html_e('Επωνυμία', 'spek-theme'); ?></strong><?php esc_html_e('. Εδώ συμπληρώνετε τα στοιχεία του συνεργάτη ή του σημείου πώλησης.', 'spek-theme'); ?>
         </p>
 
+        <?php
+        $suggested_maps_url = (string) get_post_meta($post->ID, '_spek_partner_suggested_maps_url', true);
+        if ($suggested_maps_url !== '') :
+        ?>
+            <div class="notice notice-warning inline" style="padding:12px 16px;margin:12px 0;">
+                <p><strong><?php esc_html_e('Google Maps: χρειάζεται επιβεβαίωση σημείου', 'spek-theme'); ?></strong></p>
+                <p><?php esc_html_e('Το link του Excel ενδέχεται να αφορά άλλη επιχείρηση. Ελέγξτε το και, αν είναι σωστό, επικολλήστε το στο πεδίο Google Maps URL παρακάτω και αποθηκεύστε.', 'spek-theme'); ?></p>
+                <p><a href="<?php echo esc_url($suggested_maps_url); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Άνοιγμα προτεινόμενου σημείου στο Google Maps', 'spek-theme'); ?></a></p>
+            </div>
+        <?php endif; ?>
+
         <div class="spek-product-admin__grid">
             <?php foreach ($fields as $key => $field) : ?>
                 <?php $value = get_post_meta($post->ID, $key, true); ?>
@@ -177,8 +188,7 @@ function spek_extract_lat_lng_from_maps_url(string $url): array
         // Coordinates που έχουν δοθεί ρητά ως destination/query.
         '/[?&](?:q|query|ll|destination)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/',
     
-        // Τελευταίο fallback: viewport / map center.
-        '/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/',
+        // Do NOT use /@lat,lng here: it is often the camera center, not the shop pin.
     ];
 
     foreach ($patterns as $pattern) {
@@ -270,6 +280,12 @@ function spek_save_partner_data($post_id): void
             'partner_maps_url',
             $maps_url
         );
+
+        // Manual approval/correction resolves the importer suggestion.
+        $suggested = (string) get_post_meta($post_id, '_spek_partner_suggested_maps_url', true);
+        if ($suggested !== '' && $maps_url !== '') {
+            delete_post_meta($post_id, '_spek_partner_suggested_maps_url');
+        }
     }
 
     $coordinates = spek_extract_lat_lng_from_maps_url($maps_url);
