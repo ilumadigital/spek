@@ -278,9 +278,11 @@ function spek_enqueue_assets(): void
         // Browser-only key, restricted in Google Cloud to the SPEK domain and
         // Maps JavaScript API (+ Geocoding API for geographic text search).
         // Keep the existing SPEK_GOOGLE_MAPS_API_KEY for server-side Places.
-        $google_browser_key = defined('SPEK_GOOGLE_MAPS_BROWSER_KEY')
-            ? trim((string) SPEK_GOOGLE_MAPS_BROWSER_KEY)
-            : '';
+        $google_browser_key = function_exists('spek_partner_google_browser_key')
+            ? spek_partner_google_browser_key()
+            : (defined('SPEK_GOOGLE_MAPS_BROWSER_KEY')
+                ? trim((string) SPEK_GOOGLE_MAPS_BROWSER_KEY)
+                : '');
 
         if ($google_browser_key !== '') {
             wp_enqueue_style(
