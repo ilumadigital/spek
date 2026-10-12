@@ -275,6 +275,13 @@ function spek_enqueue_assets(): void
     }
 
     if (is_page_template('templates/template-partners.php')) {
+        wp_enqueue_style(
+            'spek-partners-fullwidth',
+            SPEK_THEME_URI . '/assets/css/partners-fullwidth.css',
+            ['spek-main'],
+            filemtime(SPEK_THEME_DIR . '/assets/css/partners-fullwidth.css')
+        );
+
         // Browser-only key, restricted in Google Cloud to the SPEK domain and
         // Maps JavaScript API (+ Geocoding API for geographic text search).
         // Keep the existing SPEK_GOOGLE_MAPS_API_KEY for server-side Places.
