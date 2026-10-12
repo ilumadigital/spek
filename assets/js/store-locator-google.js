@@ -213,7 +213,8 @@
         // Use the Google Maps open-source clusterer when available; gracefully
         // fall back to individual markers if the CDN is blocked.
         if (window.markerClusterer && window.markerClusterer.MarkerClusterer) {
-            clusterer = new window.markerClusterer.MarkerClusterer({
+            try {
+                clusterer = new window.markerClusterer.MarkerClusterer({
                 map: map,
                 markers: markers,
                 renderer: {
@@ -233,7 +234,13 @@
                         });
                     }
                 }
-            });
+                });
+            } catch (clusterError) {
+                // Never fail the entire map just because clustering is unavailable.
+                console.warn('SPEK: map clustering unavailable, using standard markers', clusterError);
+                clusterer = null;
+                markers.forEach(function (marker) { marker.setMap(map); });
+            }
         } else {
             markers.forEach(function (marker) { marker.setMap(map); });
         }
@@ -524,7 +531,10 @@
             await loadMapsSDK();
             // The Google callback confirms the SDK is ready. Load only the
             // required maps library; Geocoding is requested on actual search.
-            await google.maps.importLibrary('maps');
+            await Promise.all([
+                google.maps.importLibrary('maps'),
+                google.maps.importLibrary('marker')
+            ]);
             if (failed) {
                 return;
             }
