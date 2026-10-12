@@ -1270,6 +1270,9 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         '_spek_partner_suggested_maps_url' => esc_url_raw($suggested_maps_url),
         '_spek_partner_google_match_status' => sanitize_key((string) ($google['status'] ?? '')),
         '_spek_partner_google_match_score' => isset($google['score']) && $google['score'] !== null ? (string) (int) $google['score'] : '',
+        '_spek_partner_google_candidate_name' => sanitize_text_field((string) ($google['name'] ?? '')),
+        '_spek_partner_google_candidate_address' => sanitize_text_field((string) ($google['address'] ?? '')),
+        '_spek_partner_google_match_note' => sanitize_text_field((string) ($google['note'] ?? '')),
         '_spek_partner_import_source_row' => (string) $source_row,
     ];
 
