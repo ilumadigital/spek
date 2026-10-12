@@ -1130,6 +1130,13 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
     }
 
     if (!empty($row['_duplicate_source_row'])) {
+        if (!$dry_run && function_exists('spek_partner_review_queue_issue')) {
+            spek_partner_review_queue_issue(
+                $row,
+                'duplicate',
+                'Πιθανή διπλοεγγραφή: πρώτη εμφάνιση στη γραμμή ' . (int) $row['_duplicate_source_row']
+            );
+        }
         $stats['skipped']++;
         $stats['needs_review']++;
         $review[] = [
@@ -1142,6 +1149,13 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
 
     $post_id = spek_partner_import_find_existing($row);
     if ($post_id === -1) {
+        if (!$dry_run && function_exists('spek_partner_review_queue_issue')) {
+            spek_partner_review_queue_issue(
+                $row,
+                'ambiguous',
+                'Βρέθηκαν περισσότερες από μία υπάρχουσες εγγραφές με τα ίδια στοιχεία.'
+            );
+        }
         $stats['skipped']++;
         $stats['needs_review']++;
         $review[] = [
@@ -1297,6 +1311,17 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
             update_post_meta($post_id, $key, wp_slash($value));
         }
         update_post_meta($post_id, '_spek_partner_imported_at', current_time('mysql'));
+        // A genuinely new uncertain recommendation must re-enter the review
+        // inbox. Do not undo a human decision for an unchanged suggestion.
+        $review_state = (string) get_post_meta($post_id, '_spek_partner_review_resolution', true);
+        $import_status = (string) ($google['status'] ?? '');
+        if ($suggested_maps_url !== '' || in_array($import_status, ['review', 'error', 'no_key'], true)) {
+            if ($review_state === '' || ($suggested_maps_url !== ''
+                && $suggested_maps_url !== $existing_maps_url
+                && (string) get_post_meta($post_id, '_spek_partner_review_accepted_url', true) !== $suggested_maps_url)) {
+                update_post_meta($post_id, '_spek_partner_review_resolution', 'pending');
+            }
+        }
 
         $region = trim((string) $row['region']);
         if ($region !== '' && !in_array(mb_strtolower($region, 'UTF-8'), ['unknown', 'n/a', '-', 'null'], true)) {
