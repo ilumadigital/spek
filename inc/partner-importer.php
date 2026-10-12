@@ -92,7 +92,7 @@ function spek_render_partner_importer_page(): void
                     <tr>
                         <th scope="row"><?php esc_html_e('Λειτουργία', 'spek-theme'); ?></th>
                         <td>
-                            <label><input type="checkbox" id="spek_partner_import_dry_run" name="dry_run" value="1" checked> <?php esc_html_e('Δοκιμαστική εκτέλεση — χωρίς αλλαγές στη βάση', 'spek-theme'); ?></label>
+                            <label><input type="checkbox" id="spek_partner_import_dry_run" name="dry_run" value="1" checked> <?php esc_html_e('Δοκιμαστική εκτέλεση — χωρίς αλλαγές στη βάση (εκτελούνται κανονικά εξωτερικά API αιτήματα)', 'spek-theme'); ?></label>
                             <br>
                             <label><input type="checkbox" id="spek_partner_import_update_existing" name="update_existing" value="1" checked> <?php esc_html_e('Ενημέρωση υπαρχόντων σημείων όταν βρεθεί ίδια επωνυμία + διεύθυνση/ΤΚ', 'spek-theme'); ?></label>
                         </td>
@@ -135,9 +135,50 @@ function spek_render_partner_importer_page(): void
             resultWrap.innerHTML = '<div class="notice notice-error inline"><p>' + escapeHtml(message) + '</p></div>';
         }
 
+        let completeReview = [];
+
+        function csvCell(value) {
+            let cell = String(value == null ? '' : value);
+            // Avoid CSV formula injection when opened in Excel/LibreOffice.
+            if (/^\s*[=+@-]/.test(cell)) {
+                cell = "'" + cell;
+            }
+            return '"' + cell.replace(/"/g, '""') + '"';
+        }
+
+        function downloadReview() {
+            if (!completeReview.length) { return; }
+            const columns = [
+                ['row', 'Γραμμή'], ['name', 'Επωνυμία'], ['action', 'Ενέργεια'],
+                ['google_status', 'Κατάσταση Google'], ['score', 'Βεβαιότητα'],
+                ['google_name', 'Επωνυμία Google'], ['google_address', 'Διεύθυνση Google'],
+                ['coords_source', 'Πηγή συντεταγμένων'], ['note', 'Σημειώσεις']
+            ];
+            const lines = [columns.map((col) => csvCell(col[1])).join(';')];
+            completeReview.forEach((item) => {
+                lines.push(columns.map((col) => csvCell(item[col[0]])).join(';'));
+            });
+            const blob = new Blob(['\uFEFF' + lines.join('\r\n')], {type: 'text/csv;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'spek-partner-import-report.csv';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        }
+
+        resultWrap.addEventListener('click', function (event) {
+            if (event.target && event.target.id === 'spek-partner-export-report') {
+                downloadReview();
+            }
+        });
+
         function renderResult(data) {
             const stats = data.stats || {};
             const rows = Array.isArray(data.review) ? data.review : [];
+            completeReview = rows;
             const summary = [
                 ['Σύνολο', stats.total || 0],
                 ['Δημιουργία', stats.created || 0],
@@ -158,7 +199,7 @@ function spek_render_partner_importer_page(): void
             html += '</tbody></table>';
 
             if (rows.length) {
-                html += '<h2>Αναφορά αντιστοίχισης</h2><div style="overflow:auto"><table class="widefat striped"><thead><tr>' +
+                html += '<h2>Αναφορά αντιστοίχισης</h2><p><button type="button" class="button button-secondary" id="spek-partner-export-report">Εξαγωγή πλήρους αναφοράς CSV (' + rows.length + ' γραμμές)</button></p><div style="overflow:auto;max-height:640px"><table class="widefat striped"><thead><tr>' +
                     '<th>Γραμμή</th><th>Επωνυμία</th><th>Ενέργεια</th><th>Google</th><th>Score</th><th>Google αποτέλεσμα</th><th>Locator</th><th>Σημείωση</th>' +
                     '</tr></thead><tbody>';
                 rows.forEach(function (row) {
@@ -392,7 +433,7 @@ function spek_ajax_partner_import_batch(): void
         'done' => $done,
         'dry_run' => (bool) $state['dry_run'],
         'stats' => $state['stats'],
-        'review' => $state['review'],
+        'review' => $done ? $state['review'] : [],
     ]);
 }
 add_action('wp_ajax_spek_partner_import_batch', 'spek_ajax_partner_import_batch');
