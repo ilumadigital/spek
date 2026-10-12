@@ -33,6 +33,7 @@ $required_files = [
     '/inc/partner-metaboxes.php',
     '/inc/google-map-settings.php',
     '/inc/partner-importer.php',
+    '/inc/partner-review.php',
     '/inc/product-query.php',
     '/inc/product-export.php',
     '/inc/helpers.php',
