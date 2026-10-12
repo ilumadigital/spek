@@ -336,7 +336,12 @@ function spek_ajax_partner_import_init(): void
     $seen_rows = [];
     foreach ($parsed as $index => $raw_row) {
         $row = spek_partner_import_map_row($raw_row, $column_map);
-        if (trim((string) ($row['name'] ?? '')) === '') {
+        // Keep incomplete but nonempty rows so the review inbox can repair
+        // missing names instead of silently dropping those spreadsheet records.
+        $nonempty = array_filter($row, static function ($value): bool {
+            return trim((string) $value) !== '';
+        });
+        if (!$nonempty) {
             continue;
         }
         $row['_source_row'] = $index + 2;
@@ -1124,7 +1129,16 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
     $source_row = (int) ($row['_source_row'] ?? 0);
     $name = sanitize_text_field((string) $row['name']);
     if ($name === '') {
+        if (!$dry_run && function_exists('spek_partner_review_queue_issue')) {
+            spek_partner_review_queue_issue($row, 'missing_name', 'Λείπει η επωνυμία του συνεργάτη.');
+        }
         $stats['skipped']++;
+        $stats['needs_review']++;
+        $review[] = [
+            'row' => $source_row, 'name' => 'Χωρίς επωνυμία',
+            'action' => 'skip missing name', 'google_status' => 'review',
+            'score' => null, 'note' => 'Λείπει η επωνυμία. Η εγγραφή στάλθηκε για έλεγχο.',
+        ];
         spek_partner_import_error($stats, sprintf(__('Γραμμή %d: λείπει η επωνυμία.', 'spek-theme'), $source_row));
         return;
     }
