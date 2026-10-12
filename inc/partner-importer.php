@@ -1192,6 +1192,17 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
     $existing_place_id = $post_id ? (string) get_post_meta($post_id, '_spek_partner_google_place_id', true) : '';
 
     if ($maps_url !== '') {
+        // Never silently replace an already published Google link with a new
+        // spreadsheet value. Show the new link in the review inbox first.
+        if ($post_id && $existing_maps_url !== '' && $maps_url !== $existing_maps_url) {
+            $suggested_maps_url = $maps_url;
+            $maps_url = $existing_maps_url;
+            $google = [
+                'status' => 'review', 'score' => null, 'place_id' => '',
+                'note' => 'Το νέο Google Maps URL διαφέρει από την υπάρχουσα τοποθεσία. Απαιτείται έγκριση.',
+            ];
+            $stats['needs_review']++;
+        } else {
         // A WordPress admin may already have explicitly approved this URL.
         $url_warning = $post_id && $maps_url === $existing_maps_url
             ? ''
@@ -1205,6 +1216,7 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         } else {
             $google = ['status' => 'provided', 'score' => 100, 'maps_url' => $maps_url, 'name' => '', 'address' => '', 'place_id' => ''];
             $stats['google_matched']++;
+        }
         }
     } elseif ($post_id && $existing_maps_url !== '') {
         // Reimports must keep a manually confirmed / previously saved link.
