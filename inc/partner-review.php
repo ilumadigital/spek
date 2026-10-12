@@ -264,7 +264,7 @@ function spek_partner_review_handle_action(): void
         }
 
         $row = (array) ($queue[$key]['data'] ?? []);
-        $name = sanitize_text_field((string) ($row['name'] ?? ''));
+        $name = trim(sanitize_text_field(wp_unslash((string) ($_POST['partner_name'] ?? ($row['name'] ?? '')))));
         if ($name === '') {
             spek_partner_review_redirect($return_url, 'empty_name');
         }
@@ -453,7 +453,7 @@ function spek_partner_review_render_page(): void
                 <article class="spek-review-card">
                     <div class="spek-review-card__header">
                         <div><span class="spek-review-pill is-<?php echo ($q['status'] ?? '') === 'rejected' ? 'rejected' : 'pending'; ?>">Excel · <?php echo esc_html($q['type'] ?? 'review'); ?></span>
-                            <h2><?php echo esc_html($row['name'] ?? ''); ?></h2>
+                            <h2><?php echo esc_html(($row['name'] ?? '') !== '' ? $row['name'] : 'Χωρίς επωνυμία'); ?></h2>
                             <p><?php echo esc_html(implode(', ', array_filter([$row['address'] ?? '', $row['postcode'] ?? '', $row['area'] ?? '']))); ?></p>
                             <p class="spek-review-note"><?php echo esc_html($q['message'] ?? ''); ?> · Γραμμή <?php echo esc_html((string) ($q['source_row'] ?? '')); ?></p>
                         </div>
@@ -466,6 +466,9 @@ function spek_partner_review_render_page(): void
                             <input type="hidden" name="queue_key" value="<?php echo esc_attr($item['key']); ?>">
                             <input type="hidden" name="return_url" value="<?php echo esc_url($return_url); ?>">
                             <?php wp_nonce_field('spek_partner_queue_' . $item['key']); ?>
+                            <?php if (empty($row['name'])) : ?>
+                                <label>Επωνυμία <input type="text" name="partner_name" placeholder="Συμπλήρωσε επωνυμία" required></label>
+                            <?php endif; ?>
                             <button type="submit" class="button button-primary">Δημιουργία προσχεδίου &amp; επεξεργασία</button>
                         </form>
                         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
