@@ -1,0 +1,190 @@
+/* SPEK Partners — review & approval inbox in WordPress admin. */
+.spek-review {
+    max-width: 1440px;
+    padding: 10px 14px 48px 0;
+}
+.spek-review > h1 {
+    font-size: 27px;
+    letter-spacing: -.035em;
+    font-weight: 750;
+    margin-bottom: 10px;
+}
+.spek-review > .description {
+    font-size: 13px;
+    margin: 0 0 24px;
+}
+.spek-review-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin: 22px 0;
+}
+.spek-review-stats > div {
+    background: #fff;
+    border: 1px solid #dce3ea;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 4px 14px rgb(15 45 73 / 4%);
+}
+.spek-review-stats strong {
+    display: block;
+    color: #163a5a;
+    font-size: 29px;
+    line-height: 1.2;
+}
+.spek-review-stats span {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #596d7a;
+}
+.spek-review-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    border-bottom: 1px solid #d6dfe7;
+    margin-bottom: 18px;
+}
+.spek-review-tabs a {
+    padding: 11px 16px;
+    color: #526271;
+    text-decoration: none;
+    font-weight: 650;
+    border-bottom: 3px solid transparent;
+}
+.spek-review-tabs a.is-active {
+    color: #0f4c81;
+    border-color: #0f4c81;
+}
+.spek-review-search {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+.spek-review-search input[type=search] {
+    width: min(450px, 100%);
+    min-height: 38px;
+}
+.spek-review-search .submit { padding: 0; margin: 0; }
+.spek-review-count { color: #647485; margin: 18px 0 12px; }
+.spek-review-list { display: grid; gap: 14px; }
+.spek-review-card {
+    border: 1px solid #dce3ea;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 3px 14px rgb(15 45 73 / 4%);
+    padding: 20px 22px;
+}
+.spek-review-card__header {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.spek-review-card h2 {
+    color: #18364c;
+    font-size: 18px;
+    line-height: 1.35;
+    margin: 10px 0 4px;
+}
+.spek-review-card p {
+    margin: 5px 0;
+    color: #647485;
+    font-size: 13px;
+}
+.spek-review-card p.spek-review-note {
+    color: #a15d18;
+}
+.spek-review-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: #edf0f3;
+    color: #526474;
+    font-size: 11px;
+    font-weight: 700;
+}
+.spek-review-pill.is-pending, .spek-review-pill.is-missing {
+    background: #fff2df;
+    color: #8c580e;
+}
+.spek-review-pill.is-approved, .spek-review-pill.is-ok {
+    background: #e8f6ee;
+    color: #166943;
+}
+.spek-review-pill.is-rejected {
+    background: #f5e8e8;
+    color: #972c37;
+}
+.spek-review-card__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+.spek-review-card__links a { font-weight: 650; text-decoration: none; }
+.spek-review-card details { margin-top: 14px; border-top: 1px solid #e6eaee; }
+.spek-review-card summary {
+    display: list-item;
+    width: fit-content;
+    margin-top: 13px;
+    color: #0f4c81;
+    cursor: pointer;
+    font-weight: 650;
+    font-size: 13px;
+}
+.spek-review-card summary:focus-visible { outline: 2px solid #0f4c81; }
+.spek-review-editor {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+}
+.spek-review-editor label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+.spek-review-editor label span {
+    color: #526474;
+    font-weight: 650;
+    font-size: 12px;
+}
+.spek-review-editor input {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+}
+.spek-review-editor label:has(input[name=partner_maps_url]),
+.spek-review-editor > .spek-review-note,
+.spek-review-editor > .spek-review-actions {
+    grid-column: 1 / -1;
+}
+.spek-review-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 16px;
+}
+.spek-review-actions form { margin: 0; }
+.spek-review-empty {
+    background: #fff;
+    border: 1px dashed #b8c7d4;
+    padding: 34px 24px;
+    border-radius: 12px;
+    color: #5b7082;
+}
+@media(max-width: 1000px) {
+    .spek-review-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .spek-review-editor { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media(max-width: 600px) {
+    .spek-review { padding-right: 8px; }
+    .spek-review-stats, .spek-review-editor { grid-template-columns: 1fr; }
+    .spek-review-card { padding: 16px; }
+    .spek-review-tabs a { padding: 9px 11px; }
+}
