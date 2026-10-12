@@ -925,6 +925,7 @@ function spek_partner_import_google_match(array $row, int $threshold): array
                 'name' => $name,
                 'address' => $address,
                 'score' => $score,
+                'name_score' => $name_score,
             ];
         }
     }
@@ -933,7 +934,24 @@ function spek_partner_import_google_match(array $row, int $threshold): array
         return ['status' => 'review', 'score' => 0];
     }
 
-    $best['status'] = $best['score'] >= $threshold ? 'matched' : 'review';
+    // A high address score alone must not accept the wrong business.
+    $best['status'] = $best['score'] >= $threshold && $best['name_score'] >= 55
+        ? 'matched'
+        : 'review';
+    if ($best['status'] === 'review') {
+        $best['note'] = 'Η επωνυμία/διεύθυνση Google δεν επιβεβαιώθηκε επαρκώς.';
+    }
+
+    // If both postcodes are present and conflict, hold for human review.
+    $google_postcode = '';
+    if (preg_match('/\\b[0-9]{5}\\b/', (string) $best['address'], $postal_matches)) {
+        $google_postcode = $postal_matches[0];
+    }
+    if ($target_postcode !== '' && $google_postcode !== '' && $target_postcode !== $google_postcode) {
+        $best['status'] = 'review';
+        $best['note'] = 'Διαφορετικός ΤΚ μεταξύ Excel και Google Places.';
+    }
+
     if ($best['status'] === 'matched') {
         $best['maps_url'] = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($query) . '&query_place_id=' . rawurlencode($best['place_id']);
     }
@@ -1100,8 +1118,29 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
 
     $google = [];
     $maps_url = trim((string) $row['maps_url']);
+    $suggested_maps_url = '';
+    $existing_maps_url = $post_id ? (string) get_post_meta($post_id, 'partner_maps_url', true) : '';
+    $existing_place_id = $post_id ? (string) get_post_meta($post_id, '_spek_partner_google_place_id', true) : '';
+
     if ($maps_url !== '') {
-        $google = ['status' => 'provided', 'score' => 100, 'maps_url' => $maps_url, 'name' => '', 'address' => '', 'place_id' => ''];
+        $url_warning = spek_partner_import_google_url_warning($maps_url, $name);
+        if ($url_warning !== '') {
+            // Do not overwrite an already verified link with a mismatched place.
+            $suggested_maps_url = $maps_url;
+            $maps_url = $existing_maps_url;
+            $google = ['status' => 'review', 'score' => null, 'place_id' => '', 'note' => $url_warning];
+            $stats['needs_review']++;
+        } else {
+            $google = ['status' => 'provided', 'score' => 100, 'maps_url' => $maps_url, 'name' => '', 'address' => '', 'place_id' => ''];
+            $stats['google_matched']++;
+        }
+    } elseif ($post_id && $existing_maps_url !== '') {
+        // Reimports must keep a manually confirmed / previously saved link.
+        $maps_url = $existing_maps_url;
+        $google = [
+            'status' => 'existing', 'score' => null, 'place_id' => $existing_place_id,
+            'note' => 'Διατηρήθηκε το Google Maps link από το WordPress.',
+        ];
         $stats['google_matched']++;
     } else {
         $google = spek_partner_import_google_match($row, $threshold);
@@ -1113,11 +1152,21 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         }
     }
 
-    $coords_row = $row;
-    $coords_row['maps_url'] = $maps_url !== '' ? $maps_url : (string) $row['maps_url'];
-    // For API-matched Google URLs, do not source coordinates from Google data.
-    // The URL only contains place_id/query, so this naturally falls through to TomTom.
-    $coords = spek_partner_import_locator_coords($coords_row);
+    // Never replace previously maintained coordinates automatically.
+    $existing_lat = $post_id ? trim((string) get_post_meta($post_id, 'partner_latitude', true)) : '';
+    $existing_lng = $post_id ? trim((string) get_post_meta($post_id, 'partner_longitude', true)) : '';
+    if ($existing_lat !== '' && $existing_lng !== '') {
+        $coords = [
+            'latitude' => $existing_lat, 'longitude' => $existing_lng,
+            'source' => 'Υπάρχουσες συντεταγμένες (διατηρήθηκαν)',
+        ];
+    } else {
+        // Google Places ID is saved independently. While the public map still
+        // uses TomTom, never persist Google API coordinates into this layer.
+        $coords_row = $row;
+        $coords_row['maps_url'] = $maps_url;
+        $coords = spek_partner_import_locator_coords($coords_row);
+    }
     if (!empty($coords['latitude']) && !empty($coords['longitude'])) {
         $stats['geocoded']++;
     }
@@ -1137,6 +1186,7 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         'partner_longitude' => isset($coords['longitude']) ? sanitize_text_field((string) $coords['longitude']) : '',
         '_spek_partner_import_key' => spek_partner_import_key($row),
         '_spek_partner_google_place_id' => sanitize_text_field((string) ($google['place_id'] ?? '')),
+        '_spek_partner_suggested_maps_url' => esc_url_raw($suggested_maps_url),
         '_spek_partner_google_match_status' => sanitize_key((string) ($google['status'] ?? '')),
         '_spek_partner_google_match_score' => isset($google['score']) && $google['score'] !== null ? (string) (int) $google['score'] : '',
         '_spek_partner_import_source_row' => (string) $source_row,
@@ -1177,12 +1227,19 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         }
         $post_id = (int) $result;
 
-        // Blank cells never erase manually maintained optional data. Location
-        // coordinates are an exception: only write them when a source exists.
+        // Blank input cannot delete confirmed data. Coordinates are immutable
+        // under reimport; changes to a pin must be made explicitly in WordPress.
         foreach ($meta as $key => $value) {
-            if ($value !== '') {
-                update_post_meta($post_id, $key, wp_slash($value));
+            if ($value === '') {
+                continue;
             }
+            if ($post_id && in_array($key, ['partner_latitude', 'partner_longitude'], true)) {
+                $current = (string) get_post_meta($post_id, $key, true);
+                if ($current !== '') {
+                    continue;
+                }
+            }
+            update_post_meta($post_id, $key, wp_slash($value));
         }
         update_post_meta($post_id, '_spek_partner_imported_at', current_time('mysql'));
 
@@ -1200,8 +1257,8 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         $stats[$action === 'create' ? 'created' : ($changed ? 'updated' : 'unchanged')]++;
     }
 
-    if (count($review) < 250) {
-        $review[] = [
+    // Complete audit trail for uploads with 1,500+ partners.
+    $review[] = [
             'row' => $source_row,
             'name' => $name,
             'action' => $action,
@@ -1215,13 +1272,12 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
                 !empty($coords['error']) ? 'Locator: ' . (string) $coords['error'] : '',
             ]))),
         ];
-    }
 }
 
 function spek_partner_import_error(array &$stats, string $message): void
 {
     $stats['errors_count'] = (int) ($stats['errors_count'] ?? 0) + 1;
-    if (count($stats['errors'] ?? []) < 100) {
+    if (count($stats['errors'] ?? []) < 10000) {
         $stats['errors'][] = $message;
     }
 }
