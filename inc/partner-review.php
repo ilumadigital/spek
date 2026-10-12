@@ -153,18 +153,13 @@ function spek_partner_review_handle_action(): void
         }
 
         if ($action !== 'reject') {
-            $name = sanitize_text_field(wp_unslash((string) ($_POST['partner_name'] ?? '')));
-            $name = trim($name);
+            // Validate everything before touching the live partner record.
+            $name = trim(sanitize_text_field(wp_unslash((string) ($_POST['partner_name'] ?? ''))));
             if ($name === '') {
                 spek_partner_review_redirect($return_url, 'empty_name');
             }
-            if ($name !== get_the_title($id)) {
-                $updated = wp_update_post(wp_slash(['ID' => $id, 'post_title' => $name]), true);
-                if (is_wp_error($updated)) {
-                    spek_partner_review_redirect($return_url, 'failed');
-                }
-            }
 
+            $values = [];
             $fields = [
                 'partner_address' => 'text', 'partner_area' => 'text',
                 'partner_postcode' => 'text', 'partner_phone' => 'text',
@@ -184,8 +179,10 @@ function spek_partner_review_handle_action(): void
                 } else {
                     $value = sanitize_text_field($value);
                 }
-                // Empty values are deliberately allowed in this explicit editor.
-                update_post_meta($id, $field, $value);
+                $values[$field] = $value;
+            }
+            if (($values['partner_latitude'] === '') !== ($values['partner_longitude'] === '')) {
+                spek_partner_review_redirect($return_url, 'invalid_coords');
             }
 
             $maps_url = trim((string) wp_unslash($_POST['partner_maps_url'] ?? ''));
@@ -197,13 +194,24 @@ function spek_partner_review_handle_action(): void
                     spek_partner_review_redirect($return_url, 'invalid_url');
                 }
             }
+            if ($action === 'approve'
+                && (string) get_post_meta($id, '_spek_partner_suggested_maps_url', true) !== ''
+                && $maps_url === '') {
+                spek_partner_review_redirect($return_url, 'missing_url');
+            }
+
+            if ($name !== get_the_title($id)) {
+                $updated = wp_update_post(wp_slash(['ID' => $id, 'post_title' => $name]), true);
+                if (is_wp_error($updated)) {
+                    spek_partner_review_redirect($return_url, 'failed');
+                }
+            }
+            foreach ($values as $field => $value) {
+                update_post_meta($id, $field, $value);
+            }
             update_post_meta($id, 'partner_maps_url', $maps_url);
 
             if ($action === 'approve') {
-                $previous_suggestion = (string) get_post_meta($id, '_spek_partner_suggested_maps_url', true);
-                if ($previous_suggestion !== '' && $maps_url === '') {
-                    spek_partner_review_redirect($return_url, 'missing_url');
-                }
                 if ($maps_url !== '') {
                     $query = (string) wp_parse_url($maps_url, PHP_URL_QUERY);
                     parse_str($query, $params);
@@ -212,9 +220,9 @@ function spek_partner_review_handle_action(): void
                     } elseif (!empty($params['destination_place_id'])) {
                         update_post_meta($id, '_spek_partner_google_place_id', sanitize_text_field((string) $params['destination_place_id']));
                     } else {
-                        // Do not keep an outdated Place ID if the admin switched locations.
                         update_post_meta($id, '_spek_partner_google_place_id', '');
                     }
+                    update_post_meta($id, '_spek_partner_review_accepted_url', $maps_url);
                 }
                 delete_post_meta($id, '_spek_partner_suggested_maps_url');
                 update_post_meta($id, '_spek_partner_google_match_status', 'approved');
@@ -223,13 +231,17 @@ function spek_partner_review_handle_action(): void
                 update_post_meta($id, '_spek_partner_review_resolution', 'pending');
             }
         } else {
-            // Reject only the proposed Google match. Keep published data unchanged.
+            // Reject only the proposed Google match. Published details stay intact.
+            $proposal = (string) get_post_meta($id, '_spek_partner_suggested_maps_url', true);
+            if ($proposal !== '') {
+                update_post_meta($id, '_spek_partner_review_rejected_url', $proposal);
+            }
             delete_post_meta($id, '_spek_partner_suggested_maps_url');
             update_post_meta($id, '_spek_partner_review_resolution', 'rejected');
         }
         update_post_meta($id, '_spek_partner_reviewed_by', get_current_user_id());
         update_post_meta($id, '_spek_partner_reviewed_at', current_time('mysql'));
-        spek_partner_review_redirect($return_url, $action === 'save' ? 'saved' : $action . 'd');
+        spek_partner_review_redirect($return_url, $action === 'save' ? 'saved' : ($action === 'approve' ? 'approved' : 'rejected'));
     }
 
     if (in_array($action, ['create_draft', 'dismiss'], true)) {
@@ -514,7 +526,9 @@ function spek_partner_review_render_page(): void
                             <div class="spek-review-actions">
                                 <button type="submit" name="review_action" value="save" class="button">Αποθήκευση αλλαγών</button>
                                 <button type="submit" name="review_action" value="approve" class="button button-primary">Έγκριση</button>
+                                <?php if ($suggestion !== '' || $status === 'pending') : ?>
                                 <button type="submit" name="review_action" value="reject" class="button" formnovalidate onclick="return confirm('Να απορριφθεί η προτεινόμενη αντιστοίχιση;');">Απόρριψη πρότασης</button>
+                                <?php endif; ?>
                             </div>
                         </form>
                     </details>
