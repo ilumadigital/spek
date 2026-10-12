@@ -69,6 +69,11 @@ function spek_partner_review_status(int $post_id): string
     $suggestion = (string) get_post_meta($post_id, '_spek_partner_suggested_maps_url', true);
     $match = (string) get_post_meta($post_id, '_spek_partner_google_match_status', true);
 
+    if (($suggestion !== '' || $decision === 'pending')
+        && $decision !== 'rejected' && $decision !== 'approved'
+        && spek_partner_review_has_coordinates($post_id)) {
+        return 'pending';
+    }
     if ($suggestion !== '' && $decision !== 'rejected' && $decision !== 'approved') {
         return 'pending';
     }
@@ -327,6 +332,10 @@ function spek_partner_review_render_page(): void
         'orderby' => 'title',
         'order' => 'ASC',
     ]);
+    // Prefetch all partner metadata once, instead of an extra SQL query per row.
+    if ($ids) {
+        update_meta_cache('post', array_map('intval', $ids));
+    }
     $groups = ['pending' => [], 'missing' => [], 'approved' => [], 'rejected' => [], 'ok' => []];
     foreach ($ids as $id) {
         $id = (int) $id;
@@ -443,7 +452,7 @@ function spek_partner_review_render_page(): void
                 ?>
                 <article class="spek-review-card">
                     <div class="spek-review-card__header">
-                        <div><span class="spek-review-pill is-pending">Excel · <?php echo esc_html($q['type'] ?? 'review'); ?></span>
+                        <div><span class="spek-review-pill is-<?php echo ($q['status'] ?? '') === 'rejected' ? 'rejected' : 'pending'; ?>">Excel · <?php echo esc_html($q['type'] ?? 'review'); ?></span>
                             <h2><?php echo esc_html($row['name'] ?? ''); ?></h2>
                             <p><?php echo esc_html(implode(', ', array_filter([$row['address'] ?? '', $row['postcode'] ?? '', $row['area'] ?? '']))); ?></p>
                             <p class="spek-review-note"><?php echo esc_html($q['message'] ?? ''); ?> · Γραμμή <?php echo esc_html((string) ($q['source_row'] ?? '')); ?></p>
