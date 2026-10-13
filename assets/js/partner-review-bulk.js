@@ -109,6 +109,39 @@
         return result.data || {};
     }
 
+    // Per-card fallback: when there is no Google Maps URL to approve, allow
+    // the administrator to initiate a single Places lookup directly in-card.
+    Array.from(document.querySelectorAll('[data-spek-quick-recheck]')).forEach(function (button) {
+        button.addEventListener('click', async function () {
+            if (busy || button.disabled || !config.ajaxUrl || !config.nonce) {
+                window.alert('Η αναζήτηση Google Places δεν είναι διαθέσιμη. Ελέγξτε τις ρυθμίσεις του API.');
+                return;
+            }
+            if (!window.confirm('Να γίνει αναζήτηση Google Places για αυτόν τον συνεργάτη; Η πρόταση θα χρειαστεί έγκριση και δεν θα αλλάξει αυτόματα το pin.')) {
+                return;
+            }
+            busy = true;
+            button.disabled = true;
+            const oldLabel = button.textContent;
+            button.textContent = 'Γίνεται επανέλεγχος...';
+            refresh();
+            try {
+                const result = await recheckOne(button.dataset.spekQuickRecheck);
+                window.alert(result.message || 'Ο επανέλεγχος ολοκληρώθηκε.');
+                if (result.result === 'proposed' || result.result === 'linked') {
+                    window.location.reload();
+                }
+            } catch (error) {
+                window.alert('Ο επανέλεγχος απέτυχε: ' + (error.message || String(error)));
+            } finally {
+                busy = false;
+                button.disabled = false;
+                button.textContent = oldLabel;
+                refresh();
+            }
+        });
+    });
+
     if (recheckButton) {
         recheckButton.addEventListener('click', async function () {
             const chosen = selected();
