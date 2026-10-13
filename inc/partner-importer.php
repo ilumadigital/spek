@@ -1039,6 +1039,26 @@ function spek_partner_import_resolve_google_maps_url(string $url): string
     return $current;
 }
 
+/**
+ * Greece has five-digit postal codes. An overseas result for such a shop is
+ * almost certainly an ambiguous geocoding hit, NOT a valid store location.
+ * Do not modify legitimately foreign partners with other postal formats.
+ */
+function spek_partner_import_coords_plausible(array $row, array $coords): bool
+{
+    $postcode = preg_replace('/\\D+/', '', (string) ($row['postcode'] ?? ''));
+    if (!preg_match('/^[0-9]{5}$/', $postcode)) {
+        return true;
+    }
+    if (!isset($coords['latitude'], $coords['longitude'])
+        || !is_numeric($coords['latitude']) || !is_numeric($coords['longitude'])) {
+        return false;
+    }
+    $lat = (float) $coords['latitude'];
+    $lng = (float) $coords['longitude'];
+    return $lat >= 34.2 && $lat <= 42.4 && $lng >= 19.0 && $lng <= 30.5;
+}
+
 /** Locator coordinates from supplied URL or TomTom. */
 function spek_partner_import_locator_coords(array $row): array
 {
@@ -1047,6 +1067,12 @@ function spek_partner_import_locator_coords(array $row): array
         $resolved = spek_partner_import_resolve_google_maps_url($maps_url);
         $coords = spek_extract_lat_lng_from_maps_url($resolved);
         if (!empty($coords['latitude']) && !empty($coords['longitude'])) {
+            if (!spek_partner_import_coords_plausible($row, $coords)) {
+                return [
+                    'error' => 'Ο Google Maps σύνδεσμος επέστρεψε συντεταγμένες εκτός Ελλάδας για ελληνικό ΤΚ.',
+                    'source' => 'Google Maps URL – needs review',
+                ];
+            }
             return [
                 'latitude' => (string) $coords['latitude'],
                 'longitude' => (string) $coords['longitude'],
@@ -1064,6 +1090,7 @@ function spek_partner_import_locator_coords(array $row): array
         $row['postcode'],
         $row['area'],
         $row['region'],
+        preg_match('/^[0-9]{5}$/', preg_replace('/\\D+/', '', (string) ($row['postcode'] ?? ''))) ? 'Ελλάδα' : '',
     ])));
     if ($query === '') {
         return [];
@@ -1114,6 +1141,14 @@ function spek_partner_import_locator_coords(array $row): array
     $lat = (float) $coords[1];
     if ($lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) {
         return [];
+    }
+    if (!spek_partner_import_coords_plausible($row, [
+        'latitude' => $lat, 'longitude' => $lng,
+    ])) {
+        return [
+            'error' => 'Απορρίφθηκε geocoding εκτός Ελλάδας για ελληνικό ΤΚ. Διορθώστε τις συντεταγμένες από τον Έλεγχο Συνεργατών.',
+            'source' => 'TomTom – needs review',
+        ];
     }
 
     return [
@@ -1259,7 +1294,19 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         $coords_row['maps_url'] = $maps_url;
         $coords = spek_partner_import_locator_coords($coords_row);
     }
-    if (!empty($coords['latitude']) && !empty($coords['longitude'])) {
+    $bad_coords = !empty($coords['latitude']) && !empty($coords['longitude'])
+        && !spek_partner_import_coords_plausible($row, $coords);
+    if ($bad_coords) {
+        // Existing coordinates are never erased by automatic reimport, but
+        // are flagged for manual correction and excluded from the public map.
+        $google['note'] = trim((string) ($google['note'] ?? '') . ' Συντεταγμένες εκτός Ελλάδας για ελληνικό ΤΚ.');
+    }
+    if ((!empty($coords['error']) || $bad_coords) && function_exists('spek_partner_import_error')) {
+        $stats['needs_review']++;
+        spek_partner_import_error($stats, 'Γραμμή ' . $source_row . ': ' .
+            ($bad_coords ? 'Υπάρχον μη έγκυρο pin.' : (string) $coords['error']));
+    }
+    if (!empty($coords['latitude']) && !empty($coords['longitude']) && !$bad_coords) {
         $stats['geocoded']++;
     }
 
@@ -1299,6 +1346,7 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         '_spek_partner_google_candidate_name' => sanitize_text_field((string) ($google['name'] ?? '')),
         '_spek_partner_google_candidate_address' => sanitize_text_field((string) ($google['address'] ?? '')),
         '_spek_partner_google_match_note' => sanitize_text_field((string) ($google['note'] ?? '')),
+        '_spek_partner_pin_needs_review' => ($bad_coords || !empty($coords['error'])) ? '1' : '',
         '_spek_partner_import_source_row' => (string) $source_row,
     ];
 
@@ -1356,7 +1404,8 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         // inbox. Do not undo a human decision for an unchanged suggestion.
         $review_state = (string) get_post_meta($post_id, '_spek_partner_review_resolution', true);
         $import_status = (string) ($google['status'] ?? '');
-        if ($suggested_maps_url !== '' || in_array($import_status, ['review', 'error', 'no_key'], true)) {
+        if ($suggested_maps_url !== '' || $bad_coords || !empty($coords['error'])
+            || in_array($import_status, ['review', 'error', 'no_key'], true)) {
             if ($review_state === '' || ($suggested_maps_url !== ''
                 && $suggested_maps_url !== $existing_maps_url)) {
                 update_post_meta($post_id, '_spek_partner_review_resolution', 'pending');
