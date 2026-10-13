@@ -53,6 +53,29 @@
     let searchVersion = 0;
     const geocodeCache = new Map();
 
+    function isGreekPostcode(query) {
+        return /^[0-9]{5}$/.test(String(query).trim());
+    }
+
+    // Let the listings keep working even if the optional Geocoding API is
+    // disabled or some partners have not yet been geocoded by the importer.
+    function localSearchOrigin(items, query) {
+        const normalized = norm(query);
+        const candidates = items.filter(function (partner) {
+            return partner.lat !== null && partner.lng !== null
+                && (isGreekPostcode(query)
+                    ? partner.postcode.replace(/\s/g, '') === String(query).trim()
+                    : norm(partner.area).includes(normalized));
+        });
+        if (!candidates.length) {
+            return null;
+        }
+        return {
+            lat: candidates.reduce(function (sum, partner) { return sum + partner.lat; }, 0) / candidates.length,
+            lng: candidates.reduce(function (sum, partner) { return sum + partner.lng; }, 0) / candidates.length
+        };
+    }
+
     const partners = cards.map(function (card) {
         let lat = Number.parseFloat(card.dataset.lat || '');
         let lng = Number.parseFloat(card.dataset.lng || '');
@@ -279,6 +302,16 @@
 
         if (emptyElement) {
             emptyElement.hidden = matches.length > 0;
+            if (!matches.length) {
+                const heading = emptyElement.querySelector('h3');
+                const description = emptyElement.querySelector('p');
+                if (heading) {
+                    heading.textContent = text('Δεν βρέθηκαν συνεργάτες');
+                }
+                if (description) {
+                    description.textContent = text('Δοκιμάστε άλλη περιοχή ή μεγαλύτερη ακτίνα. Μπορείτε επίσης να πατήσετε Καθαρισμός για να δείτε όλους τους συνεργάτες.');
+                }
+            }
         }
         const missing = matches.length - points;
         let message = text('Βρέθηκαν %s σημεία πώλησης.').replace('%s', matches.length);
@@ -314,23 +347,44 @@
     }
 
     async function geocode(query) {
-        if (geocodeCache.has(norm(query))) {
-            return geocodeCache.get(norm(query));
+        const cacheKey = norm(query);
+        if (geocodeCache.has(cacheKey)) {
+            return geocodeCache.get(cacheKey);
         }
+
         try {
-            // Geocoding is optional and should never block initial map display.
+            // Explicitly constrain 5-digit Greek postcodes to Greece.
+            // Without this, numeric-only queries can return unrelated places.
+            const request = isGreekPostcode(query)
+                ? {
+                    address: query + ', Ελλάδα',
+                    region: 'gr',
+                    componentRestrictions: { country: 'GR', postalCode: query }
+                }
+                : {
+                    address: query + ', Ελλάδα',
+                    region: 'gr',
+                    componentRestrictions: { country: 'GR' }
+                };
             const library = await google.maps.importLibrary('geocoding');
             const coder = new library.Geocoder();
-            const result = await coder.geocode({address: query, region: 'gr'});
+            const result = await coder.geocode(request);
             if (!result.results || !result.results.length) {
                 return null;
             }
             const location = result.results[0].geometry.location;
             const origin = {lat: location.lat(), lng: location.lng()};
-            geocodeCache.set(norm(query), origin);
+            if (!validCoordinate(origin.lat, origin.lng)) {
+                return null;
+            }
+            // Cache only within the current visit.
+            geocodeCache.set(cacheKey, origin);
             return origin;
         } catch (error) {
-            // The WordPress text filter remains functional if Geocoding is disabled.
+            // Do not hide 491 partner cards on a rejected/disabled Geocoding API.
+            if (window.console && typeof window.console.warn === 'function') {
+                window.console.warn('SPEK: optional Google Geocoding failed for the query', error);
+            }
             return null;
         }
     }
@@ -354,15 +408,13 @@
         const matchesByText = partners.filter(function (partner) {
             return partner.searchable.includes(norm(query));
         });
-        let origin = null;
-        try {
-            origin = await geocode(query);
-        } catch (error) {
-            // Allow text filters to work even when Geocoding API is disabled.
-        }
+        // Try accurate Google geocoding first; existing shop coordinates in
+        // the same postcode/city provide a local fallback if Google is denied.
+        const googleOrigin = await geocode(query);
         if (version !== searchVersion) {
             return;
         }
+        const origin = googleOrigin || localSearchOrigin(matchesByText, query);
         lastOrigin = origin;
 
         let near = [];
@@ -374,9 +426,27 @@
             });
         }
         const matches = unique(near.concat(matchesByText));
-        showPartners(matches, origin);
-        if (!matches.length) {
-            setStatus(text('Δεν βρέθηκαν σημεία πώλησης για αυτή την αναζήτηση. Δοκιμάστε άλλη περιοχή, ΤΚ ή μεγαλύτερη ακτίνα.'));
+        if (matches.length) {
+            showPartners(matches, origin);
+            if (!googleOrigin && origin) {
+                setStatus(
+                    text('Η Google δεν επέστρεψε ακριβή τοποθεσία για την αναζήτηση. Εμφανίζονται συνεργάτες με βάση τις ήδη αποθηκευμένες τοποθεσίες.')
+                );
+            } else if (!origin) {
+                setStatus(text('Βρέθηκαν %s συνεργάτες με αντιστοίχιση ονόματος, περιοχής ή ΤΚ. Η αναζήτηση ακτίνας δεν είναι διαθέσιμη χωρίς γεωγραφικό εντοπισμό.').replace('%s', matches.length));
+            }
+            return;
+        }
+
+        // Never leave the sales network completely invisible after a failed
+        // geocoding/search. Explain the fallback rather than claiming that
+        // no partners exist.
+        if (!origin) {
+            showPartners(partners, null);
+            setStatus(text('Δεν ήταν δυνατός ο γεωγραφικός εντοπισμός της περιοχής ή του ΤΚ. Εμφανίζονται όλοι οι συνεργάτες. Ελέγξτε το Geocoding API ή δοκιμάστε διαφορετική αναζήτηση.'));
+        } else {
+            showPartners(partners, null);
+            setStatus(text('Δεν βρέθηκαν επιβεβαιωμένες τοποθεσίες συνεργατών στην επιλεγμένη ακτίνα. Εμφανίζονται όλοι οι συνεργάτες. Δοκιμάστε μεγαλύτερη ακτίνα ή διαφορετική περιοχή.'));
         }
     }
 
