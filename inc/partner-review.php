@@ -58,8 +58,18 @@ function spek_partner_review_has_coordinates(int $post_id): bool
     if ($lat === '' || $lng === '' || !is_numeric($lat) || !is_numeric($lng)) {
         return false;
     }
-    return (float) $lat >= -90 && (float) $lat <= 90
-        && (float) $lng >= -180 && (float) $lng <= 180;
+    if (!((float) $lat >= -90 && (float) $lat <= 90
+        && (float) $lng >= -180 && (float) $lng <= 180)) {
+        return false;
+    }
+
+    if (function_exists('spek_partner_import_coords_plausible')) {
+        return spek_partner_import_coords_plausible(
+            ['postcode' => (string) get_post_meta($post_id, 'partner_postcode', true)],
+            ['latitude' => $lat, 'longitude' => $lng]
+        );
+    }
+    return true;
 }
 
 /** Status for the review UI; confirmation does not hide missing map pins. */
@@ -222,6 +232,10 @@ function spek_partner_review_handle_action(): void
                 update_post_meta($id, $field, $value);
             }
             update_post_meta($id, 'partner_maps_url', $maps_url);
+            // A corrected set of coordinates can resolve an old suspect-pin warning.
+            if (spek_partner_review_has_coordinates($id)) {
+                delete_post_meta($id, '_spek_partner_pin_needs_review');
+            }
 
             if ($action === 'approve') {
                 if ($maps_url !== '') {
@@ -761,7 +775,18 @@ function spek_partner_review_render_page(): void
                             <?php endif; ?>
                             <?php if ($google_note !== '' && $status === 'pending') : ?><p class="spek-review-note"><?php echo esc_html($google_note); ?></p><?php endif; ?>
                             <?php if ($pin_needs_review) : ?><p class="spek-review-note">Το Google Maps URL άλλαξε, αλλά το pin διατηρήθηκε. Επιβεβαίωσε τις συντεταγμένες του συνεργάτη.</p><?php endif; ?>
-                            <?php if ($status === 'missing') : ?><p class="spek-review-note">Απουσιάζουν έγκυρες συντεταγμένες. Δεν εμφανίζεται pin στον χάρτη.</p><?php endif; ?>
+                            <?php if ($status === 'missing') : ?>
+                                <?php
+                                $stored_lat = (string) get_post_meta($id, 'partner_latitude', true);
+                                $stored_lng = (string) get_post_meta($id, 'partner_longitude', true);
+                                $suspect_location = $stored_lat !== '' && $stored_lng !== '';
+                                ?>
+                                <p class="spek-review-note"><?php echo esc_html(
+                                    $suspect_location
+                                        ? 'Το αποθηκευμένο pin είναι άκυρο ή εκτός Ελλάδας για ελληνικό ΤΚ. Χρειάζεται έλεγχος συντεταγμένων.'
+                                        : 'Απουσιάζουν συντεταγμένες. Ο συνεργάτης εμφανίζεται στη λίστα αλλά όχι ως pin στον χάρτη.'
+                                ); ?></p>
+                            <?php endif; ?>
                             <?php if ($reviewed !== '') : ?><p class="description"><?php echo esc_html($reviewed); ?><?php if ($saved_by) : ?> · <?php echo esc_html(get_the_author_meta('display_name', $saved_by)); ?><?php endif; ?></p><?php endif; ?>
                         </div>
                         <div class="spek-review-card__links">
