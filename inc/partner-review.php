@@ -451,7 +451,7 @@ function spek_partner_review_render_page(): void
         return;
     }
     $filter = isset($_GET['status']) ? sanitize_key(wp_unslash((string) $_GET['status'])) : 'pending';
-    if (!in_array($filter, ['pending', 'missing', 'approved', 'rejected', 'all'], true)) {
+    if (!in_array($filter, ['pending', 'suggestions', 'unmatched', 'missing', 'approved', 'rejected', 'all'], true)) {
         $filter = 'pending';
     }
     $term = isset($_GET['s']) ? sanitize_text_field(wp_unslash((string) $_GET['s'])) : '';
@@ -470,9 +470,19 @@ function spek_partner_review_render_page(): void
         update_meta_cache('post', array_map('intval', $ids));
     }
     $groups = ['pending' => [], 'missing' => [], 'approved' => [], 'rejected' => [], 'ok' => []];
+    $suggestion_ids = [];
+    $unmatched_ids = [];
     foreach ($ids as $id) {
         $id = (int) $id;
-        $groups[spek_partner_review_status($id)][] = $id;
+        $status = spek_partner_review_status($id);
+        $groups[$status][] = $id;
+        if (spek_partner_review_bulk_eligible($id)) {
+            $suggestion_ids[] = $id;
+        } elseif ($status === 'pending') {
+            // "No Google Places result" is a manual-review issue,
+            // not a Google link that can be mass-approved.
+            $unmatched_ids[] = $id;
+        }
     }
     $queue = spek_partner_review_queue();
     $queued = [];
@@ -486,10 +496,32 @@ function spek_partner_review_render_page(): void
     }
 
     $items = [];
-    $group_keys = $filter === 'all' ? ['pending', 'missing', 'approved', 'rejected', 'ok']
-        : ($filter === 'pending' ? ['pending', 'missing'] : [$filter]);
-    foreach ($group_keys as $group) {
-        foreach ($groups[$group] as $id) {
+    // Put actual address suggestions first. Without this ordering a page of
+    // no-match partners hides every checkbox even if suggestions exist later.
+    if ($filter === 'suggestions') {
+        $filtered_ids = $suggestion_ids;
+    } elseif ($filter === 'unmatched') {
+        $filtered_ids = $unmatched_ids;
+    } elseif ($filter === 'pending') {
+        $filtered_ids = array_merge(
+            $suggestion_ids,
+            $unmatched_ids,
+            $groups['missing']
+        );
+    } elseif ($filter === 'all') {
+        $filtered_ids = array_merge(
+            $suggestion_ids,
+            $unmatched_ids,
+            $groups['missing'],
+            $groups['approved'],
+            $groups['rejected'],
+            $groups['ok']
+        );
+    } else {
+        $filtered_ids = $groups[$filter];
+    }
+    foreach ($filtered_ids as $id) {
+            $group = spek_partner_review_status((int) $id);
             $name = (string) get_the_title($id);
             $location = implode(' ', [
                 get_post_meta($id, 'partner_address', true),
@@ -500,7 +532,6 @@ function spek_partner_review_render_page(): void
                 continue;
             }
             $items[] = ['type' => 'partner', 'id' => $id, 'status' => $group];
-        }
     }
     if (in_array($filter, ['all', 'pending', 'rejected'], true)) {
         $queue_rows = $filter === 'rejected' ? $dismissed
@@ -566,6 +597,8 @@ function spek_partner_review_render_page(): void
             <?php
             $tabs = [
                 'pending' => 'Εκκρεμότητες',
+                'suggestions' => sprintf('Προτάσεις Google (%d)', count($suggestion_ids)),
+                'unmatched' => sprintf('Χωρίς αντιστοίχιση (%d)', count($unmatched_ids)),
                 'missing' => 'Χωρίς pin',
                 'approved' => 'Εγκεκριμένα',
                 'rejected' => 'Απορριφθέντα',
@@ -596,8 +629,7 @@ function spek_partner_review_render_page(): void
             }
         }
         ?>
-        <?php if ($bulk_eligible_count > 0) : ?>
-            <form id="spek-partner-bulk-form"
+        <form id="spek-partner-bulk-form"
                   class="spek-review-bulk"
                   method="post"
                   action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
@@ -605,8 +637,8 @@ function spek_partner_review_render_page(): void
                 <input type="hidden" name="return_url" value="<?php echo esc_url($return_url); ?>">
                 <?php wp_nonce_field('spek_partner_bulk_review'); ?>
                 <label class="spek-review-bulk__toggle">
-                    <input type="checkbox" data-spek-bulk-select-all>
-                    <span>Επιλογή όλων των προτάσεων σε αυτή τη σελίδα</span>
+                    <input type="checkbox" data-spek-bulk-select-all <?php disabled($bulk_eligible_count === 0); ?>>
+                    <span>Επιλογή προτάσεων στην τρέχουσα σελίδα</span>
                 </label>
                 <span class="spek-review-bulk__count" data-spek-bulk-counter>0 επιλεγμένες</span>
                 <button type="submit" name="bulk_decision" value="approve"
@@ -617,9 +649,23 @@ function spek_partner_review_render_page(): void
                         class="button" data-spek-bulk-action disabled>
                     Απόρριψη επιλεγμένων
                 </button>
-                <p class="spek-review-bulk__note">Αλλάζει μόνο το Google Maps URL / Place ID ή απορρίπτεται η πρόταση. Οι διευθύνσεις και οι συντεταγμένες δεν αλλάζουν αυτόματα.</p>
+                <?php if ($bulk_eligible_count === 0) : ?>
+                    <p class="spek-review-bulk__note">
+                        Δεν υπάρχουν έτοιμες προτάσεις Google Maps προς μαζική έγκριση σε αυτή τη σελίδα.
+                        Οι εγγραφές με «Δεν βρέθηκε Google Places αποτέλεσμα» χρειάζονται πρώτα χειροκίνητη αντιστοίχιση.
+                        <?php if (count($suggestion_ids) > 0) : ?>
+                            <a href="<?php echo esc_url(add_query_arg(['status' => 'suggestions', 's' => ''], $base)); ?>">
+                                Δες τις <?php echo esc_html((string) count($suggestion_ids)); ?> εκκρεμείς προτάσεις Google.
+                            </a>
+                        <?php endif; ?>
+                    </p>
+                <?php else : ?>
+                    <p class="spek-review-bulk__note">
+                        <?php echo esc_html(sprintf('%d προτάσεις διαθέσιμες για επιλογή σε αυτή τη σελίδα.', $bulk_eligible_count)); ?>
+                        Η μαζική ενέργεια αλλάζει μόνο το Google Maps URL / Place ID. Οι διευθύνσεις και τα pins δεν τροποποιούνται αυτόματα.
+                    </p>
+                <?php endif; ?>
             </form>
-        <?php endif; ?>
 
         <p class="spek-review-count"><?php echo esc_html(sprintf('%d αποτελέσματα', $total)); ?></p>
         <?php if (!$items) : ?>
@@ -680,7 +726,7 @@ function spek_partner_review_render_page(): void
                 ?>
                 <article class="spek-review-card">
                     <div class="spek-review-card__header">
-                        <?php if ($bulk_eligible_count > 0 && spek_partner_review_bulk_eligible($id) && current_user_can('edit_post', $id)) : ?>
+                        <?php if (spek_partner_review_bulk_eligible($id) && current_user_can('edit_post', $id)) : ?>
                         <label class="spek-review-card__select" title="Επιλογή πρότασης για μαζική ενέργεια">
                             <input type="checkbox"
                                    name="partner_ids[]"
