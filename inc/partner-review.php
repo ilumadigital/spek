@@ -432,6 +432,79 @@ function spek_partner_review_bulk_decide(int $post_id, string $decision): bool
     return true;
 }
 
+/**
+ * One-click address confirmation for a single partner, independent of the
+ * mass-action confidence threshold. This is an explicit human decision.
+ * Confirming a Google Maps URL NEVER confirms or changes a missing/incorrect
+ * latitude/longitude; those remain a separate review issue.
+ */
+function spek_partner_review_quick_approve(): void
+{
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('Δεν επιτρέπεται αυτή η ενέργεια.', 'spek-theme'), '', ['response' => 403]);
+    }
+
+    $post_id = absint($_POST['partner_id'] ?? 0);
+    check_admin_referer('spek_partner_review_quick_' . $post_id);
+    $return_url = spek_partner_review_back_url();
+    if (!$post_id || get_post_type($post_id) !== 'spek_partner'
+        || !current_user_can('edit_post', $post_id)
+        || !spek_partner_review_bulk_selectable($post_id)) {
+        spek_partner_review_redirect($return_url, 'quick_invalid');
+    }
+    if ((string) get_post_meta($post_id, '_spek_partner_review_resolution', true) === 'approved') {
+        spek_partner_review_redirect($return_url, 'quick_already');
+    }
+
+    $proposal = trim((string) get_post_meta($post_id, '_spek_partner_suggested_maps_url', true));
+    $existing_url = trim((string) get_post_meta($post_id, 'partner_maps_url', true));
+    $chosen = $proposal !== '' ? $proposal : $existing_url;
+    $url = function_exists('spek_partner_import_normalize_maps_url')
+        ? spek_partner_import_normalize_maps_url($chosen)
+        : '';
+
+    // Never turn a missing or malformed Google link into a fake approval.
+    if ($url === '') {
+        spek_partner_review_redirect($return_url, 'quick_missing_url');
+    }
+
+    $current_place_id = (string) get_post_meta($post_id, '_spek_partner_google_place_id', true);
+    $query = (string) wp_parse_url($url, PHP_URL_QUERY);
+    $params = [];
+    parse_str($query, $params);
+    $place_id = '';
+    foreach (['query_place_id', 'destination_place_id'] as $key) {
+        if (!empty($params[$key]) && is_string($params[$key])) {
+            $place_id = sanitize_text_field($params[$key]);
+            break;
+        }
+    }
+    // Preserve a previously verified ID only when the approved URL is
+    // unchanged. A replacement without a Place ID cannot retain an old ID.
+    if ($place_id === '' && $url === $existing_url) {
+        $place_id = $current_place_id;
+    }
+
+    update_post_meta($post_id, 'partner_maps_url', $url);
+    update_post_meta($post_id, '_spek_partner_google_place_id', $place_id);
+    update_post_meta($post_id, '_spek_partner_review_accepted_url', $url);
+    update_post_meta($post_id, '_spek_partner_google_match_status', 'approved');
+    update_post_meta($post_id, '_spek_partner_review_resolution', 'approved');
+    if ($proposal !== '' && $existing_url !== $url
+        && spek_partner_review_has_coordinates($post_id)) {
+        update_post_meta($post_id, '_spek_partner_pin_needs_review', '1');
+    }
+    delete_post_meta($post_id, '_spek_partner_suggested_maps_url');
+    update_post_meta($post_id, '_spek_partner_reviewed_by', get_current_user_id());
+    update_post_meta($post_id, '_spek_partner_reviewed_at', current_time('mysql'));
+
+    spek_partner_review_redirect(
+        $return_url,
+        spek_partner_review_has_coordinates($post_id) ? 'quick_approved' : 'quick_pin_pending'
+    );
+}
+add_action('admin_post_spek_partner_review_quick_approve', 'spek_partner_review_quick_approve');
+
 /** Bulk approve/reject only the checked partners on the current page. */
 function spek_partner_review_handle_bulk_action(): void
 {
@@ -705,6 +778,11 @@ function spek_partner_review_render_page(): void
                     'empty_name' => 'Η επωνυμία είναι υποχρεωτική.',
                     'missing_url' => 'Επιβεβαιώστε ή συμπληρώστε Google Maps URL πριν από την έγκριση.',
                     'missing_queue' => 'Η εγγραφή του Excel δεν είναι πλέον διαθέσιμη.',
+                    'quick_approved' => 'Η αντιστοίχιση Google Maps εγκρίθηκε.',
+                    'quick_pin_pending' => 'Η αντιστοίχιση Google Maps εγκρίθηκε. Οι συντεταγμένες του pin εξακολουθούν να χρειάζονται επιβεβαίωση.',
+                    'quick_missing_url' => 'Δεν υπάρχει έγκυρο Google Maps URL για άμεση έγκριση. Κάντε επανέλεγχο ή επεξεργασία της τοποθεσίας.',
+                    'quick_invalid' => 'Η εγγραφή δεν μπορεί να εγκριθεί από αυτή την ενέργεια.',
+                    'quick_already' => 'Η τοποθεσία έχει ήδη εγκριθεί.',
                     'bulk_empty' => 'Επίλεξε τουλάχιστον μία εκκρεμή πρόταση Google Maps.',
                     'bulk_invalid' => 'Η μαζική ενέργεια δεν ήταν έγκυρη ή επιλέχθηκαν υπερβολικά πολλές εγγραφές.',
                 ];
@@ -870,6 +948,13 @@ function spek_partner_review_render_page(): void
                 $google_score = (string) get_post_meta($id, '_spek_partner_google_match_score', true);
                 $google_note = (string) get_post_meta($id, '_spek_partner_google_match_note', true);
                 $pin_needs_review = (string) get_post_meta($id, '_spek_partner_pin_needs_review', true) === '1';
+                $review_decision = (string) get_post_meta($id, '_spek_partner_review_resolution', true);
+                $quick_maps_url = $suggestion !== '' ? $suggestion : $current_maps;
+                $quick_url = function_exists('spek_partner_import_normalize_maps_url')
+                    ? spek_partner_import_normalize_maps_url($quick_maps_url) : '';
+                $can_quick_approve = in_array($status, ['pending', 'missing'], true)
+                    && $review_decision !== 'approved' && $quick_url !== ''
+                    && current_user_can('edit_post', $id);
                 ?>
                 <article class="spek-review-card">
                     <div class="spek-review-card__header">
@@ -925,6 +1010,35 @@ function spek_partner_review_render_page(): void
                             <?php if ($reviewed !== '') : ?><p class="description"><?php echo esc_html($reviewed); ?><?php if ($saved_by) : ?> · <?php echo esc_html(get_the_author_meta('display_name', $saved_by)); ?><?php endif; ?></p><?php endif; ?>
                         </div>
                         <div class="spek-review-card__links">
+                            <div class="spek-review-card__quick-action">
+                                <?php if ($can_quick_approve) : ?>
+                                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"
+                                          data-spek-quick-approve-form>
+                                        <input type="hidden" name="action" value="spek_partner_review_quick_approve">
+                                        <input type="hidden" name="partner_id" value="<?php echo esc_attr((string) $id); ?>">
+                                        <input type="hidden" name="return_url" value="<?php echo esc_url($return_url); ?>">
+                                        <?php wp_nonce_field('spek_partner_review_quick_' . $id); ?>
+                                        <button type="submit" class="button button-primary spek-review-card__approve"
+                                                onclick="return window.confirm('Επιβεβαιώνεις ότι έλεγξες τη συγκεκριμένη τοποθεσία στο Google Maps; Η έγκριση δεν αλλάζει τις συντεταγμένες του pin.');">
+                                            ✓ Άμεση έγκριση
+                                        </button>
+                                    </form>
+                                <?php elseif ($review_decision === 'approved') : ?>
+                                    <button type="button" class="button spek-review-card__approve" disabled
+                                            title="Η αντιστοίχιση έχει ήδη εγκριθεί.">✓ Εγκρίθηκε</button>
+                                <?php else : ?>
+                                    <button type="button" class="button spek-review-card__approve" disabled
+                                            title="Δεν υπάρχει συγκεκριμένο Google Maps URL για έγκριση. Χρειάζεται επανέλεγχος ή επεξεργασία.">
+                                        Άμεση έγκριση
+                                    </button>
+                                    <?php if (spek_partner_review_bulk_selectable($id)) : ?>
+                                        <button type="button" class="button button-secondary"
+                                                data-spek-quick-recheck="<?php echo esc_attr((string) $id); ?>">
+                                            Επανέλεγχος Google
+                                        </button>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
                             <?php if ($suggestion !== '') : ?>
                                 <a href="<?php echo esc_url($suggestion); ?>" target="_blank" rel="noopener noreferrer">Προτεινόμενη Google ↗</a>
                                 <?php if ($current_maps !== '') : ?><a href="<?php echo esc_url($current_maps); ?>" target="_blank" rel="noopener noreferrer">Τωρινή τοποθεσία ↗</a><?php endif; ?>
