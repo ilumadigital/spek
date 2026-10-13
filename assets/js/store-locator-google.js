@@ -464,11 +464,17 @@
             const origin = {lat: position.coords.latitude, lng: position.coords.longitude};
             lastOrigin = origin;
             lastMode = 'location';
-            showPartners(partners.filter(function (partner) {
+            const nearby = partners.filter(function (partner) {
                 return distanceKm(origin, partner) <= radiusKm();
             }).sort(function (a, b) {
                 return distanceKm(origin, a) - distanceKm(origin, b);
-            }), origin);
+            });
+            if (nearby.length) {
+                showPartners(nearby, origin);
+            } else {
+                showPartners(partners, null);
+                setStatus(text('Δεν υπάρχουν συνεργάτες με επιβεβαιωμένο pin στην επιλεγμένη ακτίνα. Εμφανίζονται όλοι οι συνεργάτες.'));
+            }
         }, function () {
             if (version === searchVersion) {
                 setStatus(text('Δεν δόθηκε πρόσβαση στην τοποθεσία. Συμπληρώστε περιοχή ή ΤΚ χειροκίνητα.'));
@@ -647,9 +653,15 @@
                 radiusSelect.addEventListener('change', function () {
                     if (lastMode === 'location' && lastOrigin) {
                         ++searchVersion;
-                        showPartners(partners.filter(function (partner) {
+                        const nearby = partners.filter(function (partner) {
                             return distanceKm(lastOrigin, partner) <= radiusKm();
-                        }), lastOrigin);
+                        });
+                        if (nearby.length) {
+                            showPartners(nearby, lastOrigin);
+                        } else {
+                            showPartners(partners, null);
+                            setStatus(text('Δεν υπάρχουν συνεργάτες με επιβεβαιωμένο pin στην επιλεγμένη ακτίνα. Εμφανίζονται όλοι οι συνεργάτες.'));
+                        }
                     } else if (searchInput && searchInput.value.trim()) {
                         runSearch();
                     }
