@@ -351,8 +351,8 @@ function spek_partner_review_bulk_decide(int $post_id, string $decision): bool
     $url = function_exists('spek_partner_import_normalize_maps_url')
         ? spek_partner_import_normalize_maps_url($proposal)
         : '';
-    if ($url === '') {
-        // Keep invalid suggestions for individual inspection, never mass-accept.
+    if ($decision === 'approve' && $url === '') {
+        // Never mass-approve an invalid Google Maps link.
         return false;
     }
 
@@ -376,7 +376,7 @@ function spek_partner_review_bulk_decide(int $post_id, string $decision): bool
         update_post_meta($post_id, '_spek_partner_google_match_status', 'approved');
         // A changed location URL may require manual pin verification.
         // Never silently overwrite or invent location coordinates.
-        if ($old_url !== '' && $old_url !== $url) {
+        if ($old_url !== $url && spek_partner_review_has_coordinates($post_id)) {
             update_post_meta($post_id, '_spek_partner_pin_needs_review', '1');
         }
         update_post_meta($post_id, '_spek_partner_review_resolution', 'approved');
@@ -676,6 +676,7 @@ function spek_partner_review_render_page(): void
                 $google_address = (string) get_post_meta($id, '_spek_partner_google_candidate_address', true);
                 $google_score = (string) get_post_meta($id, '_spek_partner_google_match_score', true);
                 $google_note = (string) get_post_meta($id, '_spek_partner_google_match_note', true);
+                $pin_needs_review = (string) get_post_meta($id, '_spek_partner_pin_needs_review', true) === '1';
                 ?>
                 <article class="spek-review-card">
                     <div class="spek-review-card__header">
@@ -703,11 +704,17 @@ function spek_partner_review_render_page(): void
                                 <?php if ($google_score !== '') : ?> · <?php echo esc_html($google_score); ?>% βεβαιότητα<?php endif; ?></p>
                             <?php endif; ?>
                             <?php if ($google_note !== '' && $status === 'pending') : ?><p class="spek-review-note"><?php echo esc_html($google_note); ?></p><?php endif; ?>
+                            <?php if ($pin_needs_review) : ?><p class="spek-review-note">Το Google Maps URL άλλαξε, αλλά το pin διατηρήθηκε. Επιβεβαίωσε τις συντεταγμένες του συνεργάτη.</p><?php endif; ?>
                             <?php if ($status === 'missing') : ?><p class="spek-review-note">Απουσιάζουν έγκυρες συντεταγμένες. Δεν εμφανίζεται pin στον χάρτη.</p><?php endif; ?>
                             <?php if ($reviewed !== '') : ?><p class="description"><?php echo esc_html($reviewed); ?><?php if ($saved_by) : ?> · <?php echo esc_html(get_the_author_meta('display_name', $saved_by)); ?><?php endif; ?></p><?php endif; ?>
                         </div>
                         <div class="spek-review-card__links">
-                            <?php if ($map_link !== '') : ?><a href="<?php echo esc_url($map_link); ?>" target="_blank" rel="noopener noreferrer">Άνοιγμα στο Google Maps ↗</a><?php endif; ?>
+                            <?php if ($suggestion !== '') : ?>
+                                <a href="<?php echo esc_url($suggestion); ?>" target="_blank" rel="noopener noreferrer">Προτεινόμενη Google ↗</a>
+                                <?php if ($current_maps !== '') : ?><a href="<?php echo esc_url($current_maps); ?>" target="_blank" rel="noopener noreferrer">Τωρινή τοποθεσία ↗</a><?php endif; ?>
+                            <?php elseif ($map_link !== '') : ?>
+                                <a href="<?php echo esc_url($map_link); ?>" target="_blank" rel="noopener noreferrer">Άνοιγμα στο Google Maps ↗</a>
+                            <?php endif; ?>
                             <a href="<?php echo esc_url(get_edit_post_link($id, '')); ?>">Πλήρης επεξεργασία ↗</a>
                         </div>
                     </div>
