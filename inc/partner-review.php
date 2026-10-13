@@ -364,6 +364,17 @@ function spek_partner_review_bulk_eligible(int $post_id): bool
 }
 
 /**
+ * Address proposals with low or unknown confidence need a human review.
+ * This threshold gates only bulk APPROVAL; low-score bulk rejection is allowed.
+ */
+function spek_partner_review_bulk_approvable(int $post_id): bool
+{
+    $score = (string) get_post_meta($post_id, '_spek_partner_google_match_score', true);
+    return spek_partner_review_bulk_eligible($post_id)
+        && $score !== '' && is_numeric($score) && (float) $score >= 75;
+}
+
+/**
  * Apply one decision without touching the street/postcode/lat/lng.
  * Revalidate every post and proposed URL at submit time.
  */
@@ -379,8 +390,9 @@ function spek_partner_review_bulk_decide(int $post_id, string $decision): bool
     $url = function_exists('spek_partner_import_normalize_maps_url')
         ? spek_partner_import_normalize_maps_url($proposal)
         : '';
-    if ($decision === 'approve' && $url === '') {
-        // Never mass-approve an invalid Google Maps link.
+    if ($decision === 'approve'
+        && ($url === '' || !spek_partner_review_bulk_approvable($post_id))) {
+        // Low-confidence candidates must be approved individually after review.
         return false;
     }
 
@@ -490,6 +502,14 @@ function spek_partner_review_ajax_recheck(): void
         || !defined('SPEK_GOOGLE_MAPS_API_KEY')
         || trim((string) SPEK_GOOGLE_MAPS_API_KEY) === '') {
         wp_send_json_error(['message' => 'Λείπει το server-side Google Places API key στον importer.'], 503);
+    }
+
+    $previous_suggestion = trim((string) get_post_meta($post_id, '_spek_partner_suggested_maps_url', true));
+    if ($previous_suggestion !== '') {
+        wp_send_json_success([
+            'result' => 'handled',
+            'message' => 'Υπάρχει ήδη πρόταση Google Maps προς έγκριση.',
+        ]);
     }
 
     $row = [
@@ -779,7 +799,7 @@ function spek_partner_review_render_page(): void
                     <p class="spek-review-bulk__note">
                         Δεν υπάρχουν ακόμη έτοιμες προτάσεις Google Maps για έγκριση.
                         Επίλεξε εγγραφές και πάτησε «Επανέλεγχος Google Places» για να δημιουργηθούν υποψήφιες αντιστοιχίσεις, όπου υπάρχουν.
-                        Ο επανέλεγχος κάνει αιτήματα στο Google Places API και δεν αλλάζει τα pins.
+                        Ο επανέλεγχος κάνει αιτήματα στο Google Places API και δεν αλλάζει τα pins. Οι προτάσεις κάτω από 75% απαιτούν ατομική επαλήθευση.
                         <?php if (count($suggestion_ids) > 0) : ?>
                             <a href="<?php echo esc_url(add_query_arg(['status' => 'suggestions', 's' => ''], $base)); ?>">
                                 Δες τις <?php echo esc_html((string) count($suggestion_ids)); ?> εκκρεμείς προτάσεις Google.
@@ -789,7 +809,7 @@ function spek_partner_review_render_page(): void
                 <?php else : ?>
                     <p class="spek-review-bulk__note">
                         <?php echo esc_html(sprintf('%d προτάσεις προς έγκριση και %d συνολικά εκκρεμότητες στην τρέχουσα σελίδα.', $bulk_eligible_count, $bulk_selectable_count)); ?>
-                        Μπορείς να επανελέγξεις εγγραφές χωρίς υποψήφια πρόταση. Η έγκριση αλλάζει μόνο το Google Maps URL / Place ID, όχι τις συντεταγμένες του pin.
+                        Μπορείς να επανελέγξεις εγγραφές χωρίς υποψήφια πρόταση. Μαζική έγκριση επιτρέπεται μόνο για προτάσεις με βεβαιότητα 75% και άνω. Οι συντεταγμένες του pin δεν τροποποιούνται.
                     </p>
                 <?php endif; ?>
             </form>
@@ -861,6 +881,7 @@ function spek_partner_review_render_page(): void
                                    form="spek-partner-bulk-form"
                                    data-spek-bulk-item
                                    data-spek-bulk-proposal="<?php echo spek_partner_review_bulk_eligible($id) ? '1' : '0'; ?>"
+                                   data-spek-bulk-approvable="<?php echo spek_partner_review_bulk_approvable($id) ? '1' : '0'; ?>"
                                    aria-label="<?php echo esc_attr('Επιλογή ' . get_the_title($id)); ?>">
                         </label>
                         <?php endif; ?>
