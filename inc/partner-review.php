@@ -128,6 +128,13 @@ function spek_partner_review_admin_styles(string $hook): void
         [],
         filemtime(SPEK_THEME_DIR . '/assets/css/partner-review-admin.css')
     );
+    wp_enqueue_script(
+        'spek-partner-review-bulk',
+        SPEK_THEME_URI . '/assets/js/partner-review-bulk.js',
+        [],
+        filemtime(SPEK_THEME_DIR . '/assets/js/partner-review-bulk.js'),
+        true
+    );
 }
 add_action('admin_enqueue_scripts', 'spek_partner_review_admin_styles');
 
@@ -308,6 +315,132 @@ function spek_partner_review_redirect(string $url, string $message): void
     exit;
 }
 
+
+/**
+ * Only real, unresolved Google Maps URL suggestions can be approved/rejected
+ * in bulk. Orphan Excel rows and missing-coordinate flags are excluded.
+ */
+function spek_partner_review_bulk_eligible(int $post_id): bool
+{
+    if ($post_id < 1 || get_post_type($post_id) !== 'spek_partner') {
+        return false;
+    }
+    if (!in_array(get_post_status($post_id), ['publish', 'draft', 'pending', 'private'], true)) {
+        return false;
+    }
+    $proposal = trim((string) get_post_meta($post_id, '_spek_partner_suggested_maps_url', true));
+    $decision = (string) get_post_meta($post_id, '_spek_partner_review_resolution', true);
+    return $proposal !== ''
+        && !in_array($decision, ['approved', 'rejected'], true)
+        && spek_partner_review_status($post_id) === 'pending';
+}
+
+/**
+ * Apply one decision without touching the street/postcode/lat/lng.
+ * Revalidate every post and proposed URL at submit time.
+ */
+function spek_partner_review_bulk_decide(int $post_id, string $decision): bool
+{
+    if (!in_array($decision, ['approve', 'reject'], true)
+        || !current_user_can('edit_post', $post_id)
+        || !spek_partner_review_bulk_eligible($post_id)) {
+        return false;
+    }
+
+    $proposal = (string) get_post_meta($post_id, '_spek_partner_suggested_maps_url', true);
+    $url = function_exists('spek_partner_import_normalize_maps_url')
+        ? spek_partner_import_normalize_maps_url($proposal)
+        : '';
+    if ($url === '') {
+        // Keep invalid suggestions for individual inspection, never mass-accept.
+        return false;
+    }
+
+    if ($decision === 'approve') {
+        $old_url = (string) get_post_meta($post_id, 'partner_maps_url', true);
+        // Query-based Place IDs are supported; don't carry over a stale ID
+        // if the approved URL points elsewhere.
+        $query = (string) wp_parse_url($url, PHP_URL_QUERY);
+        $params = [];
+        parse_str($query, $params);
+        $place_id = '';
+        foreach (['query_place_id', 'destination_place_id'] as $key) {
+            if (!empty($params[$key]) && is_string($params[$key])) {
+                $place_id = sanitize_text_field($params[$key]);
+                break;
+            }
+        }
+        update_post_meta($post_id, 'partner_maps_url', $url);
+        update_post_meta($post_id, '_spek_partner_google_place_id', $place_id);
+        update_post_meta($post_id, '_spek_partner_review_accepted_url', $url);
+        update_post_meta($post_id, '_spek_partner_google_match_status', 'approved');
+        // A changed location URL may require manual pin verification.
+        // Never silently overwrite or invent location coordinates.
+        if ($old_url !== '' && $old_url !== $url) {
+            update_post_meta($post_id, '_spek_partner_pin_needs_review', '1');
+        }
+        update_post_meta($post_id, '_spek_partner_review_resolution', 'approved');
+    } else {
+        // Reject the suggestion only, not the whole partner or current URL.
+        update_post_meta($post_id, '_spek_partner_review_rejected_url', $proposal);
+        update_post_meta($post_id, '_spek_partner_review_resolution', 'rejected');
+    }
+
+    delete_post_meta($post_id, '_spek_partner_suggested_maps_url');
+    update_post_meta($post_id, '_spek_partner_reviewed_by', get_current_user_id());
+    update_post_meta($post_id, '_spek_partner_reviewed_at', current_time('mysql'));
+    return true;
+}
+
+/** Bulk approve/reject only the checked partners on the current page. */
+function spek_partner_review_handle_bulk_action(): void
+{
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('Δεν επιτρέπεται αυτή η ενέργεια.', 'spek-theme'), '', ['response' => 403]);
+    }
+    check_admin_referer('spek_partner_bulk_review');
+    $back = spek_partner_review_back_url();
+    $back = remove_query_arg(
+        ['spek_review_notice', 'spek_bulk_approved', 'spek_bulk_rejected', 'spek_bulk_skipped'],
+        $back
+    );
+    $decision = isset($_POST['bulk_decision'])
+        ? sanitize_key(wp_unslash((string) $_POST['bulk_decision']))
+        : '';
+    if (!in_array($decision, ['approve', 'reject'], true)) {
+        spek_partner_review_redirect($back, 'bulk_invalid');
+    }
+
+    $raw = isset($_POST['partner_ids']) && is_array($_POST['partner_ids'])
+        ? wp_unslash($_POST['partner_ids'])
+        : [];
+    // Up to one page of selections (25) plus a small tolerance. Never
+    // accept arbitrary unlimited IDs from forged requests.
+    if (count($raw) > 100) {
+        spek_partner_review_redirect($back, 'bulk_invalid');
+    }
+    $ids = array_values(array_unique(array_filter(array_map('absint', $raw))));
+    if (!$ids) {
+        spek_partner_review_redirect($back, 'bulk_empty');
+    }
+
+    $applied = 0;
+    foreach ($ids as $id) {
+        if (spek_partner_review_bulk_decide((int) $id, $decision)) {
+            $applied++;
+        }
+    }
+    $counts = [
+        'spek_review_notice' => 'bulk_done',
+        'spek_bulk_approved' => $decision === 'approve' ? $applied : 0,
+        'spek_bulk_rejected' => $decision === 'reject' ? $applied : 0,
+        'spek_bulk_skipped' => count($ids) - $applied,
+    ];
+    wp_safe_redirect(add_query_arg($counts, $back));
+    exit;
+}
+add_action('admin_post_spek_partner_review_bulk_action', 'spek_partner_review_handle_bulk_action');
+
 /**
  * Render review list with server-side filters and 25 entries per page.
  * At SPEK's scale (~1,500 partners), loading just IDs is inexpensive.
@@ -403,8 +536,22 @@ function spek_partner_review_render_page(): void
                     'empty_name' => 'Η επωνυμία είναι υποχρεωτική.',
                     'missing_url' => 'Επιβεβαιώστε ή συμπληρώστε Google Maps URL πριν από την έγκριση.',
                     'missing_queue' => 'Η εγγραφή του Excel δεν είναι πλέον διαθέσιμη.',
+                    'bulk_empty' => 'Επίλεξε τουλάχιστον μία εκκρεμή πρόταση Google Maps.',
+                    'bulk_invalid' => 'Η μαζική ενέργεια δεν ήταν έγκυρη ή επιλέχθηκαν υπερβολικά πολλές εγγραφές.',
                 ];
-                echo esc_html($messages[$notice] ?? 'Η ενέργεια ολοκληρώθηκε.');
+                if ($notice === 'bulk_done') {
+                    $approved_count = absint($_GET['spek_bulk_approved'] ?? 0);
+                    $rejected_count = absint($_GET['spek_bulk_rejected'] ?? 0);
+                    $skipped_count = absint($_GET['spek_bulk_skipped'] ?? 0);
+                    printf(
+                        esc_html__('Ολοκληρώθηκε: %1$d εγκρίσεις, %2$d απορρίψεις, %3$d παραλείψεις (χωρίς ενεργή/έγκυρη πρόταση ή δικαίωμα).', 'spek-theme'),
+                        $approved_count,
+                        $rejected_count,
+                        $skipped_count
+                    );
+                } else {
+                    echo esc_html($messages[$notice] ?? 'Η ενέργεια ολοκληρώθηκε.');
+                }
             ?></p></div>
         <?php endif; ?>
 
@@ -438,6 +585,41 @@ function spek_partner_review_render_page(): void
             <input type="search" name="s" value="<?php echo esc_attr($term); ?>" placeholder="Αναζήτηση επωνυμίας, διεύθυνσης, περιοχής ή ΤΚ">
             <?php submit_button('Αναζήτηση', 'secondary', 'submit', false); ?>
         </form>
+
+        <?php
+        $bulk_eligible_count = 0;
+        foreach ($items as $item) {
+            if ($item['type'] === 'partner'
+                && spek_partner_review_bulk_eligible((int) $item['id'])
+                && current_user_can('edit_post', (int) $item['id'])) {
+                $bulk_eligible_count++;
+            }
+        }
+        ?>
+        <?php if ($bulk_eligible_count > 0) : ?>
+            <form id="spek-partner-bulk-form"
+                  class="spek-review-bulk"
+                  method="post"
+                  action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <input type="hidden" name="action" value="spek_partner_review_bulk_action">
+                <input type="hidden" name="return_url" value="<?php echo esc_url($return_url); ?>">
+                <?php wp_nonce_field('spek_partner_bulk_review'); ?>
+                <label class="spek-review-bulk__toggle">
+                    <input type="checkbox" data-spek-bulk-select-all>
+                    <span>Επιλογή όλων των προτάσεων σε αυτή τη σελίδα</span>
+                </label>
+                <span class="spek-review-bulk__count" data-spek-bulk-counter>0 επιλεγμένες</span>
+                <button type="submit" name="bulk_decision" value="approve"
+                        class="button button-primary" data-spek-bulk-action disabled>
+                    Έγκριση επιλεγμένων
+                </button>
+                <button type="submit" name="bulk_decision" value="reject"
+                        class="button" data-spek-bulk-action disabled>
+                    Απόρριψη επιλεγμένων
+                </button>
+                <p class="spek-review-bulk__note">Αλλάζει μόνο το Google Maps URL / Place ID ή απορρίπτεται η πρόταση. Οι διευθύνσεις και οι συντεταγμένες δεν αλλάζουν αυτόματα.</p>
+            </form>
+        <?php endif; ?>
 
         <p class="spek-review-count"><?php echo esc_html(sprintf('%d αποτελέσματα', $total)); ?></p>
         <?php if (!$items) : ?>
@@ -497,7 +679,17 @@ function spek_partner_review_render_page(): void
                 ?>
                 <article class="spek-review-card">
                     <div class="spek-review-card__header">
-                        <div>
+                        <?php if ($bulk_eligible_count > 0 && spek_partner_review_bulk_eligible($id) && current_user_can('edit_post', $id)) : ?>
+                        <label class="spek-review-card__select" title="Επιλογή πρότασης για μαζική ενέργεια">
+                            <input type="checkbox"
+                                   name="partner_ids[]"
+                                   value="<?php echo esc_attr((string) $id); ?>"
+                                   form="spek-partner-bulk-form"
+                                   data-spek-bulk-item
+                                   aria-label="<?php echo esc_attr('Επιλογή ' . get_the_title($id)); ?>">
+                        </label>
+                        <?php endif; ?>
+                        <div class="spek-review-card__main">
                             <span class="spek-review-pill is-<?php echo esc_attr($status); ?>"><?php echo esc_html(spek_partner_review_label($status)); ?></span>
                             <h2><?php echo esc_html(get_the_title($id)); ?></h2>
                             <p><?php echo esc_html(implode(', ', array_filter([
