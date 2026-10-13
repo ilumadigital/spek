@@ -26,6 +26,13 @@
 
     const initialCenter = {lat: 38.2749, lng: 23.8103};
     const initialZoom = 6;
+    // Approximate geographic envelope of Greece, generously including islands.
+    // Used only to detect demonstrably incorrect coordinates on Greek 5-digit ZIPs.
+    const greekBounds = {south: 34.2, north: 42.4, west: 19.0, east: 30.5};
+    const inGreece = function (lat, lng) {
+        return lat >= greekBounds.south && lat <= greekBounds.north
+            && lng >= greekBounds.west && lng <= greekBounds.east;
+    };
     const text = function (value) {
         return (window.spekI18n && window.spekI18n[value]) || value;
     };
@@ -51,6 +58,7 @@
     let lastOrigin = null;
     let lastMode = 'all';
     let searchVersion = 0;
+    let geocodeFailure = '';
     const geocodeCache = new Map();
 
     function isGreekPostcode(query) {
@@ -77,6 +85,7 @@
     }
 
     const partners = cards.map(function (card) {
+        const postcode = String(card.dataset.postcode || '').replace(/\s+/g, '');
         let lat = Number.parseFloat(card.dataset.lat || '');
         let lng = Number.parseFloat(card.dataset.lng || '');
         if (!validCoordinate(lat, lng)) {
@@ -91,17 +100,25 @@
                 lng = Number.parseFloat(found[2]);
             }
         }
+        const globallyValid = validCoordinate(lat, lng);
+        // Bad TomTom/old importer geocodes have placed Greek stores in the USA.
+        // Hide the bad marker, not the partner or their contact details.
+        const wrongCountry = globallyValid && /^[0-9]{5}$/.test(postcode)
+            && !inGreece(lat, lng);
+        if (wrongCountry) {
+            card.dataset.pinWarning = 'outside-greece';
+        }
         return {
             id: card.dataset.partnerId || '',
             title: card.dataset.title || '',
             area: card.dataset.area || '',
-            postcode: card.dataset.postcode || '',
+            postcode: postcode,
             address: card.dataset.address || '',
             searchable: norm(card.dataset.search || ''),
             mapsUrl: card.dataset.mapsUrl || '',
             placeId: card.dataset.placeId || '',
-            lat: validCoordinate(lat, lng) ? lat : null,
-            lng: validCoordinate(lat, lng) ? lng : null,
+            lat: globallyValid && !wrongCountry ? lat : null,
+            lng: globallyValid && !wrongCountry ? lng : null,
             card: card,
             marker: null
         };
@@ -282,14 +299,17 @@
             });
             bounds.extend(origin);
         }
-        if (points > 1 || (points > 0 && origin)) {
+        // Never auto-fit all published pins: one erroneous or international
+        // location previously zoomed the entire locator out to the world.
+        const fitSelection = !!origin || (matches.length > 0 && matches.length < partners.length);
+        if (fitSelection && (points > 1 || (points > 0 && origin))) {
             map.fitBounds(bounds, 44);
             google.maps.event.addListenerOnce(map, 'idle', function () {
                 if (map.getZoom() > 14) {
                     map.setZoom(14);
                 }
             });
-        } else if (points === 1) {
+        } else if (fitSelection && points === 1) {
             map.setCenter(bounds.getCenter());
             map.setZoom(15);
         } else if (origin) {
@@ -347,46 +367,65 @@
     }
 
     async function geocode(query) {
+        geocodeFailure = '';
         const cacheKey = norm(query);
         if (geocodeCache.has(cacheKey)) {
             return geocodeCache.get(cacheKey);
         }
 
         try {
-            // Explicitly constrain 5-digit Greek postcodes to Greece.
-            // Without this, numeric-only queries can return unrelated places.
-            const request = isGreekPostcode(query)
-                ? {
-                    address: query + ', Ελλάδα',
-                    region: 'gr',
-                    componentRestrictions: { country: 'GR', postalCode: query }
-                }
-                : {
-                    address: query + ', Ελλάδα',
-                    region: 'gr',
-                    componentRestrictions: { country: 'GR' }
-                };
             const library = await google.maps.importLibrary('geocoding');
             const coder = new library.Geocoder();
-            const result = await coder.geocode(request);
-            if (!result.results || !result.results.length) {
-                return null;
+            // Restrict to Greece without requiring an exact postal-code component
+            // match. Google's postal area records sometimes omit that component.
+            const postcode = isGreekPostcode(query);
+            const requests = [{
+                address: query + ', Ελλάδα',
+                region: 'gr',
+                componentRestrictions: {country: 'GR'}
+            }];
+            if (postcode) {
+                requests.push({
+                    address: query.slice(0, 3) + ' ' + query.slice(3) + ', Ελλάδα',
+                    region: 'gr',
+                    componentRestrictions: {country: 'GR'}
+                });
             }
-            const location = result.results[0].geometry.location;
-            const origin = {lat: location.lat(), lng: location.lng()};
-            if (!validCoordinate(origin.lat, origin.lng)) {
-                return null;
+            for (const request of requests) {
+                try {
+                    const response = await coder.geocode(request);
+                    const location = response.results && response.results[0]
+                        && response.results[0].geometry.location;
+                    if (!location) {
+                        geocodeFailure = 'no_results';
+                        continue;
+                    }
+                    const origin = {lat: location.lat(), lng: location.lng()};
+                    if (!validCoordinate(origin.lat, origin.lng)
+                        || !inGreece(origin.lat, origin.lng)) {
+                        geocodeFailure = 'outside_greece';
+                        continue;
+                    }
+                    geocodeCache.set(cacheKey, origin);
+                    return origin;
+                } catch (error) {
+                    const message = String(error && (error.code || error.message || error));
+                    // Only retry when the query has no results, not when an API
+                    // key, quota or Google Cloud API setting is blocking us.
+                    if (/ZERO_RESULTS/i.test(message)) {
+                        geocodeFailure = 'no_results';
+                        continue;
+                    }
+                    geocodeFailure = 'api_error';
+                    console.warn('SPEK Geocoding request failed:', message);
+                    break;
+                }
             }
-            // Cache only within the current visit.
-            geocodeCache.set(cacheKey, origin);
-            return origin;
         } catch (error) {
-            // Do not hide 491 partner cards on a rejected/disabled Geocoding API.
-            if (window.console && typeof window.console.warn === 'function') {
-                window.console.warn('SPEK: optional Google Geocoding failed for the query', error);
-            }
-            return null;
+            geocodeFailure = 'api_error';
+            console.warn('SPEK Geocoding library unavailable:', error);
         }
+        return null;
     }
 
     async function runSearch() {
@@ -443,7 +482,11 @@
         // no partners exist.
         if (!origin) {
             showPartners(partners, null);
-            setStatus(text('Δεν ήταν δυνατός ο γεωγραφικός εντοπισμός της περιοχής ή του ΤΚ. Εμφανίζονται όλοι οι συνεργάτες. Ελέγξτε το Geocoding API ή δοκιμάστε διαφορετική αναζήτηση.'));
+            setStatus(
+                geocodeFailure === 'api_error'
+                    ? text('Η γεωγραφική αναζήτηση Google δεν είναι διαθέσιμη. Εμφανίζονται όλοι οι συνεργάτες. Ο διαχειριστής πρέπει να ελέγξει αν το Geocoding API είναι ενεργό και επιτρέπεται από το κλειδί Google Maps.')
+                    : text('Δεν αναγνωρίστηκε η συγκεκριμένη περιοχή ή ο ΤΚ στην Google. Εμφανίζονται όλοι οι συνεργάτες· δοκιμάστε και το όνομα της περιοχής.')
+            );
         } else {
             showPartners(partners, null);
             setStatus(text('Δεν βρέθηκαν επιβεβαιωμένες τοποθεσίες συνεργατών στην επιλεγμένη ακτίνα. Εμφανίζονται όλοι οι συνεργάτες. Δοκιμάστε μεγαλύτερη ακτίνα ή διαφορετική περιοχή.'));
