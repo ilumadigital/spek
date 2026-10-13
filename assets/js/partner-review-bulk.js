@@ -27,15 +27,25 @@
         });
     }
 
+    function approvableChosen() {
+        return selected().filter(function (item) {
+            return item.dataset.spekBulkApprovable === '1';
+        });
+    }
+
     function refresh() {
         const chosen = selected();
         const proposals = proposalsChosen();
+        const approvable = approvableChosen();
         if (counter) {
             counter.textContent = chosen.length + ' από ' + items.length
-                + ' επιλεγμένες · ' + proposals.length + ' προτάσεις';
+                + ' επιλεγμένες · ' + proposals.length + ' προτάσεις'
+                + ' · ' + approvable.length + ' προς μαζική έγκριση';
         }
         actionButtons.forEach(function (button) {
-            button.disabled = busy || proposals.length === 0;
+            button.disabled = busy || (button.value === 'approve'
+                ? approvable.length === 0
+                : proposals.length === 0);
         });
         if (recheckButton) {
             recheckButton.disabled = busy || chosen.length === 0 || !config.ajaxUrl || !config.nonce;
@@ -57,16 +67,16 @@
     items.forEach(function (item) { item.addEventListener('change', refresh); });
 
     form.addEventListener('submit', function (event) {
-        const proposals = proposalsChosen();
-        if (!proposals.length || busy) {
+        const submitter = event.submitter;
+        const action = submitter && submitter.value === 'reject' ? 'reject' : 'approve';
+        const applicable = action === 'approve' ? approvableChosen() : proposalsChosen();
+        if (!applicable.length || busy) {
             event.preventDefault();
             return;
         }
-        const submitter = event.submitter;
-        const action = submitter && submitter.value === 'reject' ? 'reject' : 'approve';
-        const count = proposals.length;
+        const count = applicable.length;
         const ignored = selected().length - count;
-        const note = ignored ? '\nΟι ' + ignored + ' εγγραφές χωρίς πρόταση δεν θα αλλάξουν.' : '';
+        const note = ignored ? '\nΟι ' + ignored + ' εγγραφές χωρίς έγκυρη/αρκετά αξιόπιστη πρόταση δεν θα αλλάξουν.' : '';
         const message = action === 'reject'
             ? 'Να απορριφθούν ' + count + ' επιλεγμένες προτάσεις Google Maps; Οι συνεργάτες παραμένουν καταχωρισμένοι.' + note
             : 'Να εγκριθούν ' + count + ' επιλεγμένες προτάσεις Google Maps; Τα pins και οι διευθύνσεις στο WordPress δεν αλλάζουν αυτόματα.' + note;
