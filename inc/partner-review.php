@@ -145,6 +145,10 @@ function spek_partner_review_admin_styles(string $hook): void
         filemtime(SPEK_THEME_DIR . '/assets/js/partner-review-bulk.js'),
         true
     );
+    wp_localize_script('spek-partner-review-bulk', 'spekPartnerReviewConfig', [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('spek_partner_review_recheck'),
+    ]);
 }
 add_action('admin_enqueue_scripts', 'spek_partner_review_admin_styles');
 
@@ -331,9 +335,19 @@ function spek_partner_review_redirect(string $url, string $message): void
 
 
 /**
- * Only real, unresolved Google Maps URL suggestions can be approved/rejected
- * in bulk. Orphan Excel rows and missing-coordinate flags are excluded.
+ * Select published/draft partners with outstanding map issues for bulk
+ * rechecking. Selection does not imply a Google proposal exists.
  */
+function spek_partner_review_bulk_selectable(int $post_id): bool
+{
+    if ($post_id < 1 || get_post_type($post_id) !== 'spek_partner'
+        || !in_array(get_post_status($post_id), ['publish', 'draft', 'pending', 'private'], true)) {
+        return false;
+    }
+    return in_array(spek_partner_review_status($post_id), ['pending', 'missing'], true);
+}
+
+/** Only real unresolved URL suggestions can be approved or rejected in bulk. */
 function spek_partner_review_bulk_eligible(int $post_id): bool
 {
     if ($post_id < 1 || get_post_type($post_id) !== 'spek_partner') {
@@ -346,7 +360,7 @@ function spek_partner_review_bulk_eligible(int $post_id): bool
     $decision = (string) get_post_meta($post_id, '_spek_partner_review_resolution', true);
     return $proposal !== ''
         && !in_array($decision, ['approved', 'rejected'], true)
-        && spek_partner_review_status($post_id) === 'pending';
+        && in_array(spek_partner_review_status($post_id), ['pending', 'missing'], true);
 }
 
 /**
@@ -455,6 +469,94 @@ function spek_partner_review_handle_bulk_action(): void
 }
 add_action('admin_post_spek_partner_review_bulk_action', 'spek_partner_review_handle_bulk_action');
 
+
+/**
+ * AJAX one-at-a-time Google Places recheck. Used by the bulk selector to
+ * generate proposals for records with no candidate URL; never writes pins.
+ * Every request is separately permission-checked to avoid mass overwrites.
+ */
+function spek_partner_review_ajax_recheck(): void
+{
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(['message' => 'Δεν επιτρέπεται αυτή η ενέργεια.'], 403);
+    }
+    check_ajax_referer('spek_partner_review_recheck', 'nonce');
+    $post_id = absint($_POST['partner_id'] ?? 0);
+    if (!$post_id || !current_user_can('edit_post', $post_id)
+        || !spek_partner_review_bulk_selectable($post_id)) {
+        wp_send_json_error(['message' => 'Δεν υπάρχει ενεργή εκκρεμότητα για αυτή την εγγραφή.'], 400);
+    }
+    if (!function_exists('spek_partner_import_google_match')
+        || !defined('SPEK_GOOGLE_MAPS_API_KEY')
+        || trim((string) SPEK_GOOGLE_MAPS_API_KEY) === '') {
+        wp_send_json_error(['message' => 'Λείπει το server-side Google Places API key στον importer.'], 503);
+    }
+
+    $row = [
+        'name' => (string) get_the_title($post_id),
+        'address' => (string) get_post_meta($post_id, 'partner_address', true),
+        'postcode' => (string) get_post_meta($post_id, 'partner_postcode', true),
+        'area' => (string) get_post_meta($post_id, 'partner_area', true),
+        'region' => '',
+    ];
+    $regions = wp_get_post_terms($post_id, 'partner_region', ['fields' => 'names']);
+    if (!is_wp_error($regions) && !empty($regions)) {
+        $row['region'] = implode(', ', $regions);
+    }
+    $google = spek_partner_import_google_match($row, 78);
+    $place_id = sanitize_text_field((string) ($google['place_id'] ?? ''));
+    $status = (string) ($google['status'] ?? 'error');
+    if ($place_id === '') {
+        update_post_meta($post_id, '_spek_partner_google_match_note', sanitize_text_field(
+            (string) ($google['note'] ?? 'Δεν βρέθηκε αξιόπιστη καταχώριση Google Places.')
+        ));
+        update_post_meta($post_id, '_spek_partner_google_match_status', sanitize_key($status));
+        update_post_meta($post_id, '_spek_partner_last_rechecked_at', current_time('mysql'));
+        wp_send_json_success(['result' => 'none', 'message' => 'Δεν προέκυψε υποψήφια αντιστοίχιση.']);
+    }
+
+    $candidate_url = 'https://www.google.com/maps/search/?api=1&query=' .
+        rawurlencode(trim(implode(', ', array_filter([
+            (string) ($google['name'] ?? $row['name']),
+            (string) ($google['address'] ?? $row['area']),
+        ])))) . '&query_place_id=' . rawurlencode($place_id);
+
+    $existing_place_id = (string) get_post_meta($post_id, '_spek_partner_google_place_id', true);
+    $approved_url = (string) get_post_meta($post_id, '_spek_partner_review_accepted_url', true);
+    $rejected_url = (string) get_post_meta($post_id, '_spek_partner_review_rejected_url', true);
+    if ($place_id === $existing_place_id && $existing_place_id !== '') {
+        wp_send_json_success([
+            'result' => 'linked',
+            'message' => 'Η τοποθεσία Google έχει ήδη συνδεθεί. Το pin απαιτεί ξεχωριστή διόρθωση.',
+        ]);
+    }
+    if ($candidate_url === $approved_url || $candidate_url === $rejected_url) {
+        wp_send_json_success([
+            'result' => 'handled',
+            'message' => 'Η ίδια πρόταση έχει ήδη εγκριθεί ή απορριφθεί.',
+        ]);
+    }
+
+    update_post_meta($post_id, '_spek_partner_suggested_maps_url', esc_url_raw($candidate_url));
+    update_post_meta($post_id, '_spek_partner_google_candidate_name',
+        sanitize_text_field((string) ($google['name'] ?? '')));
+    update_post_meta($post_id, '_spek_partner_google_candidate_address',
+        sanitize_text_field((string) ($google['address'] ?? '')));
+    update_post_meta($post_id, '_spek_partner_google_match_score',
+        isset($google['score']) ? (string) (int) $google['score'] : '');
+    update_post_meta($post_id, '_spek_partner_google_match_note',
+        sanitize_text_field((string) ($google['note'] ?? 'Χρειάζεται επιβεβαίωση πριν τη σύνδεση.')));
+    update_post_meta($post_id, '_spek_partner_google_match_status', 'review');
+    update_post_meta($post_id, '_spek_partner_review_resolution', 'pending');
+    update_post_meta($post_id, '_spek_partner_last_rechecked_at', current_time('mysql'));
+
+    wp_send_json_success([
+        'result' => 'proposed',
+        'message' => 'Βρέθηκε υποψήφια τοποθεσία. Ελέγξτε την πριν εγκρίνετε.',
+    ]);
+}
+add_action('wp_ajax_spek_partner_review_recheck', 'spek_partner_review_ajax_recheck');
+
 /**
  * Render review list with server-side filters and 25 entries per page.
  * At SPEK's scale (~1,500 partners), loading just IDs is inexpensive.
@@ -534,6 +636,8 @@ function spek_partner_review_render_page(): void
     } else {
         $filtered_ids = $groups[$filter];
     }
+    // A missing-pin record may also have a candidate proposal. Display it once.
+    $filtered_ids = array_values(array_unique($filtered_ids));
     foreach ($filtered_ids as $id) {
             $group = spek_partner_review_status((int) $id);
             $name = (string) get_the_title($id);
@@ -635,10 +739,16 @@ function spek_partner_review_render_page(): void
 
         <?php
         $bulk_eligible_count = 0;
+        $bulk_selectable_count = 0;
         foreach ($items as $item) {
-            if ($item['type'] === 'partner'
-                && spek_partner_review_bulk_eligible((int) $item['id'])
-                && current_user_can('edit_post', (int) $item['id'])) {
+            if ($item['type'] !== 'partner'
+                || !current_user_can('edit_post', (int) $item['id'])) {
+                continue;
+            }
+            if (spek_partner_review_bulk_selectable((int) $item['id'])) {
+                $bulk_selectable_count++;
+            }
+            if (spek_partner_review_bulk_eligible((int) $item['id'])) {
                 $bulk_eligible_count++;
             }
         }
@@ -651,10 +761,12 @@ function spek_partner_review_render_page(): void
                 <input type="hidden" name="return_url" value="<?php echo esc_url($return_url); ?>">
                 <?php wp_nonce_field('spek_partner_bulk_review'); ?>
                 <label class="spek-review-bulk__toggle">
-                    <input type="checkbox" data-spek-bulk-select-all <?php disabled($bulk_eligible_count === 0); ?>>
-                    <span>Επιλογή προτάσεων στην τρέχουσα σελίδα</span>
+                    <input type="checkbox" data-spek-bulk-select-all <?php disabled($bulk_selectable_count === 0); ?>>
+                    <span>Επιλογή εκκρεμοτήτων στην τρέχουσα σελίδα</span>
                 </label>
                 <span class="spek-review-bulk__count" data-spek-bulk-counter>0 επιλεγμένες</span>
+                <button type="button" class="button button-secondary"
+                        data-spek-bulk-recheck disabled>Επανέλεγχος Google Places</button>
                 <button type="submit" name="bulk_decision" value="approve"
                         class="button button-primary" data-spek-bulk-action disabled>
                     Έγκριση επιλεγμένων
@@ -665,8 +777,9 @@ function spek_partner_review_render_page(): void
                 </button>
                 <?php if ($bulk_eligible_count === 0) : ?>
                     <p class="spek-review-bulk__note">
-                        Δεν υπάρχουν έτοιμες προτάσεις Google Maps προς μαζική έγκριση σε αυτή τη σελίδα.
-                        Οι εγγραφές με «Δεν βρέθηκε Google Places αποτέλεσμα» χρειάζονται πρώτα χειροκίνητη αντιστοίχιση.
+                        Δεν υπάρχουν ακόμη έτοιμες προτάσεις Google Maps για έγκριση.
+                        Επίλεξε εγγραφές και πάτησε «Επανέλεγχος Google Places» για να δημιουργηθούν υποψήφιες αντιστοιχίσεις, όπου υπάρχουν.
+                        Ο επανέλεγχος κάνει αιτήματα στο Google Places API και δεν αλλάζει τα pins.
                         <?php if (count($suggestion_ids) > 0) : ?>
                             <a href="<?php echo esc_url(add_query_arg(['status' => 'suggestions', 's' => ''], $base)); ?>">
                                 Δες τις <?php echo esc_html((string) count($suggestion_ids)); ?> εκκρεμείς προτάσεις Google.
@@ -675,8 +788,8 @@ function spek_partner_review_render_page(): void
                     </p>
                 <?php else : ?>
                     <p class="spek-review-bulk__note">
-                        <?php echo esc_html(sprintf('%d προτάσεις διαθέσιμες για επιλογή σε αυτή τη σελίδα.', $bulk_eligible_count)); ?>
-                        Η μαζική ενέργεια αλλάζει μόνο το Google Maps URL / Place ID. Οι διευθύνσεις και τα pins δεν τροποποιούνται αυτόματα.
+                        <?php echo esc_html(sprintf('%d προτάσεις προς έγκριση και %d συνολικά εκκρεμότητες στην τρέχουσα σελίδα.', $bulk_eligible_count, $bulk_selectable_count)); ?>
+                        Μπορείς να επανελέγξεις εγγραφές χωρίς υποψήφια πρόταση. Η έγκριση αλλάζει μόνο το Google Maps URL / Place ID, όχι τις συντεταγμένες του pin.
                     </p>
                 <?php endif; ?>
             </form>
@@ -740,13 +853,14 @@ function spek_partner_review_render_page(): void
                 ?>
                 <article class="spek-review-card">
                     <div class="spek-review-card__header">
-                        <?php if (spek_partner_review_bulk_eligible($id) && current_user_can('edit_post', $id)) : ?>
-                        <label class="spek-review-card__select" title="Επιλογή πρότασης για μαζική ενέργεια">
+                        <?php if (spek_partner_review_bulk_selectable($id) && current_user_can('edit_post', $id)) : ?>
+                        <label class="spek-review-card__select" title="Επιλογή συνεργάτη για επανέλεγχο Google Places ή υπάρχουσας πρότασης">
                             <input type="checkbox"
                                    name="partner_ids[]"
                                    value="<?php echo esc_attr((string) $id); ?>"
                                    form="spek-partner-bulk-form"
                                    data-spek-bulk-item
+                                   data-spek-bulk-proposal="<?php echo spek_partner_review_bulk_eligible($id) ? '1' : '0'; ?>"
                                    aria-label="<?php echo esc_attr('Επιλογή ' . get_the_title($id)); ?>">
                         </label>
                         <?php endif; ?>
