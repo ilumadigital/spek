@@ -737,14 +737,24 @@ function spek_partner_review_render_page(): void
                         </label>
                         <?php endif; ?>
                         <div class="spek-review-card__main">
-                            <span class="spek-review-pill is-<?php echo esc_attr($status); ?>"><?php echo esc_html(spek_partner_review_label($status)); ?></span>
+                            <span class="spek-review-pill is-<?php echo esc_attr($status); ?>"><?php
+                                echo esc_html(
+                                    $status === 'pending' && $suggestion === ''
+                                        ? 'Χωρίς πρόταση Google'
+                                        : spek_partner_review_label($status)
+                                );
+                            ?></span>
                             <h2><?php echo esc_html(get_the_title($id)); ?></h2>
                             <p><?php echo esc_html(implode(', ', array_filter([
                                 get_post_meta($id, 'partner_address', true),
                                 get_post_meta($id, 'partner_postcode', true),
                                 get_post_meta($id, 'partner_area', true),
                             ]))); ?></p>
-                            <?php if ($suggestion !== '') : ?><p class="spek-review-note">Προτεινόμενη τοποθεσία Google — χρειάζεται έλεγχο</p><?php endif; ?>
+                            <?php if ($suggestion !== '') : ?>
+                                <p class="spek-review-note">Προτεινόμενη τοποθεσία Google — μπορείς να την εγκρίνεις ή να την απορρίψεις.</p>
+                            <?php elseif ($status === 'pending') : ?>
+                                <p class="spek-review-note">Δεν υπάρχει υποψήφια αντιστοίχιση Google Maps για μαζική έγκριση. Διόρθωσε ή συμπλήρωσε την τοποθεσία από τη Γρήγορη επεξεργασία.</p>
+                            <?php endif; ?>
                             <?php if ($google_name !== '' || $google_address !== '') : ?>
                                 <p><strong>Google:</strong> <?php echo esc_html(implode(' · ', array_filter([$google_name, $google_address]))); ?>
                                 <?php if ($google_score !== '') : ?> · <?php echo esc_html($google_score); ?>% βεβαιότητα<?php endif; ?></p>
