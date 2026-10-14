@@ -1,102 +1,81 @@
 /*
- * SPEK homepage-only water ambience.
- * Decorative SVG backgrounds: no layout changes, no JS, no overlay on hero video.
- * The stylesheet is enqueued exclusively for the Greek/English homepage.
+ * SPEK homepage | one unified water backdrop.
+ * Background artwork belongs to <main.front-page>, NOT to individual panels.
+ * Scoped to the homepage by inc/enqueue.php. Hero video is not modified.
  */
 
 body .front-page {
-    background:
-        radial-gradient(ellipse at 7% 24%, rgba(127, 201, 232, .12), transparent 31%),
-        radial-gradient(ellipse at 93% 62%, rgba(94, 175, 216, .10), transparent 34%),
-        linear-gradient(180deg, #f9fcff 0%, #ffffff 29%, #f5fafc 70%, #ffffff 100%);
-}
-
-/* Sections stay crisp and readable: the water remains behind their content. */
-body .front-page .home-section-group--one > .product-categories {
+    background-color: #f6fbfe;
     background-image:
-        url("../images/home-water-droplets.svg"),
-        url("../images/home-water-waves.svg"),
-        radial-gradient(ellipse at 90% 12%, rgba(142, 209, 237, .20), transparent 45%),
-        linear-gradient(180deg, #fff 0%, #f6fbfe 100%);
-    background-position: right -125px top -45px, center bottom -110px, center, center;
-    background-size: 790px auto, 125% auto, cover, cover;
+        url("../images/home-water-continuous.svg"),
+        linear-gradient(180deg, #fbfdff 0%, #f3f9fd 28%, #fff 52%, #f2f9fd 76%, #fafdff 100%);
     background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
 }
 
-body .front-page .home-section-group--one > .finder-preview {
-    background-image:
-        url("../images/home-water-waves.svg"),
-        url("../images/home-water-droplets.svg"),
-        radial-gradient(ellipse at 5% 80%, rgba(121, 196, 230, .18), transparent 52%),
-        linear-gradient(135deg, #f5fbff 0%, #fff 67%);
-    background-position: left -240px bottom -200px, right -220px top -110px, center, center;
-    background-size: 120% auto, 720px auto, cover, cover;
-    background-repeat: no-repeat;
+/* Remove the fixed grid from the old layered homepage treatment. */
+body .front-page::before {
+    display: none;
+    content: none;
 }
 
-/* Why SPEK already contains its own custom water-flow SVG.
-   Keep its shared component intact for both Home and Company. */
-
-body .front-page .home-section-group--two > .catalogue-preview {
-    background-image:
-        url("../images/home-water-droplets.svg"),
-        url("../images/home-water-waves.svg"),
-        radial-gradient(ellipse at 88% 22%, rgba(159, 217, 241, .20), transparent 46%),
-        linear-gradient(180deg, #f8fcff 0%, #fff 100%);
-    background-position: right -155px top -220px, center bottom -245px, center, center;
-    background-size: 700px auto, 117% auto, cover, cover;
-    background-repeat: no-repeat;
+/* Keep the same structural group wrappers and spacing, without separate panels. */
+body .front-page .home-section-group,
+body .front-page .home-section-group--one,
+body .front-page .home-section-group--two,
+body .front-page .home-section-group--three {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
-body .front-page .home-section-group--three > .store-preview {
-    background-image:
-        url("../images/home-water-waves.svg"),
-        url("../images/home-water-droplets.svg"),
-        radial-gradient(ellipse at 14% 88%, rgba(140, 205, 232, .19), transparent 49%),
-        linear-gradient(180deg, #fff 0%, #f7fbfe 100%);
-    background-position: left -200px bottom -210px, right -175px top -135px, center, center;
-    background-size: 124% auto, 730px auto, cover, cover;
-    background-repeat: no-repeat;
-}
-
+/* The SINGLE underlying water backdrop is visible continuously through sections. */
+body .front-page .home-section-group > .section,
+body .front-page .home-section-group--one > .product-categories,
+body .front-page .home-section-group--one > .finder-preview,
+body .front-page .home-section-group--two > .why-spek,
+body .front-page .home-section-group--two > .catalogue-preview,
+body .front-page .home-section-group--three > .store-preview,
 body .front-page .home-section-group--three > .b2b-cta {
-    background-image:
-        url("../images/home-water-droplets.svg"),
-        url("../images/home-water-waves.svg"),
-        radial-gradient(ellipse at 80% 18%, rgba(137, 202, 232, .18), transparent 40%),
-        linear-gradient(135deg, #f5fbff 0%, #fff 74%);
-    background-position: right -170px top -175px, center bottom -270px, center, center;
-    background-size: 780px auto, 124% auto, cover, cover;
-    background-repeat: no-repeat;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
 }
 
-/* Tablet/mobile: avoid spreading artwork across important copy or buttons. */
-@media (max-width: 900px) {
-    body .front-page .home-section-group--one > .product-categories,
-    body .front-page .home-section-group--two > .catalogue-preview,
-    body .front-page .home-section-group--three > .b2b-cta {
-        background-size: 570px auto, 1100px auto, cover, cover;
-        background-position: right -215px top -60px, center bottom -100px, center, center;
-    }
-
-    body .front-page .home-section-group--one > .finder-preview,
-    body .front-page .home-section-group--three > .store-preview {
-        background-size: 1100px auto, 540px auto, cover, cover;
-        background-position: left -410px bottom -120px, right -245px top -20px, center, center;
-    }
+/* Shared Why SPEK styles force an opaque section; override only on Home. */
+body .front-page .home-section-group > .why-spek--flow {
+    background: transparent !important;
+}
+body .front-page .why-spek--flow .why-spek__practical,
+body .front-page .why-spek--flow .why-spek__benefits {
+    background: transparent !important;
 }
 
-@media (max-width: 600px) {
-    body .front-page .home-section-group--one > .product-categories,
-    body .front-page .home-section-group--two > .catalogue-preview,
-    body .front-page .home-section-group--three > .b2b-cta {
-        background-size: 440px auto, 840px auto, cover, cover;
-        background-position: right -240px top 25px, right -390px bottom -125px, center, center;
+/* No lines or decorative grid imply a new background at each section boundary. */
+body .front-page .home-section-group > .section + .section {
+    border-top: 0;
+}
+body .front-page .home-section-group > .finder-preview::before {
+    display: none;
+    content: none;
+}
+
+/* On narrow screens the continuous ribbon remains behind the layout.
+   Cards, copy, CTA and hero keep their own untouched styles. */
+@media (max-width: 700px) {
+    body .front-page {
+        background-position: 50% center;
+        background-size: 130% 100%, 100% 100%;
     }
 
-    body .front-page .home-section-group--one > .finder-preview,
-    body .front-page .home-section-group--three > .store-preview {
-        background-size: 840px auto, 410px auto, cover, cover;
-        background-position: left -475px bottom -140px, right -240px top 15px, center, center;
+    body .front-page .home-section-group,
+    body .front-page .home-section-group--one,
+    body .front-page .home-section-group--two,
+    body .front-page .home-section-group--three {
+        border-radius: 0;
+        box-shadow: none;
     }
 }
