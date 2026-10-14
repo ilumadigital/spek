@@ -1,9 +1,9 @@
 /**
  * SPEK WordPress admin: populate latitude & longitude when a Google Maps
- * URL containing /@lat,lng is pasted. No external API calls.
+ * URL containing coordinates is pasted. Place !3d!4d takes priority.
  *
- * /@lat,lng is the map camera centre; it may differ from the actual business
- * position (!3d...!4d...). Admins can adjust the fields manually afterward.
+ * When provided, !3d...!4d... is the business marker; /@lat,lng is only
+ * the camera-centre fallback. Admins can still edit the fields manually.
  */
 (function () {
     'use strict';
@@ -20,9 +20,9 @@
         }
         const number = '(-?(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+))';
         const patterns = [
-            {source: 'map_center', pattern: new RegExp('@' + number + ',' + number + '(?=,|/|\\?|&|$)', 'i')},
             {source: 'place', pattern: new RegExp('!3d' + number + '!4d' + number, 'i')},
-            {source: 'query', pattern: new RegExp('[?&](?:q|query|ll|destination)=' + number + ',\\s*' + number + '(?=&|$)', 'i')}
+            {source: 'query', pattern: new RegExp('[?&](?:q|query|ll|destination)=' + number + ',\\s*' + number + '(?=&|$)', 'i')},
+            {source: 'map_center', pattern: new RegExp('@' + number + ',' + number + '(?=,|/|\\?|&|$)', 'i')}
         ];
         for (const item of patterns) {
             const matches = url.match(item.pattern);
