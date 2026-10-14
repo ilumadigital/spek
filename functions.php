@@ -34,6 +34,7 @@ $required_files = [
     '/inc/google-map-settings.php',
     '/inc/partner-importer.php',
     '/inc/partner-review.php',
+    '/inc/partner-coordinate-repair.php',
     '/inc/product-query.php',
     '/inc/product-export.php',
     '/inc/helpers.php',
