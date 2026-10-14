@@ -1076,7 +1076,10 @@ function spek_partner_import_locator_coords(array $row): array
             return [
                 'latitude' => (string) $coords['latitude'],
                 'longitude' => (string) $coords['longitude'],
-                'source' => 'Google Maps URL',
+                'source' => ($coords['source'] ?? '') === 'map_center'
+                    ? 'Google Maps URL @ (κέντρο προβολής)'
+                    : 'Google Maps URL',
+                'coordinate_origin' => (string) ($coords['source'] ?? ''),
             ];
         }
     }
@@ -1346,7 +1349,9 @@ function spek_partner_import_process_row(array $row, bool $dry_run, bool $update
         '_spek_partner_google_candidate_name' => sanitize_text_field((string) ($google['name'] ?? '')),
         '_spek_partner_google_candidate_address' => sanitize_text_field((string) ($google['address'] ?? '')),
         '_spek_partner_google_match_note' => sanitize_text_field((string) ($google['note'] ?? '')),
-        '_spek_partner_pin_needs_review' => ($bad_coords || !empty($coords['error'])) ? '1' : '',
+        '_spek_partner_pin_needs_review' => ($bad_coords || !empty($coords['error'])
+            || ($coords['coordinate_origin'] ?? '') === 'map_center') ? '1' : '',
+        '_spek_partner_coords_source' => sanitize_key((string) ($coords['coordinate_origin'] ?? '')),
         '_spek_partner_import_source_row' => (string) $source_row,
     ];
 
