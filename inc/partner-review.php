@@ -139,6 +139,17 @@ function spek_partner_review_admin_styles(string $hook): void
         filemtime(SPEK_THEME_DIR . '/assets/css/partner-review-admin.css')
     );
     wp_enqueue_script(
+        'spek-partner-coordinate-repair',
+        SPEK_THEME_URI . '/assets/js/partner-coordinate-repair.js',
+        [],
+        filemtime(SPEK_THEME_DIR . '/assets/js/partner-coordinate-repair.js'),
+        true
+    );
+    wp_localize_script('spek-partner-coordinate-repair', 'spekPartnerPinRepair', [
+        'endpoint' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('spek_partner_coord_repair'),
+    ]);
+    wp_enqueue_script(
         'spek-partner-review-bulk',
         SPEK_THEME_URI . '/assets/js/partner-review-bulk.js',
         [],
@@ -810,6 +821,22 @@ function spek_partner_review_render_page(): void
     <div class="wrap spek-review">
         <h1><?php esc_html_e('Έλεγχος συνεργατών', 'spek-theme'); ?></h1>
         <p class="description">Όλες οι εκκρεμότητες των συνεργατών και οι γραμμές Excel που δεν εισήχθησαν με ασφάλεια. Κάθε απόφαση καταγράφεται στον συνεργάτη.</p>
+        <?php if (function_exists('spek_partner_coord_repair_state')) :
+            $repair = spek_partner_coord_repair_state(); ?>
+            <div class="notice notice-info inline spek-pin-repair-progress"
+                 data-spek-pin-repair
+                 data-status="<?php echo esc_attr($repair['status']); ?>">
+                <p><strong>Αυτόματη διόρθωση παλιών συντεταγμένων Google Maps</strong></p>
+                <p data-spek-pin-repair-label><?php
+                    echo esc_html(sprintf(
+                        'Ελέγχθηκαν %1$d / %2$d συνεργάτες · διορθώθηκαν %3$d · συμπληρώθηκαν %4$d κενά pins · προστατεύτηκαν %5$d χειροκίνητες/διαφορετικές θέσεις.',
+                        (int) $repair['cursor'], (int) $repair['total'], (int) $repair['fixed'],
+                        (int) $repair['filled'], (int) $repair['protected']
+                    ));
+                ?></p>
+                <p class="description">Η διόρθωση χρησιμοποιεί τις συντεταγμένες του pin (!3d…!4d) από το αποθηκευμένο Google Maps URL, μόνο όταν η παλιά θέση ταιριάζει με το @ ή είναι κενή. Δεν χρειάζεται κανένα χρεώσιμο Google API.</p>
+            </div>
+        <?php endif; ?>
         <?php if ($notice !== '') : ?>
             <div class="notice notice-info is-dismissible"><p><?php
                 $messages = [
