@@ -1,0 +1,102 @@
+/*
+ * SPEK homepage-only water ambience.
+ * Decorative SVG backgrounds: no layout changes, no JS, no overlay on hero video.
+ * The stylesheet is enqueued exclusively for the Greek/English homepage.
+ */
+
+body .front-page {
+    background:
+        radial-gradient(ellipse at 7% 24%, rgba(127, 201, 232, .12), transparent 31%),
+        radial-gradient(ellipse at 93% 62%, rgba(94, 175, 216, .10), transparent 34%),
+        linear-gradient(180deg, #f9fcff 0%, #ffffff 29%, #f5fafc 70%, #ffffff 100%);
+}
+
+/* Sections stay crisp and readable: the water remains behind their content. */
+body .front-page .home-section-group--one > .product-categories {
+    background-image:
+        url("../images/home-water-droplets.svg"),
+        url("../images/home-water-waves.svg"),
+        radial-gradient(ellipse at 90% 12%, rgba(142, 209, 237, .20), transparent 45%),
+        linear-gradient(180deg, #fff 0%, #f6fbfe 100%);
+    background-position: right -125px top -45px, center bottom -110px, center, center;
+    background-size: 790px auto, 125% auto, cover, cover;
+    background-repeat: no-repeat;
+}
+
+body .front-page .home-section-group--one > .finder-preview {
+    background-image:
+        url("../images/home-water-waves.svg"),
+        url("../images/home-water-droplets.svg"),
+        radial-gradient(ellipse at 5% 80%, rgba(121, 196, 230, .18), transparent 52%),
+        linear-gradient(135deg, #f5fbff 0%, #fff 67%);
+    background-position: left -240px bottom -200px, right -220px top -110px, center, center;
+    background-size: 120% auto, 720px auto, cover, cover;
+    background-repeat: no-repeat;
+}
+
+/* Why SPEK already contains its own custom water-flow SVG.
+   Keep its shared component intact for both Home and Company. */
+
+body .front-page .home-section-group--two > .catalogue-preview {
+    background-image:
+        url("../images/home-water-droplets.svg"),
+        url("../images/home-water-waves.svg"),
+        radial-gradient(ellipse at 88% 22%, rgba(159, 217, 241, .20), transparent 46%),
+        linear-gradient(180deg, #f8fcff 0%, #fff 100%);
+    background-position: right -155px top -220px, center bottom -245px, center, center;
+    background-size: 700px auto, 117% auto, cover, cover;
+    background-repeat: no-repeat;
+}
+
+body .front-page .home-section-group--three > .store-preview {
+    background-image:
+        url("../images/home-water-waves.svg"),
+        url("../images/home-water-droplets.svg"),
+        radial-gradient(ellipse at 14% 88%, rgba(140, 205, 232, .19), transparent 49%),
+        linear-gradient(180deg, #fff 0%, #f7fbfe 100%);
+    background-position: left -200px bottom -210px, right -175px top -135px, center, center;
+    background-size: 124% auto, 730px auto, cover, cover;
+    background-repeat: no-repeat;
+}
+
+body .front-page .home-section-group--three > .b2b-cta {
+    background-image:
+        url("../images/home-water-droplets.svg"),
+        url("../images/home-water-waves.svg"),
+        radial-gradient(ellipse at 80% 18%, rgba(137, 202, 232, .18), transparent 40%),
+        linear-gradient(135deg, #f5fbff 0%, #fff 74%);
+    background-position: right -170px top -175px, center bottom -270px, center, center;
+    background-size: 780px auto, 124% auto, cover, cover;
+    background-repeat: no-repeat;
+}
+
+/* Tablet/mobile: avoid spreading artwork across important copy or buttons. */
+@media (max-width: 900px) {
+    body .front-page .home-section-group--one > .product-categories,
+    body .front-page .home-section-group--two > .catalogue-preview,
+    body .front-page .home-section-group--three > .b2b-cta {
+        background-size: 570px auto, 1100px auto, cover, cover;
+        background-position: right -215px top -60px, center bottom -100px, center, center;
+    }
+
+    body .front-page .home-section-group--one > .finder-preview,
+    body .front-page .home-section-group--three > .store-preview {
+        background-size: 1100px auto, 540px auto, cover, cover;
+        background-position: left -410px bottom -120px, right -245px top -20px, center, center;
+    }
+}
+
+@media (max-width: 600px) {
+    body .front-page .home-section-group--one > .product-categories,
+    body .front-page .home-section-group--two > .catalogue-preview,
+    body .front-page .home-section-group--three > .b2b-cta {
+        background-size: 440px auto, 840px auto, cover, cover;
+        background-position: right -240px top 25px, right -390px bottom -125px, center, center;
+    }
+
+    body .front-page .home-section-group--one > .finder-preview,
+    body .front-page .home-section-group--three > .store-preview {
+        background-size: 840px auto, 410px auto, cover, cover;
+        background-position: left -475px bottom -140px, right -240px top 15px, center, center;
+    }
+}
