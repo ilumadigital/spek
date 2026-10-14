@@ -161,9 +161,9 @@ function spek_render_partner_data_metabox($post): void
 
 /**
  * Extract embedded coordinates from a Google Maps URL, without API calls.
- * Prefer /@latitude,longitude exactly as requested for the SPEK workflow.
- * This is normally the map camera position (not necessarily the store pin).
- * Fallback: actual POI /!3d...!4d..., then explicit query coordinates.
+ * Prefer the actual POI position /!3dlatitude!4dlongitude.
+ * Only use /@latitude,longitude when the POI position is unavailable,
+ * and flag that lower-confidence camera-centre fallback for review.
  */
 function spek_extract_lat_lng_from_maps_url(string $url): array
 {
@@ -176,9 +176,9 @@ function spek_extract_lat_lng_from_maps_url(string $url): array
     }
     $number = '(-?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+))';
     $patterns = [
-        'map_center' => '~@' . $number . ',' . $number . '(?=,|/|\?|&|$)~i',
         'place' => '~!3d' . $number . '!4d' . $number . '~i',
         'query' => '~[?&](?:q|query|ll|destination)=' . $number . ',\s*' . $number . '(?=&|$)~i',
+        'map_center' => '~@' . $number . ',' . $number . '(?=,|/|\?|&|$)~i',
     ];
     foreach ($patterns as $source => $pattern) {
         if (!preg_match($pattern, $decoded_url, $matches)) {
