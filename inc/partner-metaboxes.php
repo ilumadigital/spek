@@ -160,57 +160,76 @@ function spek_render_partner_data_metabox($post): void
 }
 
 /**
- * Extract latitude / longitude from a Google Maps URL.
- *
- * Supports URLs containing:
- * - @37.983810,23.727539
- * - !3d37.983810!4d23.727539
- * - query=37.983810,23.727539
- * - q=37.983810,23.727539
- * - ll=37.983810,23.727539
+ * Extract embedded coordinates from a Google Maps URL, without API calls.
+ * Prefer /@latitude,longitude exactly as requested for the SPEK workflow.
+ * This is normally the map camera position (not necessarily the store pin).
+ * Fallback: actual POI /!3d...!4d..., then explicit query coordinates.
  */
 function spek_extract_lat_lng_from_maps_url(string $url): array
 {
     if ($url === '') {
         return [];
     }
-
     $decoded_url = $url;
-
     for ($i = 0; $i < 3; $i++) {
         $decoded_url = rawurldecode($decoded_url);
     }
-
+    $number = '(-?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+))';
     $patterns = [
-        // Πρώτη προτεραιότητα: πραγματικές coordinates του place/POI.
-        '/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/',
-    
-        // Coordinates που έχουν δοθεί ρητά ως destination/query.
-        '/[?&](?:q|query|ll|destination)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/',
-    
-        // Do NOT use /@lat,lng here: it is often the camera center, not the shop pin.
+        'map_center' => '~@' . $number . ',' . $number . '(?=,|/|\?|&|$)~i',
+        'place' => '~!3d' . $number . '!4d' . $number . '~i',
+        'query' => '~[?&](?:q|query|ll|destination)=' . $number . ',\s*' . $number . '(?=&|$)~i',
     ];
-
-    foreach ($patterns as $pattern) {
-        if (preg_match($pattern, $decoded_url, $matches)) {
-            $latitude  = (float) $matches[1];
-            $longitude = (float) $matches[2];
-
-            if (
-                $latitude >= -90 &&
-                $latitude <= 90 &&
-                $longitude >= -180 &&
-                $longitude <= 180
-            ) {
-                return [
-                    'latitude'  => (string) $latitude,
-                    'longitude' => (string) $longitude,
-                ];
-            }
+    foreach ($patterns as $source => $pattern) {
+        if (!preg_match($pattern, $decoded_url, $matches)) {
+            continue;
         }
+        $lat = (float) $matches[1];
+        $lng = (float) $matches[2];
+        if (!is_finite($lat) || !is_finite($lng)
+            || $lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) {
+            continue;
+        }
+        return [
+            'latitude' => (string) $matches[1],
+            'longitude' => (string) $matches[2],
+            'source' => $source,
+        ];
     }
-
     return [];
+}
+
+/**
+ * Store coordinates from a pasted Maps URL, with a country plausibility check.
+ * Never rewrite existing manual coordinates unless the URL changed.
+ */
+function spek_partner_save_coords_from_maps_url(int $post_id, string $maps_url, bool $force = false): bool
+{
+    $parsed = spek_extract_lat_lng_from_maps_url($maps_url);
+    if (!$parsed) {
+        return false;
+    }
+    if (function_exists('spek_partner_import_coords_plausible')
+        && !spek_partner_import_coords_plausible([
+            'postcode' => (string) get_post_meta($post_id, 'partner_postcode', true),
+        ], $parsed)) {
+        update_post_meta($post_id, '_spek_partner_pin_needs_review', '1');
+        return false;
+    }
+    $lat = (string) get_post_meta($post_id, 'partner_latitude', true);
+    $lng = (string) get_post_meta($post_id, 'partner_longitude', true);
+    if (!$force && $lat !== '' && $lng !== '') {
+        return false;
+    }
+    update_post_meta($post_id, 'partner_latitude', $parsed['latitude']);
+    update_post_meta($post_id, 'partner_longitude', $parsed['longitude']);
+    update_post_meta($post_id, '_spek_partner_coords_source', $parsed['source']);
+    if ($parsed['source'] === 'map_center') {
+        update_post_meta($post_id, '_spek_partner_pin_needs_review', '1');
+    } else {
+        delete_post_meta($post_id, '_spek_partner_pin_needs_review');
+    }
+    return true;
 }
 
 /**
@@ -263,6 +282,7 @@ function spek_save_partner_data($post_id): void
     }
 
     $maps_url = '';
+    $existing_maps_url = (string) get_post_meta($post_id, 'partner_maps_url', true);
 
     if (isset($_POST['partner_website'])) {
         update_post_meta(
@@ -288,31 +308,49 @@ function spek_save_partner_data($post_id): void
         }
     }
 
-    $coordinates = spek_extract_lat_lng_from_maps_url($maps_url);
-
-    if (!empty($coordinates)) {
-        update_post_meta($post_id, 'partner_latitude', sanitize_text_field($coordinates['latitude']));
-        update_post_meta($post_id, 'partner_longitude', sanitize_text_field($coordinates['longitude']));
-    } else {
-        if (isset($_POST['partner_latitude'])) {
-            update_post_meta(
-                $post_id,
-                'partner_latitude',
-                sanitize_text_field(wp_unslash($_POST['partner_latitude']))
-            );
-        }
-
-        if (isset($_POST['partner_longitude'])) {
-            update_post_meta(
-                $post_id,
-                'partner_longitude',
-                sanitize_text_field(wp_unslash($_POST['partner_longitude']))
-            );
+    // A changed Google Maps URL gets its embedded coordinates automatically.
+    // Unchanged URLs will fill missing coordinates but preserve manual pins.
+    $url_changed = $maps_url !== '' && $maps_url !== $existing_maps_url;
+    $autofilled = $maps_url !== '' && spek_partner_save_coords_from_maps_url(
+        (int) $post_id,
+        $maps_url,
+        $url_changed
+    );
+    if (!$autofilled && (!$url_changed || !spek_extract_lat_lng_from_maps_url($maps_url))) {
+        // Explicitly edited coordinates are still supported, especially for
+        // short links without embedded coordinates.
+        foreach (['partner_latitude', 'partner_longitude'] as $field) {
+            if (isset($_POST[$field])) {
+                update_post_meta(
+                    $post_id,
+                    $field,
+                    sanitize_text_field(wp_unslash((string) $_POST[$field]))
+                );
+            }
         }
     }
+
 }
 
 add_action('save_post_spek_partner', 'spek_save_partner_data');
+
+/** Live coordinate extraction in the normal WordPress partner editor. */
+function spek_enqueue_partner_coordinate_autofill(string $hook): void
+{
+    $screen = get_current_screen();
+    if (!$screen || $screen->post_type !== 'spek_partner' || $screen->base !== 'post') {
+        return;
+    }
+    wp_enqueue_script(
+        'spek-partner-coordinates',
+        SPEK_THEME_URI . '/assets/js/partner-coordinates.js',
+        [],
+        filemtime(SPEK_THEME_DIR . '/assets/js/partner-coordinates.js'),
+        true
+    );
+}
+add_action('admin_enqueue_scripts', 'spek_enqueue_partner_coordinate_autofill');
+
 
 /**
  * Partner admin columns.
