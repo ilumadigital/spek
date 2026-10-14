@@ -545,6 +545,11 @@ function spek_partner_review_quick_approve(): void
             $proposal !== '' && $existing_url !== $url
         );
     }
+    // If this partner still has historical /@ coordinates for the same URL,
+    // correct them to the actual POI in this very approval request.
+    if (function_exists('spek_partner_coord_repair_one')) {
+        spek_partner_coord_repair_one($post_id);
+    }
     if ($proposal !== '' && $existing_url !== $url
         && spek_partner_review_has_coordinates($post_id)) {
         update_post_meta($post_id, '_spek_partner_pin_needs_review', '1');
@@ -1067,7 +1072,7 @@ function spek_partner_review_render_page(): void
                             <?php if ($google_note !== '' && $status === 'pending') : ?><p class="spek-review-note"><?php echo esc_html($google_note); ?></p><?php endif; ?>
                             <?php if ($pin_needs_review) : ?><p class="spek-review-note"><?php echo esc_html(
                                 (string) get_post_meta($id, '_spek_partner_coords_source', true) === 'map_center'
-                                    ? 'Οι συντεταγμένες προήλθαν από το @ (κέντρο προβολής Google Maps). Επιβεβαίωσε ότι το σημείο αντιστοιχεί στο κατάστημα.'
+                                    ? 'Οι συντεταγμένες προήλθαν μόνο από το @ (κέντρο προβολής). Αν υπάρχει !3d…!4d στο URL, θα χρησιμοποιηθεί αυτόματα το ακριβές pin.'
                                     : 'Το σημείο απαιτεί επιβεβαίωση. Έλεγξε το Google Maps URL και τις συντεταγμένες του συνεργάτη.'
                             ); ?></p><?php endif; ?>
                             <?php if ($status === 'missing') : ?>
@@ -1094,7 +1099,7 @@ function spek_partner_review_render_page(): void
                                         <input type="hidden" name="return_url" value="<?php echo esc_url($return_url); ?>">
                                         <?php wp_nonce_field('spek_partner_review_quick_' . $id); ?>
                                         <button type="submit" class="button button-primary spek-review-card__approve"
-                                                onclick="return window.confirm('Επιβεβαιώνεις ότι έλεγξες τη συγκεκριμένη τοποθεσία Google Maps; Αν το link περιέχει @, θα συμπληρωθούν αυτόματα οι συντεταγμένες από το κέντρο προβολής.');">
+                                                onclick="return window.confirm('Επιβεβαιώνεις την τοποθεσία Google Maps; Χρησιμοποιείται πρώτα το ακριβές pin !3d/!4d και μόνο εναλλακτικά το κέντρο @.');">
                                             ✓ Άμεση έγκριση
                                         </button>
                                     </form>
@@ -1147,7 +1152,7 @@ function spek_partner_review_render_page(): void
                                     <input type="<?php echo $name === 'partner_email' ? 'email' : 'text'; ?>" name="<?php echo esc_attr($name); ?>" value="<?php echo esc_attr((string) $field[1]); ?>">
                                 </label>
                             <?php endforeach; ?>
-                            <p class="spek-review-note">Επικόλλησε πλήρες Google Maps URL: τα πεδία Latitude και Longitude συμπληρώνονται αυτόματα από το @. Προσοχή: το @ είναι το κέντρο προβολής του χάρτη, όχι απαραίτητα το ακριβές pin καταστήματος.</p>
+                            <p class="spek-review-note">Επικόλλησε πλήρες Google Maps URL: Latitude και Longitude συμπληρώνονται αυτόματα από το ακριβές pin (!3d…!4d). Το @ χρησιμοποιείται μόνο όταν λείπει το pin και χρειάζεται επιβεβαίωση.</p>
                             <div class="spek-review-actions">
                                 <button type="submit" name="review_action" value="save" class="button">Αποθήκευση αλλαγών</button>
                                 <button type="submit" name="review_action" value="approve" class="button button-primary">Έγκριση</button>
