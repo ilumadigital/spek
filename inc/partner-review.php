@@ -145,6 +145,13 @@ function spek_partner_review_admin_styles(string $hook): void
         filemtime(SPEK_THEME_DIR . '/assets/js/partner-review-bulk.js'),
         true
     );
+    wp_enqueue_script(
+        'spek-partner-coordinates',
+        SPEK_THEME_URI . '/assets/js/partner-coordinates.js',
+        [],
+        filemtime(SPEK_THEME_DIR . '/assets/js/partner-coordinates.js'),
+        true
+    );
     wp_localize_script('spek-partner-review-bulk', 'spekPartnerReviewConfig', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('spek_partner_review_recheck'),
@@ -179,6 +186,26 @@ function spek_partner_review_handle_action(): void
         }
 
         if ($action !== 'reject') {
+            // If the admin pasted a Google URL, fill latitude / longitude
+            // from the @ map-centre pair before validating/saving the form.
+            $incoming_maps_url = trim((string) wp_unslash($_POST['partner_maps_url'] ?? ''));
+            $previous_maps_url = (string) get_post_meta($id, 'partner_maps_url', true);
+            $autocoords = function_exists('spek_extract_lat_lng_from_maps_url')
+                ? spek_extract_lat_lng_from_maps_url($incoming_maps_url) : [];
+            $url_coords_applied = false;
+            $posted_lat = trim((string) wp_unslash($_POST['partner_latitude'] ?? ''));
+            $posted_lng = trim((string) wp_unslash($_POST['partner_longitude'] ?? ''));
+            $url_changed = $incoming_maps_url !== '' && $incoming_maps_url !== $previous_maps_url;
+            if ($autocoords && ($url_changed || ($posted_lat === '' && $posted_lng === ''))
+                && (!function_exists('spek_partner_import_coords_plausible')
+                    || spek_partner_import_coords_plausible([
+                        'postcode' => sanitize_text_field(wp_unslash((string) ($_POST['partner_postcode'] ?? ''))),
+                    ], $autocoords))) {
+                $_POST['partner_latitude'] = $autocoords['latitude'];
+                $_POST['partner_longitude'] = $autocoords['longitude'];
+                $url_coords_applied = true;
+            }
+
             // Validate everything before touching the live partner record.
             $name = trim(sanitize_text_field(wp_unslash((string) ($_POST['partner_name'] ?? ''))));
             if ($name === '') {
@@ -236,8 +263,15 @@ function spek_partner_review_handle_action(): void
                 update_post_meta($id, $field, $value);
             }
             update_post_meta($id, 'partner_maps_url', $maps_url);
-            // A corrected set of coordinates can resolve an old suspect-pin warning.
-            if (spek_partner_review_has_coordinates($id)) {
+            if ($url_coords_applied) {
+                update_post_meta($id, '_spek_partner_coords_source', (string) ($autocoords['source'] ?? ''));
+                if (($autocoords['source'] ?? '') === 'map_center') {
+                    // The @ camera location was used; confirmation is still needed.
+                    update_post_meta($id, '_spek_partner_pin_needs_review', '1');
+                } else {
+                    delete_post_meta($id, '_spek_partner_pin_needs_review');
+                }
+            } elseif (spek_partner_review_has_coordinates($id)) {
                 delete_post_meta($id, '_spek_partner_pin_needs_review');
             }
 
@@ -490,6 +524,16 @@ function spek_partner_review_quick_approve(): void
     update_post_meta($post_id, '_spek_partner_review_accepted_url', $url);
     update_post_meta($post_id, '_spek_partner_google_match_status', 'approved');
     update_post_meta($post_id, '_spek_partner_review_resolution', 'approved');
+
+    // A reviewed/pasted full Google Maps URL can also populate the pin.
+    // Extracting @ requires no external Google API call.
+    if (function_exists('spek_partner_save_coords_from_maps_url')) {
+        spek_partner_save_coords_from_maps_url(
+            $post_id,
+            $url,
+            $proposal !== '' && $existing_url !== $url
+        );
+    }
     if ($proposal !== '' && $existing_url !== $url
         && spek_partner_review_has_coordinates($post_id)) {
         update_post_meta($post_id, '_spek_partner_pin_needs_review', '1');
@@ -994,7 +1038,11 @@ function spek_partner_review_render_page(): void
                                 <?php if ($google_score !== '') : ?> · <?php echo esc_html($google_score); ?>% βεβαιότητα<?php endif; ?></p>
                             <?php endif; ?>
                             <?php if ($google_note !== '' && $status === 'pending') : ?><p class="spek-review-note"><?php echo esc_html($google_note); ?></p><?php endif; ?>
-                            <?php if ($pin_needs_review) : ?><p class="spek-review-note">Το Google Maps URL άλλαξε, αλλά το pin διατηρήθηκε. Επιβεβαίωσε τις συντεταγμένες του συνεργάτη.</p><?php endif; ?>
+                            <?php if ($pin_needs_review) : ?><p class="spek-review-note"><?php echo esc_html(
+                                (string) get_post_meta($id, '_spek_partner_coords_source', true) === 'map_center'
+                                    ? 'Οι συντεταγμένες προήλθαν από το @ (κέντρο προβολής Google Maps). Επιβεβαίωσε ότι το σημείο αντιστοιχεί στο κατάστημα.'
+                                    : 'Το σημείο απαιτεί επιβεβαίωση. Έλεγξε το Google Maps URL και τις συντεταγμένες του συνεργάτη.'
+                            ); ?></p><?php endif; ?>
                             <?php if ($status === 'missing') : ?>
                                 <?php
                                 $stored_lat = (string) get_post_meta($id, 'partner_latitude', true);
@@ -1019,7 +1067,7 @@ function spek_partner_review_render_page(): void
                                         <input type="hidden" name="return_url" value="<?php echo esc_url($return_url); ?>">
                                         <?php wp_nonce_field('spek_partner_review_quick_' . $id); ?>
                                         <button type="submit" class="button button-primary spek-review-card__approve"
-                                                onclick="return window.confirm('Επιβεβαιώνεις ότι έλεγξες τη συγκεκριμένη τοποθεσία στο Google Maps; Η έγκριση δεν αλλάζει τις συντεταγμένες του pin.');">
+                                                onclick="return window.confirm('Επιβεβαιώνεις ότι έλεγξες τη συγκεκριμένη τοποθεσία Google Maps; Αν το link περιέχει @, θα συμπληρωθούν αυτόματα οι συντεταγμένες από το κέντρο προβολής.');">
                                             ✓ Άμεση έγκριση
                                         </button>
                                     </form>
@@ -1072,7 +1120,7 @@ function spek_partner_review_render_page(): void
                                     <input type="<?php echo $name === 'partner_email' ? 'email' : 'text'; ?>" name="<?php echo esc_attr($name); ?>" value="<?php echo esc_attr((string) $field[1]); ?>">
                                 </label>
                             <?php endforeach; ?>
-                            <p class="spek-review-note">Το Google Maps URL δεν αλλάζει μόνο του τις συντεταγμένες του pin. Έλεγξε τις Latitude/Longitude πριν την τελική επιβεβαίωση.</p>
+                            <p class="spek-review-note">Επικόλλησε πλήρες Google Maps URL: τα πεδία Latitude και Longitude συμπληρώνονται αυτόματα από το @. Προσοχή: το @ είναι το κέντρο προβολής του χάρτη, όχι απαραίτητα το ακριβές pin καταστήματος.</p>
                             <div class="spek-review-actions">
                                 <button type="submit" name="review_action" value="save" class="button">Αποθήκευση αλλαγών</button>
                                 <button type="submit" name="review_action" value="approve" class="button button-primary">Έγκριση</button>
