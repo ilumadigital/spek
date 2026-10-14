@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 640" fill="none">
+<defs>
+ <linearGradient id="stream" x1="0" y1="340" x2="1600" y2="340" gradientUnits="userSpaceOnUse">
+  <stop stop-color="#D8F3FD" stop-opacity="0"/>
+  <stop offset=".20" stop-color="#A3D8F0" stop-opacity=".28"/>
+  <stop offset=".52" stop-color="#6BB5DC" stop-opacity=".31"/>
+  <stop offset=".78" stop-color="#B6E3F5" stop-opacity=".19"/>
+  <stop offset="1" stop-color="#E7F8FF" stop-opacity="0"/>
+ </linearGradient>
+ <linearGradient id="rim" x1="0" y1="200" x2="1600" y2="540" gradientUnits="userSpaceOnUse">
+  <stop stop-color="#59A8D4" stop-opacity="0"/>
+  <stop offset=".20" stop-color="#4F9ECB" stop-opacity=".35"/>
+  <stop offset=".62" stop-color="#1680BF" stop-opacity=".30"/>
+  <stop offset="1" stop-color="#80C9E9" stop-opacity="0"/>
+ </linearGradient>
+ <linearGradient id="shine" x1="0" y1="160" x2="1600" y2="570" gradientUnits="userSpaceOnUse">
+  <stop stop-color="#FFFFFF" stop-opacity="0"/>
+  <stop offset=".44" stop-color="#FFFFFF" stop-opacity=".72"/>
+  <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+ </linearGradient>
+</defs>
+<path d="M-110 470C115 282 305 559 546 378S900 202 1094 334s352 187 624-51" stroke="url(#stream)" stroke-width="185" stroke-linecap="round"/>
+<path d="M-100 435C127 247 324 524 552 349s345-173 542-51 347 174 619-50" stroke="url(#rim)" stroke-width="3"/>
+<path d="M-100 463C127 275 324 552 552 377s345-173 542-51 347 174 619-50" stroke="url(#rim)" stroke-width="1.6"/>
+<path d="M-100 494C127 306 324 583 552 408s345-173 542-51 347 174 619-50" stroke="#70B9DF" stroke-opacity=".28" stroke-width="1.2"/>
+<path d="M-100 410C127 222 324 499 552 324s345-173 542-51 347 174 619-50" stroke="url(#shine)" stroke-width="14"/>
+<path d="M-70 540C187 390 308 608 553 451s373-176 553-57 355 134 590-42" stroke="#9DD3EB" stroke-opacity=".16" stroke-width="46" stroke-linecap="round"/>
+<path d="M-80 550C177 400 298 618 543 461s373-176 553-57 355 134 590-42" stroke="#4D9AC9" stroke-opacity=".24" stroke-width="1.7"/>
+<g stroke="#62AFD8" stroke-opacity=".16" stroke-width="1.5">
+ <ellipse cx="269" cy="304" rx="150" ry="33" transform="rotate(-13 269 304)"/>
+ <ellipse cx="269" cy="304" rx="198" ry="47" transform="rotate(-13 269 304)"/>
+ <ellipse cx="1273" cy="247" rx="132" ry="25" transform="rotate(12 1273 247)"/>
+</g>
+</svg>
