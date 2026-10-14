@@ -88,16 +88,34 @@
         const postcode = String(card.dataset.postcode || '').replace(/\s+/g, '');
         let lat = Number.parseFloat(card.dataset.lat || '');
         let lng = Number.parseFloat(card.dataset.lng || '');
-        if (!validCoordinate(lat, lng)) {
-            const url = card.dataset.mapsUrl || '';
-            // Google /@ coordinates are a camera position and are intentionally ignored.
-            let found = url.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);
-            if (!found) {
-                found = url.match(/[?&](?:q|query|ll|destination)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
+        let url = card.dataset.mapsUrl || '';
+        try { url = decodeURIComponent(url); } catch (ignored) { /* keep raw URL */ }
+        const place = url.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);
+        const center = url.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)(?=,|\/|\?|&|$)/);
+        const coordsNear = function (one, two) {
+            return Number.isFinite(one) && Number.isFinite(two) && Math.abs(one - two) <= 0.000001;
+        };
+
+        // Immediately display the actual Google place pin for legacy records
+        // whose saved coordinates still equal the old /@ camera location.
+        // Manually changed coordinates that differ from /@ remain untouched.
+        if (place) {
+            const placeLat = Number.parseFloat(place[1]);
+            const placeLng = Number.parseFloat(place[2]);
+            const storedAtCamera = center
+                && coordsNear(lat, Number.parseFloat(center[1]))
+                && coordsNear(lng, Number.parseFloat(center[2]));
+            if ((!validCoordinate(lat, lng) || storedAtCamera)
+                && validCoordinate(placeLat, placeLng)) {
+                lat = placeLat;
+                lng = placeLng;
             }
-            if (found) {
-                lat = Number.parseFloat(found[1]);
-                lng = Number.parseFloat(found[2]);
+        }
+        if (!validCoordinate(lat, lng)) {
+            const query = url.match(/[?&](?:q|query|ll|destination)=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
+            if (query) {
+                lat = Number.parseFloat(query[1]);
+                lng = Number.parseFloat(query[2]);
             }
         }
         const globallyValid = validCoordinate(lat, lng);
