@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 4800" preserveAspectRatio="none" fill="none">
+  <!-- One continuous background for the entire homepage, not individual sections. -->
+  <defs>
+    <linearGradient id="waterRibbon" x1="-80" y1="0" x2="1660" y2="4800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D0EFFA" stop-opacity=".01"/>
+      <stop offset=".15" stop-color="#80C7E8" stop-opacity=".20"/>
+      <stop offset=".46" stop-color="#58B0DA" stop-opacity=".17"/>
+      <stop offset=".74" stop-color="#95D4EE" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#CBEFFA" stop-opacity=".03"/>
+    </linearGradient>
+    <linearGradient id="ribbonLine" x1="100" y1="800" x2="1500" y2="4200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#337EA9" stop-opacity="0"/>
+      <stop offset=".18" stop-color="#64ADD2" stop-opacity=".30"/>
+      <stop offset=".54" stop-color="#347FAF" stop-opacity=".28"/>
+      <stop offset=".83" stop-color="#78C4E4" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#78C4E4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="droplet" x1="-30" y1="-49" x2="36" y2="43" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity=".88"/>
+      <stop offset=".4" stop-color="#D1EFFB" stop-opacity=".43"/>
+      <stop offset="1" stop-color="#519FC9" stop-opacity=".24"/>
+    </linearGradient>
+    <radialGradient id="mist">
+      <stop stop-color="#C1E6F8" stop-opacity=".26"/>
+      <stop offset=".6" stop-color="#C1E6F8" stop-opacity=".10"/>
+      <stop offset="1" stop-color="#C1E6F8" stop-opacity="0"/>
+    </radialGradient>
+    <g id="drop">
+      <path d="M0-47C-10-29-36-7-36 13a36 36 0 0 0 72 0C36-7 10-29 0-47Z" fill="url(#droplet)" stroke="#77BADA" stroke-opacity=".33" stroke-width="1.2"/>
+      <path d="M-21 11c2-13 11-24 17-31" stroke="#fff" stroke-opacity=".74" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <!-- Pale aquatic glow moves through the page as one vertical canvas. -->
+  <ellipse cx="1340" cy="490" rx="450" ry="700" fill="url(#mist)"/>
+  <ellipse cx="165" cy="1640" rx="510" ry="740" fill="url(#mist)"/>
+  <ellipse cx="1380" cy="2800" rx="520" ry="820" fill="url(#mist)"/>
+  <ellipse cx="310" cy="4100" rx="485" ry="710" fill="url(#mist)"/>
+
+  <!-- A flowing path connects the top, middle and end of the homepage. -->
+  <path id="waterPath" d="M-240 445 C210 120 350 1000 788 772 S1485 435 1815 1260 S1110 2070 780 1745 S35 1760 -190 2380 S425 3445 975 3025 S1670 3295 1785 3935 S1055 4655 500 4430" stroke="url(#waterRibbon)" stroke-width="240" stroke-linecap="round"/>
+  <path d="M-240 363 C210 38 350 918 788 690 S1485 353 1815 1178 S1110 1988 780 1663 S35 1678 -190 2298 S425 3363 975 2943 S1670 3213 1785 3853 S1055 4573 500 4348" stroke="url(#ribbonLine)" stroke-width="3"/>
+  <path d="M-240 395 C210 70 350 950 788 722 S1485 385 1815 1210 S1110 2020 780 1695 S35 1710 -190 2330 S425 3395 975 2975 S1670 3245 1785 3885 S1055 4605 500 4380" stroke="#FFFFFF" stroke-opacity=".50" stroke-width="12"/>
+  <path d="M-240 494 C210 169 350 1049 788 821 S1485 484 1815 1309 S1110 2119 780 1794 S35 1809 -190 2429 S425 3494 975 3074 S1670 3344 1785 3984 S1055 4704 500 4479" stroke="url(#ribbonLine)" stroke-width="2.2"/>
+
+  <!-- Sparse ripples and water drops sit mainly in the open margins. -->
+  <g stroke="#4F9BC5" stroke-opacity=".19" stroke-width="2">
+    <ellipse cx="1390" cy="580" rx="126" ry="27" transform="rotate(-9 1390 580)"/>
+    <ellipse cx="1390" cy="580" rx="186" ry="42" transform="rotate(-9 1390 580)"/>
+    <ellipse cx="200" cy="1690" rx="143" ry="33" transform="rotate(10 200 1690)"/>
+    <ellipse cx="200" cy="1690" rx="210" ry="51" transform="rotate(10 200 1690)"/>
+    <ellipse cx="1410" cy="3000" rx="120" ry="27" transform="rotate(-7 1410 3000)"/>
+    <ellipse cx="1410" cy="3000" rx="185" ry="44" transform="rotate(-7 1410 3000)"/>
+    <ellipse cx="242" cy="4190" rx="130" ry="31" transform="rotate(12 242 4190)"/>
+    <ellipse cx="242" cy="4190" rx="190" ry="47" transform="rotate(12 242 4190)"/>
+  </g>
+  <g opacity=".84">
+    <use href="#drop" transform="translate(1402 510) scale(1.30)"/>
+    <use href="#drop" transform="translate(1189 830) scale(.47) rotate(13)"/>
+    <use href="#drop" transform="translate(112 1020) scale(.56) rotate(-9)"/>
+    <use href="#drop" transform="translate(220 1615) scale(1.23) rotate(-9)"/>
+    <use href="#drop" transform="translate(80 1950) scale(.51)"/>
+    <use href="#drop" transform="translate(1480 2310) scale(.78) rotate(10)"/>
+    <use href="#drop" transform="translate(1390 2940) scale(1.17) rotate(8)"/>
+    <use href="#drop" transform="translate(1250 3250) scale(.38)"/>
+    <use href="#drop" transform="translate(105 3600) scale(.65) rotate(-14)"/>
+    <use href="#drop" transform="translate(240 4115) scale(1.26) rotate(-10)"/>
+    <use href="#drop" transform="translate(1525 4390) scale(.43) rotate(16)"/>
+  </g>
+  <g fill="#82BDDB" opacity=".23">
+    <circle cx="1050" cy="680" r="6"/>
+    <circle cx="1550" cy="1160" r="5"/>
+    <circle cx="88" cy="1465" r="7"/>
+    <circle cx="355" cy="2035" r="3"/>
+    <circle cx="1430" cy="2525" r="7"/>
+    <circle cx="1160" cy="3165" r="5"/>
+    <circle cx="90" cy="3850" r="5"/>
+    <circle cx="380" cy="4440" r="4"/>
+  </g>
+</svg>
