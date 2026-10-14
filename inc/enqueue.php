@@ -138,6 +138,17 @@ function spek_enqueue_assets(): void
             ['spek-home-client-refresh'],
             filemtime(SPEK_THEME_DIR . '/assets/css/why-spek-flow.css')
         );
+
+        // Only homepage requests get the additional water / droplet backgrounds.
+        // Company keeps its existing shared SPEK values section unchanged.
+        if (is_front_page() || (function_exists('spek_is_english_home_request') && spek_is_english_home_request())) {
+            wp_enqueue_style(
+                'spek-home-water-background',
+                SPEK_THEME_URI . '/assets/css/home-water-background.css',
+                ['spek-why-spek-flow'],
+                filemtime(SPEK_THEME_DIR . '/assets/css/home-water-background.css')
+            );
+        }
     }
 
     wp_enqueue_script(
