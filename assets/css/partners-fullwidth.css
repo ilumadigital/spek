@@ -208,3 +208,32 @@ body.page-template-template-partners .partners-page .partners-map__helper {
         padding: 10px;
     }
 }
+
+/* The list and map are one geographic view; show distance consistently. */
+body.page-template-template-partners .partners-page .partner-card__distance {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 28px;
+    padding: 4px 10px;
+    border: 1px solid rgba(15,76,129,.20);
+    border-radius: 999px;
+    background: #eff6fb;
+    color: #0f4c81;
+    font-size: 12px;
+    font-weight: 750;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+body.page-template-template-partners .partners-page [data-partner-empty][hidden] {
+    display: none !important;
+}
+body.page-template-template-partners .partners-page [data-partner-empty]:not([hidden]) {
+    display: block;
+    flex: 0 0 auto;
+    padding: 25px 20px;
+    border: 1px dashed #d3e0ea;
+    border-radius: 18px;
+    background: #f7fafc;
+    color: #43596b;
+}
