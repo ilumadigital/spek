@@ -296,6 +296,9 @@
 
     function showPartners(matches, origin) {
         if (!map) { return; }
+        // Every new search starts from the closest visible result. Panning the
+        // map never resets scroll position, because it only calls syncVisibleCards.
+        if (resultsElement) { resultsElement.scrollTop = 0; }
         clearMarkers();
         lastOrigin = origin;
         activePartners = matches.filter(function (partner) {
