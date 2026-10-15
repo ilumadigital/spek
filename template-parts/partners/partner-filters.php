@@ -20,7 +20,7 @@ $published_count = (int) $partner_count->found_posts;
         <p>
             <?php
             printf(
-                esc_html__('Αναζήτηση ανά περιοχή ή ΤΚ σε %d καταχωρημένα σημεία.', 'spek-theme'),
+                esc_html__('Αναζήτηση ανά περιοχή, ΤΚ ή χώρα σε %d καταχωρημένα σημεία.', 'spek-theme'),
                 $published_count
             );
             ?>
@@ -29,7 +29,7 @@ $published_count = (int) $partner_count->found_posts;
 
     <div class="partner-locator__form">
         <div class="partner-locator__field partner-locator__field--search">
-            <label for="partner-location-search"><?php esc_html_e('Περιοχή ή ΤΚ', 'spek-theme'); ?></label>
+            <label for="partner-location-search"><?php esc_html_e('Περιοχή, ΤΚ ή χώρα', 'spek-theme'); ?></label>
             <input
                 id="partner-location-search"
                 type="search"
@@ -69,6 +69,6 @@ $published_count = (int) $partner_count->found_posts;
     </div>
 
     <p class="partner-locator__status" data-partner-status>
-        <?php esc_html_e('Συμπληρώστε περιοχή ή ΤΚ για να εμφανιστούν αποτελέσματα.', 'spek-theme'); ?>
+        <?php esc_html_e('Μετακινήστε τον χάρτη ή αναζητήστε περιοχή, ΤΚ ή χώρα.', 'spek-theme'); ?>
     </p>
 </div>
