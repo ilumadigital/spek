@@ -62,26 +62,7 @@
     const geocodeCache = new Map();
 
     function isGreekPostcode(query) {
-        return /^[0-9]{5}$/.test(String(query).trim());
-    }
-
-    // Let the listings keep working even if the optional Geocoding API is
-    // disabled or some partners have not yet been geocoded by the importer.
-    function localSearchOrigin(items, query) {
-        const normalized = norm(query);
-        const candidates = items.filter(function (partner) {
-            return partner.lat !== null && partner.lng !== null
-                && (isGreekPostcode(query)
-                    ? partner.postcode.replace(/\s/g, '') === String(query).trim()
-                    : norm(partner.area).includes(normalized));
-        });
-        if (!candidates.length) {
-            return null;
-        }
-        return {
-            lat: candidates.reduce(function (sum, partner) { return sum + partner.lat; }, 0) / candidates.length,
-            lng: candidates.reduce(function (sum, partner) { return sum + partner.lng; }, 0) / candidates.length
-        };
+        return /^[0-9]{5}$/.test(String(query).replace(/\s+/g, ''));
     }
 
     const partners = cards.map(function (card) {
@@ -307,7 +288,7 @@
         setStatus(lastOrigin
             ? 'Εμφανίζονται ' + shown.length + ' από ' + activePartners.length
                 + ' σημεία εντός ' + radiusKm()
-                + ' km από την αναζήτηση, με αύξουσα απόσταση.'
+                + ' km από την αναζήτηση, σε αύξουσα απόσταση ευθείας.'
                 + (statusDetail ? ' ' + statusDetail : '')
             : 'Εμφανίζονται ' + shown.length + ' συνεργάτες εντός της ορατής περιοχής του χάρτη.'
                 + (statusDetail ? ' ' + statusDetail : ''));
@@ -391,35 +372,10 @@
         syncVisibleCards();
     }
 
-    function unique(items) {
-        const ids = new Set();
-        return items.filter(function (partner) {
-            const identity = partner.id || partner.title;
-            if (ids.has(identity)) {
-                return false;
-            }
-            ids.add(identity);
-            return true;
-        });
-    }
-
     function isGreece(query) {
         return ['ελλαδα', 'ελλασ', 'greece', 'ellada'].includes(norm(query));
     }
 
-    function isForeign(partner) {
-        return ['romania', 'oradea', 'bihor', 'skopje', 'macedonia']
-            .some(function (word) {
-                return norm([partner.title, partner.address, partner.area].join(' ')).includes(word);
-            });
-    }
-
-    /**
-     * Geocode the user's geographic search origin. No name/text match is
-     * ever added to results outside the selected distance.
-     * Greek postcodes are constrained to Greece; other countries remain
-     * searchable (e.g. Romania, Cyprus) without forcing a Greece result.
-     */
     async function geocode(query) {
         geocodeFailure = '';
         const cacheKey = norm(query);
@@ -430,14 +386,15 @@
             const library = await google.maps.importLibrary('geocoding');
             const coder = new library.Geocoder();
             const postcode = isGreekPostcode(query);
+            const zip = postcode ? query.replace(/\s+/g, '') : '';
             const countryQuery = isGreece(query)
                 || /\b(?:greece|romania|cyprus|bulgaria|albania|italy|france|germany|turkey|north macedonia|serbia|uk|united kingdom)\b/i.test(query)
                 || /(?:ελλαδ|ρουμαν|κυπρ|βουλγαρ|αλβαν|ιταλ|γαλλ|γερμαν|τουρκ|σερβ|μακεδον)/i.test(query);
             const requests = postcode
                 ? [
-                    {address: query + ', Ελλάδα', region: 'gr',
+                    {address: zip + ', Ελλάδα', region: 'gr',
                         componentRestrictions: {country: 'GR'}},
-                    {address: query.slice(0, 3) + ' ' + query.slice(3) + ', Ελλάδα',
+                    {address: zip.slice(0, 3) + ' ' + zip.slice(3) + ', Ελλάδα',
                         region: 'gr', componentRestrictions: {country: 'GR'}}
                 ]
                 : countryQuery
