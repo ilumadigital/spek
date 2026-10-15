@@ -137,6 +137,14 @@
         return Number.isFinite(value) ? value : 10;
     }
 
+    function setRadiusAvailability(enabled) {
+        if (!radiusSelect) { return; }
+        radiusSelect.disabled = !enabled;
+        radiusSelect.title = enabled
+            ? ''
+            : 'Η αναζήτηση χώρας εμφανίζει όλους τους συνεργάτες χωρίς περιορισμό χιλιομέτρων.';
+    }
+
     function distanceKm(origin, partner) {
         if (!origin || partner.lat === null || partner.lng === null) {
             return Infinity;
@@ -588,6 +596,7 @@
         const query = searchInput ? searchInput.value.trim() : '';
         if (!query) {
             lastMode = 'all';
+            setRadiusAvailability(true);
             countryViewport = null;
             countryLabel = '';
             statusDetail = '';
@@ -595,6 +604,7 @@
             return;
         }
         lastMode = 'search';
+        setRadiusAvailability(true);
         countryViewport = null;
         countryLabel = '';
         setStatus('Εντοπίζεται το σημείο αναζήτησης...');
@@ -613,6 +623,7 @@
         }
         if (origin.countryCode) {
             lastMode = 'country';
+            setRadiusAvailability(false);
             countryLabel = origin.countryName || query;
             countryViewport = origin.viewport || null;
             setStatus('Εντοπίζονται όλα τα καταστήματα στη χώρα ' + countryLabel + '...');
@@ -646,6 +657,7 @@
             if (version !== searchVersion) { return; }
             const origin = {lat: position.coords.latitude, lng: position.coords.longitude};
             lastMode = 'location';
+            setRadiusAvailability(true);
             countryViewport = null;
             countryLabel = '';
             statusDetail = '';
@@ -849,6 +861,7 @@
                         searchInput.value = '';
                     }
                     lastMode = 'all';
+                    setRadiusAvailability(true);
                     countryViewport = null;
                     countryLabel = '';
                     statusDetail = '';
