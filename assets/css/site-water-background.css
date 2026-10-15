@@ -1,0 +1,113 @@
+/*
+ * SPEK — one continuous water background site-wide.
+ *
+ * The single SVG is painted once on #page (header + content + footer).
+ * No individual page/section loads its own copy of the artwork.
+ * Preserve all functional cards, forms, maps, product images and dark feature panels.
+ */
+
+body {
+    background-color: #f6fbfe;
+}
+
+#page.site {
+    min-height: 100vh;
+    background-color: #f6fbfe;
+    background-image:
+        url("../images/home-water-continuous.svg"),
+        linear-gradient(180deg, #fbfdff 0%, #f3f9fd 28%, #ffffff 52%, #f2f9fd 76%, #fafdff 100%);
+    background-position: center top, center top;
+    background-size: 100% 100%, 100% 100%;
+    background-repeat: no-repeat, no-repeat;
+}
+
+/* Main page surfaces must not cover the shared artwork. */
+#page.site > .site-main {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+/* Only full-width layout sections are cleared. Their nested content surfaces
+ * (filters, galleries, cards, forms, map, catalogue viewer) stay untouched. */
+#page.site > .site-main > .page-hero,
+#page.site > .site-main > .products-archive__hero,
+#page.site > .site-main > .products-listing,
+#page.site > .site-main > .cta-strip,
+#page.site > .site-main > .single-product-hero,
+#page.site > .site-main > .product-main-content,
+#page.site > .site-main > .catalogue-reader-hero,
+#page.site > .site-main > .catalogue-reader-section,
+#page.site > .site-main > .catalogues-library__hero,
+#page.site > .site-main > .catalogues-library__section,
+#page.site > .site-main > .company-hero,
+#page.site > .site-main > .company-intro,
+#page.site > .site-main > .company-history,
+#page.site > .site-main > .company-values,
+#page.site > .site-main > .company-quality,
+#page.site > .site-main > .company-global--premium,
+#page.site > .site-main > .company-details-section,
+#page.site > .site-main > .contact-hub-hero,
+#page.site > .site-main > .contact-form-section,
+#page.site > .site-main > .contact-careers-section,
+#page.site > .site-main > .careers-hero,
+#page.site > .site-main > .careers-positions-section,
+#page.site > .site-main > .careers-application-section,
+#page.site > .site-main > .finder-hero,
+#page.site > .site-main > .finder-app,
+#page.site > .site-main > .store-locator {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+/* Additional named page wrappers with their own opaque backgrounds. */
+#page.site .spek-company-page .company-intro,
+#page.site .spek-company-page .company-global.company-global--premium,
+#page.site .products-archive .products-listing,
+#page.site .products-archive .products-archive__hero,
+#page.site .products-archive > .cta-strip,
+#page.site .single-product-page .single-product-hero,
+#page.site .single-product-page .product-main-content,
+#page.site .careers-page .careers-hero,
+#page.site .contact-page .contact-careers-section,
+#page.site .product-finder-page .finder-app {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+/* The Why SPEK section is reused on Company; only its outer background
+ * is cleared. Keep the four values, card fills and connector intact. */
+#page.site .spek-company-page .company-why-spek-group {
+    border: 0;
+    background: transparent !important;
+    box-shadow: none;
+}
+#page.site .spek-company-page .company-why-spek-group > .why-spek--flow,
+#page.site .spek-company-page .why-spek--flow .why-spek__practical,
+#page.site .spek-company-page .why-spek--flow .why-spek__benefits {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+/* Homepage now uses the same site-wide canvas, not an additional main bg. */
+#page.site > .front-page {
+    background: transparent !important;
+    background-image: none !important;
+}
+#page.site > .front-page::before {
+    display: none;
+    content: none;
+}
+
+/* Footer keeps its legible panel but gently reveals the common water artwork.
+ * The opaque sticky navigation header is deliberately preserved. */
+#page.site > .site-footer {
+    background: rgba(255, 255, 255, .88);
+    background-image: none;
+}
+
+@media (max-width: 700px) {
+    #page.site {
+        background-position: center top, center top;
+        background-size: 130% 100%, 100% 100%;
+    }
+}
