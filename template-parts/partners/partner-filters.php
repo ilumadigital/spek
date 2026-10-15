@@ -34,7 +34,7 @@ $published_count = (int) $partner_count->found_posts;
                 id="partner-location-search"
                 type="search"
                 data-partner-search
-                placeholder="<?php esc_attr_e('π.χ. Αθήνα, Αγ. Δημήτριος, 12242', 'spek-theme'); ?>"
+                placeholder="<?php esc_attr_e('π.χ. Αθήνα, 12242, Ελλάδα, Ρουμανία', 'spek-theme'); ?>"
                 autocomplete="postal-code"
             >
         </div>
@@ -44,6 +44,7 @@ $published_count = (int) $partner_count->found_posts;
             <select id="partner-radius" data-partner-radius>
                 <option value="5">5 km</option>
                 <option value="10" selected>10 km</option>
+                <option value="20">20 km</option>
                 <option value="25">25 km</option>
                 <option value="50">50 km</option>
                 <option value="100">100 km</option>
