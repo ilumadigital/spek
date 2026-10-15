@@ -238,64 +238,125 @@
         }
     }
 
-    function showPartners(matches, origin) {
-        if (!map) {
-            return;
-        }
-        clearMarkers();
-        const bounds = new google.maps.LatLngBounds();
-        let points = 0;
-        const icon = pinSVG();
-        const visible = new Set(matches);
+
+    // The same set of points controls map pins and cards. Moving/zooming
+    // the map only filters the cards; no extra Google requests are made.
+    let activePartners = [];
+    let statusDetail = '';
+    let mapReady = false;
+
+    function syncVisibleCards() {
+        if (!map || !mapReady) { return; }
+        const bounds = typeof map.getBounds === 'function' ? map.getBounds() : null;
+        if (!bounds || typeof bounds.contains !== 'function') { return; }
+        const center = typeof map.getCenter === 'function' ? map.getCenter() : null;
+        const focus = lastOrigin || (center ? {
+            lat: typeof center.lat === 'function' ? center.lat() : center.lat,
+            lng: typeof center.lng === 'function' ? center.lng() : center.lng
+        } : initialCenter);
+        const shown = activePartners.filter(function (partner) {
+            return partner.lat !== null && partner.lng !== null
+                && bounds.contains({lat: partner.lat, lng: partner.lng})
+                && (!lastOrigin || distanceKm(lastOrigin, partner) <= radiusKm());
+        }).sort(function (a, b) {
+            return distanceKm(focus, a) - distanceKm(focus, b)
+                || a.title.localeCompare(b.title, 'el');
+        });
+
+        const visible = new Set(shown);
         partners.forEach(function (partner) {
             partner.card.classList.toggle('is-hidden', !visible.has(partner));
         });
+        if (resultsElement) {
+            const fragment = document.createDocumentFragment();
+            shown.forEach(function (partner) {
+                let badge = partner.card.querySelector('[data-partner-distance]');
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'partner-card__distance';
+                    badge.setAttribute('data-partner-distance', '');
+                    const header = partner.card.querySelector('.partner-card__header');
+                    if (header) { header.appendChild(badge); }
+                }
+                if (badge) {
+                    badge.textContent = distanceKm(focus, partner).toLocaleString('el-GR', {
+                        minimumFractionDigits: 1, maximumFractionDigits: 1
+                    }) + ' km';
+                    badge.title = lastOrigin
+                        ? 'Ευθεία απόσταση από το σημείο αναζήτησης'
+                        : 'Ευθεία απόσταση από το κέντρο του χάρτη';
+                }
+                fragment.appendChild(partner.card);
+            });
+            resultsElement.appendChild(fragment);
+        }
 
-        matches.forEach(function (partner) {
-            if (partner.lat === null || partner.lng === null) {
-                return;
+        if (emptyElement) {
+            emptyElement.hidden = shown.length !== 0;
+            if (!shown.length) {
+                const heading = emptyElement.querySelector('h3');
+                const description = emptyElement.querySelector('p');
+                if (heading) { heading.textContent = 'Δεν υπάρχουν συνεργάτες στην ορατή περιοχή'; }
+                if (description) {
+                    description.textContent = lastOrigin
+                        ? 'Δεν υπάρχουν καταστήματα που να βρίσκονται ταυτόχρονα εντός του χάρτη και της επιλεγμένης ακτίνας.'
+                        : 'Μετακινήστε τον χάρτη ή μειώστε το zoom για να εμφανιστούν καταστήματα.';
+                }
             }
-            const position = {lat: partner.lat, lng: partner.lng};
+        }
+        setStatus(lastOrigin
+            ? 'Εμφανίζονται ' + shown.length + ' από ' + activePartners.length
+                + ' σημεία εντός ' + radiusKm()
+                + ' km από την αναζήτηση, με αύξουσα απόσταση.'
+                + (statusDetail ? ' ' + statusDetail : '')
+            : 'Εμφανίζονται ' + shown.length + ' συνεργάτες εντός της ορατής περιοχής του χάρτη.'
+                + (statusDetail ? ' ' + statusDetail : ''));
+    }
+
+    function showPartners(matches, origin) {
+        if (!map) { return; }
+        clearMarkers();
+        lastOrigin = origin;
+        activePartners = matches.filter(function (partner) {
+            return partner.lat !== null && partner.lng !== null
+                && (!origin || distanceKm(origin, partner) <= radiusKm());
+        });
+        const icon = pinSVG();
+        activePartners.forEach(function (partner) {
             const marker = new google.maps.Marker({
-                position: position,
+                position: {lat: partner.lat, lng: partner.lng},
                 title: partner.title,
                 icon: icon
             });
             marker.addListener('click', function () { openPartner(partner, true); });
             partner.marker = marker;
             markers.push(marker);
-            bounds.extend(position);
-            points += 1;
         });
 
-        // Use the Google Maps open-source clusterer when available; gracefully
-        // fall back to individual markers if the CDN is blocked.
         if (window.markerClusterer && window.markerClusterer.MarkerClusterer) {
             try {
                 clusterer = new window.markerClusterer.MarkerClusterer({
-                map: map,
-                markers: markers,
-                renderer: {
-                    render: function (cluster) {
-                        const number = cluster.count;
-                        const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">'
-                            + '<circle cx="25" cy="25" r="24" fill="#0f4c81" stroke="#fff" stroke-width="3"/>'
-                            + '</svg>';
-                        return new google.maps.Marker({
-                            position: cluster.position,
-                            label: {text: String(number), color: '#ffffff', fontSize: '13px', fontWeight: '700'},
-                            icon: {
-                                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-                                scaledSize: new google.maps.Size(50, 50)
-                            },
-                            zIndex: 1000 + number
-                        });
+                    map: map,
+                    markers: markers,
+                    renderer: {
+                        render: function (cluster) {
+                            const count = cluster.count;
+                            const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">'
+                                + '<circle cx="25" cy="25" r="24" fill="#0f4c81" stroke="#fff" stroke-width="3"/></svg>';
+                            return new google.maps.Marker({
+                                position: cluster.position,
+                                label: {text: String(count), color: '#ffffff', fontSize: '13px', fontWeight: '700'},
+                                icon: {
+                                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+                                    scaledSize: new google.maps.Size(50, 50)
+                                },
+                                zIndex: 1000 + count
+                            });
+                        }
                     }
-                }
                 });
-            } catch (clusterError) {
-                // Never fail the entire map just because clustering is unavailable.
-                console.warn('SPEK: map clustering unavailable, using standard markers', clusterError);
+            } catch (error) {
+                console.warn('SPEK: marker clustering unavailable', error);
                 clusterer = null;
                 markers.forEach(function (marker) { marker.setMap(map); });
             }
@@ -315,50 +376,19 @@
                 fillOpacity: 0.08,
                 clickable: false
             });
-            bounds.extend(origin);
-        }
-        // Never auto-fit all published pins: one erroneous or international
-        // location previously zoomed the entire locator out to the world.
-        const fitSelection = !!origin || (matches.length > 0 && matches.length < partners.length);
-        if (fitSelection && (points > 1 || (points > 0 && origin))) {
-            map.fitBounds(bounds, 44);
-            google.maps.event.addListenerOnce(map, 'idle', function () {
-                if (map.getZoom() > 14) {
-                    map.setZoom(14);
-                }
-            });
-        } else if (fitSelection && points === 1) {
-            map.setCenter(bounds.getCenter());
-            map.setZoom(15);
-        } else if (origin) {
-            map.setCenter(origin);
-            map.setZoom(12);
+            const circleBounds = typeof radiusCircle.getBounds === 'function'
+                ? radiusCircle.getBounds() : null;
+            if (circleBounds) {
+                map.fitBounds(circleBounds, 36);
+            } else {
+                map.setCenter(origin);
+                map.setZoom(11);
+            }
         } else {
             map.setCenter(initialCenter);
             map.setZoom(initialZoom);
         }
-
-        if (emptyElement) {
-            emptyElement.hidden = matches.length > 0;
-            if (!matches.length) {
-                const heading = emptyElement.querySelector('h3');
-                const description = emptyElement.querySelector('p');
-                if (heading) {
-                    heading.textContent = text('Δεν βρέθηκαν συνεργάτες');
-                }
-                if (description) {
-                    description.textContent = text('Δοκιμάστε άλλη περιοχή ή μεγαλύτερη ακτίνα. Μπορείτε επίσης να πατήσετε Καθαρισμός για να δείτε όλους τους συνεργάτες.');
-                }
-            }
-        }
-        const missing = matches.length - points;
-        let message = text('Βρέθηκαν %s σημεία πώλησης.').replace('%s', matches.length);
-        if (missing > 0) {
-            message += ' ' + text('%s δεν έχουν συντεταγμένες και δεν φαίνονται στον χάρτη.').replace('%s', missing);
-        }
-        setStatus(message);
-        // The map container can change dimensions with responsive layouts.
-        google.maps.event.trigger(map, 'resize');
+        syncVisibleCards();
     }
 
     function unique(items) {
