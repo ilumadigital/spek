@@ -330,6 +330,8 @@ function spek_enqueue_assets(): void
             // API restrictions in Google Cloud, never put the server key here.
             wp_localize_script('spek-store-locator', 'spekMapConfig', [
                 'googleBrowserKey' => $google_browser_key,
+                // Loaded only on country searches, not on every map visit.
+                'countryBoundariesUrl' => SPEK_THEME_URI . '/assets/data/partner-country-boundaries.geojson',
             ]);
         } else {
             // Safe fallback until the website owner adds the new browser key.
