@@ -139,8 +139,8 @@ function spek_enqueue_assets(): void
             filemtime(SPEK_THEME_DIR . '/assets/css/why-spek-flow.css')
         );
 
-        // Only homepage requests get the additional water / droplet backgrounds.
-        // Company keeps its existing shared SPEK values section unchanged.
+        // Homepage section transparency: the artwork itself is shared site-wide.
+        // Company retains the same values component without duplicate decorations.
         if (is_front_page() || (function_exists('spek_is_english_home_request') && spek_is_english_home_request())) {
             wp_enqueue_style(
                 'spek-home-water-background',
@@ -367,6 +367,15 @@ function spek_enqueue_assets(): void
             ]);
         }
     }
+
+    // Paint one continuous water background behind every frontend template.
+    // Enqueue LAST so page-specific layout backgrounds cannot hide it.
+    wp_enqueue_style(
+        'spek-site-water-background',
+        SPEK_THEME_URI . '/assets/css/site-water-background.css',
+        ['spek-main'],
+        filemtime(SPEK_THEME_DIR . '/assets/css/site-water-background.css')
+    );
 }
 
 function spek_enqueue_admin_assets($hook): void
