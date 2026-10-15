@@ -414,31 +414,39 @@
             });
     }
 
+    /**
+     * Geocode the user's geographic search origin. No name/text match is
+     * ever added to results outside the selected distance.
+     * Greek postcodes are constrained to Greece; other countries remain
+     * searchable (e.g. Romania, Cyprus) without forcing a Greece result.
+     */
     async function geocode(query) {
         geocodeFailure = '';
         const cacheKey = norm(query);
         if (geocodeCache.has(cacheKey)) {
             return geocodeCache.get(cacheKey);
         }
-
         try {
             const library = await google.maps.importLibrary('geocoding');
             const coder = new library.Geocoder();
-            // Restrict to Greece without requiring an exact postal-code component
-            // match. Google's postal area records sometimes omit that component.
             const postcode = isGreekPostcode(query);
-            const requests = [{
-                address: query + ', Ελλάδα',
-                region: 'gr',
-                componentRestrictions: {country: 'GR'}
-            }];
-            if (postcode) {
-                requests.push({
-                    address: query.slice(0, 3) + ' ' + query.slice(3) + ', Ελλάδα',
-                    region: 'gr',
-                    componentRestrictions: {country: 'GR'}
-                });
-            }
+            const countryQuery = isGreece(query)
+                || /\b(?:greece|romania|cyprus|bulgaria|albania|italy|france|germany|turkey|north macedonia|serbia|uk|united kingdom)\b/i.test(query)
+                || /(?:ελλαδ|ρουμαν|κυπρ|βουλγαρ|αλβαν|ιταλ|γαλλ|γερμαν|τουρκ|σερβ|μακεδον)/i.test(query);
+            const requests = postcode
+                ? [
+                    {address: query + ', Ελλάδα', region: 'gr',
+                        componentRestrictions: {country: 'GR'}},
+                    {address: query.slice(0, 3) + ' ' + query.slice(3) + ', Ελλάδα',
+                        region: 'gr', componentRestrictions: {country: 'GR'}}
+                ]
+                : countryQuery
+                    ? [{address: query, region: 'gr'}]
+                    : [
+                        {address: query + ', Ελλάδα', region: 'gr',
+                            componentRestrictions: {country: 'GR'}},
+                        {address: query, region: 'gr'}
+                    ];
             for (const request of requests) {
                 try {
                     const response = await coder.geocode(request);
@@ -450,28 +458,26 @@
                     }
                     const origin = {lat: location.lat(), lng: location.lng()};
                     if (!validCoordinate(origin.lat, origin.lng)
-                        || !inGreece(origin.lat, origin.lng)) {
-                        geocodeFailure = 'outside_greece';
+                        || (postcode && !inGreece(origin.lat, origin.lng))) {
+                        geocodeFailure = 'no_results';
                         continue;
                     }
                     geocodeCache.set(cacheKey, origin);
                     return origin;
                 } catch (error) {
                     const message = String(error && (error.code || error.message || error));
-                    // Only retry when the query has no results, not when an API
-                    // key, quota or Google Cloud API setting is blocking us.
                     if (/ZERO_RESULTS/i.test(message)) {
                         geocodeFailure = 'no_results';
                         continue;
                     }
                     geocodeFailure = 'api_error';
-                    console.warn('SPEK Geocoding request failed:', message);
+                    console.warn('SPEK Google Geocoding:', message);
                     break;
                 }
             }
         } catch (error) {
             geocodeFailure = 'api_error';
-            console.warn('SPEK Geocoding library unavailable:', error);
+            console.warn('SPEK Geocoding library:', error);
         }
         return null;
     }
@@ -479,96 +485,47 @@
     async function runSearch() {
         const version = ++searchVersion;
         const query = searchInput ? searchInput.value.trim() : '';
-        lastMode = 'search';
-
         if (!query) {
             lastMode = 'all';
+            statusDetail = '';
             showPartners(partners, null);
             return;
         }
-        if (isGreece(query)) {
-            showPartners(partners.filter(function (partner) { return !isForeign(partner); }), null);
-            return;
-        }
+        lastMode = 'search';
+        setStatus('Εντοπίζεται το σημείο αναζήτησης...');
+        const origin = await geocode(query);
+        if (version !== searchVersion) { return; }
 
-        setStatus(text('Γίνεται αναζήτηση...'));
-        const matchesByText = partners.filter(function (partner) {
-            return partner.searchable.includes(norm(query));
-        });
-        // Try accurate Google geocoding first; existing shop coordinates in
-        // the same postcode/city provide a local fallback if Google is denied.
-        const googleOrigin = await geocode(query);
-        if (version !== searchVersion) {
-            return;
-        }
-        const origin = googleOrigin || localSearchOrigin(matchesByText, query);
-        lastOrigin = origin;
-
-        let near = [];
-        if (origin) {
-            near = partners.filter(function (partner) {
-                return distanceKm(origin, partner) <= radiusKm();
-            }).sort(function (a, b) {
-                return distanceKm(origin, a) - distanceKm(origin, b);
-            });
-        }
-        const matches = unique(near.concat(matchesByText));
-        if (matches.length) {
-            showPartners(matches, origin);
-            if (!googleOrigin && origin) {
-                setStatus(
-                    text('Η Google δεν επέστρεψε ακριβή τοποθεσία για την αναζήτηση. Εμφανίζονται συνεργάτες με βάση τις ήδη αποθηκευμένες τοποθεσίες.')
-                );
-            } else if (!origin) {
-                setStatus(text('Βρέθηκαν %s συνεργάτες με αντιστοίχιση ονόματος, περιοχής ή ΤΚ. Η αναζήτηση ακτίνας δεν είναι διαθέσιμη χωρίς γεωγραφικό εντοπισμό.').replace('%s', matches.length));
-            }
-            return;
-        }
-
-        // Never leave the sales network completely invisible after a failed
-        // geocoding/search. Explain the fallback rather than claiming that
-        // no partners exist.
         if (!origin) {
-            showPartners(partners, null);
-            setStatus(
-                geocodeFailure === 'api_error'
-                    ? text('Η γεωγραφική αναζήτηση Google δεν είναι διαθέσιμη. Εμφανίζονται όλοι οι συνεργάτες. Ο διαχειριστής πρέπει να ελέγξει αν το Geocoding API είναι ενεργό και επιτρέπεται από το κλειδί Google Maps.')
-                    : text('Δεν αναγνωρίστηκε η συγκεκριμένη περιοχή ή ο ΤΚ στην Google. Εμφανίζονται όλοι οι συνεργάτες· δοκιμάστε και το όνομα της περιοχής.')
-            );
-        } else {
-            showPartners(partners, null);
-            setStatus(text('Δεν βρέθηκαν επιβεβαιωμένες τοποθεσίες συνεργατών στην επιλεγμένη ακτίνα. Εμφανίζονται όλοι οι συνεργάτες. Δοκιμάστε μεγαλύτερη ακτίνα ή διαφορετική περιοχή.'));
+            // Never show text matches or unrelated stores when the geographic
+            // search has no valid zero point.
+            lastOrigin = null;
+            statusDetail = geocodeFailure === 'api_error'
+                ? 'Η υπηρεσία γεωγραφικής αναζήτησης δεν είναι διαθέσιμη. Ελέγξτε το Geocoding API.'
+                : 'Η τοποθεσία δεν αναγνωρίστηκε. Δοκιμάστε άλλη περιοχή, ΤΚ ή χώρα.';
+            showPartners([], null);
+            return;
         }
+        statusDetail = '';
+        showPartners(partners, origin);
     }
 
     function nearMyLocation() {
         if (!navigator.geolocation) {
-            setStatus(text('Ο browser δεν υποστηρίζει εντοπισμό τοποθεσίας.'));
+            setStatus('Ο browser δεν υποστηρίζει εντοπισμό τοποθεσίας.');
             return;
         }
         const version = ++searchVersion;
-        setStatus(text('Εντοπίζεται η θέση σας...'));
+        setStatus('Εντοπίζεται η θέση σας...');
         navigator.geolocation.getCurrentPosition(function (position) {
-            if (version !== searchVersion) {
-                return;
-            }
+            if (version !== searchVersion) { return; }
             const origin = {lat: position.coords.latitude, lng: position.coords.longitude};
-            lastOrigin = origin;
             lastMode = 'location';
-            const nearby = partners.filter(function (partner) {
-                return distanceKm(origin, partner) <= radiusKm();
-            }).sort(function (a, b) {
-                return distanceKm(origin, a) - distanceKm(origin, b);
-            });
-            if (nearby.length) {
-                showPartners(nearby, origin);
-            } else {
-                showPartners(partners, null);
-                setStatus(text('Δεν υπάρχουν συνεργάτες με επιβεβαιωμένο pin στην επιλεγμένη ακτίνα. Εμφανίζονται όλοι οι συνεργάτες.'));
-            }
+            statusDetail = '';
+            showPartners(partners, origin);
         }, function () {
             if (version === searchVersion) {
-                setStatus(text('Δεν δόθηκε πρόσβαση στην τοποθεσία. Συμπληρώστε περιοχή ή ΤΚ χειροκίνητα.'));
+                setStatus('Δεν δόθηκε πρόσβαση στην τοποθεσία. Συμπληρώστε περιοχή ή ΤΚ χειροκίνητα.');
             }
         }, {enableHighAccuracy: false, timeout: 10000, maximumAge: 300000});
     }
@@ -721,6 +678,11 @@
                 ]
             });
             popup = new google.maps.InfoWindow({maxWidth: 310});
+            // Synchronize cards on every pan, zoom, drag or map resize.
+            map.addListener('idle', function () {
+                mapReady = true;
+                syncVisibleCards();
+            });
             partners.forEach(function (partner) {
                 partner.card.addEventListener('mouseenter', function () {
                     if (partner.marker) {
@@ -744,16 +706,8 @@
                 radiusSelect.addEventListener('change', function () {
                     if (lastMode === 'location' && lastOrigin) {
                         ++searchVersion;
-                        const nearby = partners.filter(function (partner) {
-                            return distanceKm(lastOrigin, partner) <= radiusKm();
-                        });
-                        if (nearby.length) {
-                            showPartners(nearby, lastOrigin);
-                        } else {
-                            showPartners(partners, null);
-                            setStatus(text('Δεν υπάρχουν συνεργάτες με επιβεβαιωμένο pin στην επιλεγμένη ακτίνα. Εμφανίζονται όλοι οι συνεργάτες.'));
-                        }
-                    } else if (searchInput && searchInput.value.trim()) {
+                        showPartners(partners, lastOrigin);
+                    } else if (lastMode === 'search' && searchInput && searchInput.value.trim()) {
                         runSearch();
                     }
                 });
@@ -768,7 +722,7 @@
                         searchInput.value = '';
                     }
                     lastMode = 'all';
-                    lastOrigin = null;
+                    statusDetail = '';
                     showPartners(partners, null);
                 });
             }
@@ -776,6 +730,7 @@
                 google.maps.event.trigger(map, 'resize');
             });
             setupWheelScroll();
+            mapReady = true;
             showPartners(partners, null);
         } catch (error) {
             showMapFailure('Ο χάρτης Google Maps δεν φορτώθηκε. Ελέγξτε τη σύνδεση, το API key, τους περιορισμούς domain και το Billing του Google Cloud.');
