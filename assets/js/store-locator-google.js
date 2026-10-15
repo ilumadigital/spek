@@ -59,6 +59,9 @@
     let lastMode = 'all';
     let searchVersion = 0;
     let geocodeFailure = '';
+    let countryViewport = null;
+    let countryLabel = '';
+    let countryBoundariesPromise = null;
     const geocodeCache = new Map();
 
     function isGreekPostcode(query) {
@@ -285,7 +288,12 @@
                 }
             }
         }
-        setStatus(lastOrigin
+        setStatus(lastMode === 'country'
+            ? 'Εμφανίζονται ' + shown.length + ' από ' + activePartners.length
+                + ' καταστήματα στη χώρα ' + countryLabel
+                + '. Η επιλογή ακτίνας δεν εφαρμόζεται.'
+                + (statusDetail ? ' ' + statusDetail : '')
+            : lastOrigin
             ? 'Εμφανίζονται ' + shown.length + ' από ' + activePartners.length
                 + ' σημεία εντός ' + radiusKm()
                 + ' km από την αναζήτηση, σε αύξουσα απόσταση ευθείας.'
@@ -368,6 +376,25 @@
                 map.setCenter(origin);
                 map.setZoom(11);
             }
+        } else if (lastMode === 'country' && countryViewport) {
+            // Frame the whole selected country and its partner pins, so the
+            // initial list can show every partner across the country.
+            try {
+                const countryBounds = new google.maps.LatLngBounds();
+                if (typeof countryBounds.union === 'function') {
+                    countryBounds.union(countryViewport);
+                }
+                activePartners.forEach(function (partner) {
+                    countryBounds.extend({lat: partner.lat, lng: partner.lng});
+                });
+                if (activePartners.length > 0 || typeof countryBounds.union === 'function') {
+                    map.fitBounds(countryBounds, 30);
+                } else {
+                    map.fitBounds(countryViewport, 30);
+                }
+            } catch (error) {
+                map.fitBounds(countryViewport, 30);
+            }
         } else {
             map.setCenter(initialCenter);
             map.setZoom(initialZoom);
@@ -377,6 +404,107 @@
 
     function isGreece(query) {
         return ['ελλαδα', 'ελλασ', 'greece', 'ellada'].includes(norm(query));
+    }
+
+    /**
+     * Local country polygons (ISO-3166 alpha-2), fetched only for a country
+     * search. Geocoder viewports are rectangles and include neighbouring
+     * countries; never use viewport or radius as country membership.
+     */
+    function loadCountryBoundaries() {
+        if (!countryBoundariesPromise) {
+            const url = config.countryBoundariesUrl;
+            if (!url) {
+                return Promise.reject(new Error('country-boundaries-url-missing'));
+            }
+            countryBoundariesPromise = fetch(url, {credentials: 'same-origin'}).then(function (response) {
+                if (!response.ok) { throw new Error('country-boundaries-http-' + response.status); }
+                return response.json();
+            }).then(function (data) {
+                if (!data || data.type !== 'FeatureCollection' || !Array.isArray(data.features)) {
+                    throw new Error('country-boundaries-invalid');
+                }
+                return data.features;
+            }).catch(function (error) {
+                countryBoundariesPromise = null;
+                throw error;
+            });
+        }
+        return countryBoundariesPromise;
+    }
+
+    function countryCodeFromResult(result, query) {
+        const components = Array.isArray(result.address_components) ? result.address_components : [];
+        const component = components.find(function (entry) {
+            return Array.isArray(entry.types) && entry.types.includes('country');
+        });
+        const code = component && String(component.short_name || '').toUpperCase();
+        if (code && /^[A-Z]{2}$/.test(code)) { return code; }
+        const aliases = {
+            ελλαδα: 'GR', ελλασ: 'GR', greece: 'GR', ellada: 'GR',
+            ρουμανια: 'RO', romania: 'RO', κυπροσ: 'CY', κυπρο: 'CY',
+            cyprus: 'CY', βουλγαρια: 'BG', bulgaria: 'BG',
+            αλβανια: 'AL', albania: 'AL', ιταλια: 'IT', italy: 'IT',
+            τουρκια: 'TR', turkey: 'TR', turkiye: 'TR',
+            γερμανια: 'DE', germany: 'DE', γαλλια: 'FR', france: 'FR',
+            ισπανια: 'ES', spain: 'ES', σερβια: 'RS', serbia: 'RS',
+            μακεδονια: 'MK', northmacedonia: 'MK', 'north macedonia': 'MK',
+            'united kingdom': 'GB', uk: 'GB', 'united states': 'US', usa: 'US'
+        };
+        return aliases[norm(query)] || '';
+    }
+
+    /** Ray casting over GeoJSON polygon, respecting holes and multipolygons. */
+    function pointInRing(lat, lng, ring) {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            const a = ring[i], b = ring[j];
+            if ((a[1] > lat) !== (b[1] > lat)) {
+                const x = (b[0] - a[0]) * (lat - a[1]) / (b[1] - a[1]) + a[0];
+                if (lng < x) { inside = !inside; }
+            }
+        }
+        return inside;
+    }
+
+    function pointInPolygon(lat, lng, rings) {
+        if (!rings || !rings.length || !pointInRing(lat, lng, rings[0])) {
+            return false;
+        }
+        for (let i = 1; i < rings.length; i++) {
+            if (pointInRing(lat, lng, rings[i])) { return false; }
+        }
+        return true;
+    }
+
+    function pointInCountry(partner, geometry, countryCode) {
+        if (partner.lat === null || partner.lng === null) { return false; }
+        // The bundled global boundary dataset is simplified. Small Greek
+        // islands may be omitted. Greek five-digit postcodes + Greek envelope
+        // cover those stores without including Cyprus (four-digit postcodes).
+        if (countryCode === 'GR' && isGreekPostcode(partner.postcode)
+            && inGreece(partner.lat, partner.lng)) {
+            return true;
+        }
+        const parts = geometry.type === 'Polygon'
+            ? [geometry.coordinates]
+            : geometry.type === 'MultiPolygon' ? geometry.coordinates : [];
+        return parts.some(function (polygon) {
+            return pointInPolygon(partner.lat, partner.lng, polygon);
+        });
+    }
+
+    async function getCountryPartners(countryCode) {
+        const features = await loadCountryBoundaries();
+        const feature = features.find(function (item) {
+            return item.properties && item.properties.iso2 === countryCode;
+        });
+        if (!feature || !feature.geometry) {
+            throw new Error('country-boundaries-unsupported-' + countryCode);
+        }
+        return partners.filter(function (partner) {
+            return pointInCountry(partner, feature.geometry, countryCode);
+        });
     }
 
     async function geocode(query) {
@@ -416,7 +544,20 @@
                         geocodeFailure = 'no_results';
                         continue;
                     }
+                    const place = response.results[0];
                     const origin = {lat: location.lat(), lng: location.lng()};
+                    const isCountry = Array.isArray(place.types) && place.types.includes('country');
+                    if (isCountry) {
+                        const countryCode = countryCodeFromResult(place, query);
+                        if (countryCode) {
+                            origin.countryCode = countryCode;
+                            origin.countryName = (Array.isArray(place.address_components)
+                                ? place.address_components.find(function (entry) {
+                                    return Array.isArray(entry.types) && entry.types.includes('country');
+                                }) : null)?.long_name || query;
+                            origin.viewport = place.geometry.viewport || place.geometry.bounds || null;
+                        }
+                    }
                     if (!validCoordinate(origin.lat, origin.lng)
                         || (postcode && !inGreece(origin.lat, origin.lng))) {
                         geocodeFailure = 'no_results';
@@ -447,11 +588,15 @@
         const query = searchInput ? searchInput.value.trim() : '';
         if (!query) {
             lastMode = 'all';
+            countryViewport = null;
+            countryLabel = '';
             statusDetail = '';
             showPartners(partners, null);
             return;
         }
         lastMode = 'search';
+        countryViewport = null;
+        countryLabel = '';
         setStatus('Εντοπίζεται το σημείο αναζήτησης...');
         const origin = await geocode(query);
         if (version !== searchVersion) { return; }
@@ -466,6 +611,26 @@
             showPartners([], null);
             return;
         }
+        if (origin.countryCode) {
+            lastMode = 'country';
+            countryLabel = origin.countryName || query;
+            countryViewport = origin.viewport || null;
+            setStatus('Εντοπίζονται όλα τα καταστήματα στη χώρα ' + countryLabel + '...');
+            try {
+                const matches = await getCountryPartners(origin.countryCode);
+                if (version !== searchVersion) { return; }
+                statusDetail = '';
+                showPartners(matches, null);
+            } catch (error) {
+                if (version !== searchVersion) { return; }
+                console.warn('SPEK country filtering:', error);
+                statusDetail = 'Δεν ήταν δυνατή η φόρτωση των ορίων της χώρας. Δοκιμάστε ξανά.';
+                showPartners([], null);
+            }
+            return;
+        }
+        countryViewport = null;
+        countryLabel = '';
         statusDetail = '';
         showPartners(partners, origin);
     }
@@ -481,6 +646,8 @@
             if (version !== searchVersion) { return; }
             const origin = {lat: position.coords.latitude, lng: position.coords.longitude};
             lastMode = 'location';
+            countryViewport = null;
+            countryLabel = '';
             statusDetail = '';
             showPartners(partners, origin);
         }, function () {
@@ -682,6 +849,8 @@
                         searchInput.value = '';
                     }
                     lastMode = 'all';
+                    countryViewport = null;
+                    countryLabel = '';
                     statusDetail = '';
                     showPartners(partners, null);
                 });
