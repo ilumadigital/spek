@@ -59,6 +59,10 @@ function row($id, $sku, $expectedSeries, $series, $expectedCats='', $cats='') {
         'expected_categories' => $expectedCats, 'categories' => $cats];
 }
 
+check(spek_tc_live_snapshot(102) === ['sku' => '10064', 'series' => 'SPEK', 'categories' => 'Μπάνιο'], 'Preview diagnostics read actual WordPress values');
+rejects(function () { spek_tc_plan(row(102, '10064', '', '', 'Καζανάκια', 'Σιφόνια')); }, 'Unexpected category blocks the import rather than guessing');
+check(spek_tc_live_snapshot(102)['categories'] === 'Μπάνιο', 'Blocked preview still exposes the real category');
+
 $r = row(101, '10062', 'SPEK', 'LB Plast');
 $original = $GLOBALS['products'][101];
 check(spek_tc_has_changes(spek_tc_plan($r)), 'Preview detects pending series replacement');
