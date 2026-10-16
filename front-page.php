@@ -16,6 +16,9 @@ get_header();
 
     <?php get_template_part('template-parts/home/hero'); ?>
 
+    <?php // A compact benefits strip fills the space below the hero video. ?>
+    <?php get_template_part('template-parts/home/practical-benefits', null, ['home_strip' => true]); ?>
+
     <div class="home-section-group home-section-group--one">
         <?php get_template_part('template-parts/home/product-categories'); ?>
         <?php get_template_part('template-parts/home/product-finder-preview'); ?>
