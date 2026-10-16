@@ -165,6 +165,15 @@ function spek_enqueue_assets(): void
                 ['spek-home-water-background'],
                 filemtime(SPEK_THEME_DIR . '/assets/css/home-partners-map.css')
             );
+
+            // A restrained, responsive editorial strip after the homepage video.
+            // Not loaded for Company pages (which keep the original layout).
+            wp_enqueue_style(
+                'spek-home-practical-strip',
+                SPEK_THEME_URI . '/assets/css/home-practical-strip.css',
+                ['spek-home-partners-map'],
+                filemtime(SPEK_THEME_DIR . '/assets/css/home-practical-strip.css')
+            );
         }
     }
 
