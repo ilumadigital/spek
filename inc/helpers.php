@@ -361,7 +361,7 @@ if (!function_exists('spek_home_mechanism_images')) {
                         continue;
                     }
                     $title = (string) get_post_field('post_title', $product_id);
-                    if (!preg_match('/μηχ|mechanis|duo|αέρ|aero/iu', $title)) {
+                    if (!preg_match('/(?:μ|m)ηχ|mechanis|duo|αέρ|aero/iu', $title)) {
                         continue;
                     }
                     $photo = get_the_post_thumbnail_url($product_id, 'large');
