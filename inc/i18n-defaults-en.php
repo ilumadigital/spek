@@ -2,6 +2,27 @@
 /** Bundled English defaults for the public SPEK frontend. Admin values override these. */
 if (!defined('ABSPATH')) { exit; }
 return [
+    // Factory showcase translations.
+    'Σύγχρονο περιβάλλον παραγωγής' => 'Modern manufacturing environment',
+    'Οργανωμένες γραμμές παραγωγής και τεχνική γνώση σε ένα σύγχρονο βιομηχανικό περιβάλλον.' => 'Organised production lines and technical expertise in a modern industrial setting.',
+    'Γραμμή παραγωγής SPEK' => 'SPEK production line',
+    'Υποδομή' => 'Infrastructure',
+    'Παραγωγική βάση με καθαρή οργάνωση' => 'A well-organised production facility',
+    'Εξοπλισμός, ροή εργασίας και παραγωγικές διαδικασίες λειτουργούν ως ένα ενιαίο σύστημα.' => 'Equipment, workflows and production processes work together as one integrated system.',
+    'Παραγωγικός χώρος SPEK' => 'SPEK production area',
+    'Τεχνογνωσία' => 'Expertise',
+    'Η λεπτομέρεια πίσω από κάθε προϊόν' => 'The details behind every product',
+    'Η παραγωγική εμπειρία της SPEK συνδέει τον σχεδιασμό, το εργαλείο και το τελικό αποτέλεσμα.' => 'SPEK\'s manufacturing expertise connects design, tooling and the finished product.',
+    'Τεχνική παραγωγική διαδικασία SPEK' => 'SPEK technical manufacturing process',
+    'Συνέπεια σε κάθε στάδιο παραγωγής' => 'Consistency at every production stage',
+    'Κάθε στάδιο οργανώνεται με στόχο σταθερή ποιότητα, επαναληψιμότητα και αξιόπιστη λειτουργία.' => 'Every stage is organised for consistent quality, repeatability and reliable performance.',
+    'Σύγχρονη γραμμή παραγωγής SPEK' => 'Modern SPEK production line',
+    'Εκεί όπου η τεχνογνωσία γίνεται προϊόν.' => 'Where expertise becomes a product.',
+    'Μια ματιά στις εγκαταστάσεις, τον εξοπλισμό και την παραγωγική διαδικασία πίσω από τα προϊόντα SPEK.' => 'A look at the facilities, equipment and production process behind SPEK products.',
+    'Γνωρίστε την εταιρεία' => 'Discover the company',
+    'Επιλογή διαφάνειας' => 'Select slide',
+    'Προηγούμενη εικόνα' => 'Previous image',
+    'Επόμενη εικόνα' => 'Next image',
     'Γίνεται φόρτωση σημείων πώλησης...' => 'Loading points of sale...',
     'Ενδιαφέρον για προϊόν: %s' => 'Enquiry about product: %s',
     'Προϊόν' => 'Product',
