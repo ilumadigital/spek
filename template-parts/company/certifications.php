@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     <div class="container">
         <div class="section-heading company-quality__heading" data-reveal>
             <span class="eyebrow"><?php esc_html_e('Ποιότητα', 'spek-theme'); ?></span>
-            <h2><?php esc_html_e('Η ποιότητα δεν ελέγχεται μόνο στο τέλος Χτίζεται σε κάθε στάδιο', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Η ποιότητα δεν ελέγχεται μόνο στο τέλος. Χτίζεται σε κάθε στάδιο.', 'spek-theme'); ?></h2>
             <p><?php esc_html_e('Από τις πρώτες ύλες μέχρι την τελική διάθεση, η SPEK οργανώνει τις διαδικασίες της με στόχο τη συνέπεια, την αξιοπιστία και τη συνεχή βελτίωση.', 'spek-theme'); ?></p>
         </div>
 
@@ -42,8 +42,11 @@ if (!defined('ABSPATH')) {
         </div>
 
         <div class="company-closing" data-reveal>
+            <div class="company-closing__media" aria-hidden="true">
+                <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/spek-website-factory-line-4-blue.png'); ?>" alt="" loading="lazy" decoding="async">
+            </div>
             <span><?php esc_html_e('SPEK / Από το 1990', 'spek-theme'); ?></span>
-            <h2><?php esc_html_e('Πάνω από 35 χρόνια εξέλιξης Και συνεχίζουμε', 'spek-theme'); ?></h2>
+            <h2><?php esc_html_e('Πάνω από 35 χρόνια εξέλιξης. Και συνεχίζουμε.', 'spek-theme'); ?></h2>
             <p><?php esc_html_e('Η εμπειρία μάς έφερε μέχρι εδώ. Η διαρκής βελτίωση είναι αυτή που καθορίζει το επόμενο βήμα.', 'spek-theme'); ?></p>
         </div>
     </div>
