@@ -86,6 +86,24 @@ function spek_tc_term_names(array $ids, string $taxonomy): string
     return $names ? implode(' | ', $names) : '—';
 }
 
+/** Read the actual WP record for diagnostics, even when preconditions reject it. */
+function spek_tc_live_snapshot(int $id): array
+{
+    $snapshot = ['sku' => '—', 'series' => 'Μη διαθέσιμο', 'categories' => 'Μη διαθέσιμο'];
+    if (get_post_type($id) !== 'spek_product') {
+        return $snapshot;
+    }
+    $snapshot['sku'] = (string) get_post_meta($id, 'product_code', true);
+    foreach (['series' => 'product_series', 'categories' => 'product_category'] as $field => $taxonomy) {
+        try {
+            $snapshot[$field] = spek_tc_term_names(spek_tc_current_terms($id, $taxonomy), $taxonomy);
+        } catch (Throwable $e) {
+            $snapshot[$field] = 'Αδυναμία ανάγνωσης: ' . $e->getMessage();
+        }
+    }
+    return $snapshot;
+}
+
 /** Strict CSV parsing: UTF-8 BOM, exact schema, distinct ID/SKU, max 1000 rows. */
 function spek_tc_read_csv(string $path): array
 {
@@ -244,8 +262,11 @@ function spek_tc_render_page(): void
         $rows = spek_tc_read_csv($file['tmp_name']);
         $errors = 0;
         $pending = 0;
+        $blockers = [];
         echo '<h2>Προεπισκόπηση — ' . count($rows) . ' προϊόντα</h2>';
-        echo '<table class="widefat striped"><thead><tr><th>WP ID / SKU</th><th>Τίτλος αναφοράς</th><th>Σειρά (τώρα → μετά)</th><th>Κατηγορίες (τώρα → μετά)</th><th>Αποτέλεσμα</th></tr></thead><tbody>';
+        // Buffer the table so validation blockers can be shown ABOVE 189+ preview rows.
+        ob_start();
+        echo '<div style="overflow-x:auto"><table class="widefat striped" style="min-width:1080px"><thead><tr><th>WP ID / SKU</th><th>Τίτλος αναφοράς</th><th>Σειρά (τώρα → μετά)</th><th>Κατηγορίες (τώρα → μετά)</th><th>Αποτέλεσμα</th></tr></thead><tbody>';
         foreach ($rows as $row) {
             $display = [];
             try {
@@ -259,16 +280,42 @@ function spek_tc_render_page(): void
                 }
             } catch (Throwable $e) {
                 ++$errors;
+                $snapshot = spek_tc_live_snapshot((int) $row['id']);
+                $blockers[] = ['row' => $row, 'reason' => $e->getMessage(), 'actual' => $snapshot];
                 $status = 'ΣΦΑΛΜΑ: ' . $e->getMessage();
                 foreach (['series', 'categories'] as $field) {
-                    $display[$field] = $row[$field] === '' ? 'Χωρίς αλλαγή' : $row['expected_' . $field] . ' → ' . $row[$field];
+                    $display[$field] = 'WP: ' . $snapshot[$field] . ' · CSV αναμένει: ' .
+                        ($row['expected_' . $field] === '' ? '—' : $row['expected_' . $field]) .
+                        ($row[$field] === '' ? ' (χωρίς αλλαγή)' : ' → ' . $row[$field]);
                 }
             }
-            echo '<tr><td>' . esc_html($row['id'] . ' / ' . $row['sku']) . '</td><td>' . esc_html($row['reference_title']) . '</td><td>' . esc_html($display['series']) . '</td><td>' . esc_html($display['categories']) . '</td><td>' . esc_html($status) . '</td></tr>';
+            $row_has_error = isset($snapshot);
+            echo '<tr id="spek-tc-row-' . esc_attr($row['id']) . '"' . ($row_has_error ? ' style="background:#fff0ef"' : '') . '><td>' .
+                esc_html($row['id'] . ' / ' . $row['sku']) . '</td><td>' . esc_html($row['reference_title']) .
+                '</td><td>' . esc_html($display['series']) . '</td><td>' . esc_html($display['categories']) .
+                '</td><td style="overflow-wrap:anywhere;min-width:180px">' . esc_html($status) . '</td></tr>';
+            unset($snapshot);
         }
-        echo '</tbody></table>';
+        echo '</tbody></table></div>';
+        $preview_table = ob_get_clean();
         if ($errors) {
-            echo '<div class="notice notice-error inline"><p><strong>Η εφαρμογή αποκλείστηκε: ' . (int) $errors . ' σφάλματα.</strong> Κανένα προϊόν δεν ενημερώθηκε.</p></div>';
+            echo '<div class="notice notice-error inline" style="padding:10px 16px;max-width:1100px" id="spek-tc-errors">';
+            echo '<p><strong>Η εφαρμογή αποκλείστηκε: ' . (int) $errors . ' σφάλμα(τα).</strong> Κανένα προϊόν δεν ενημερώθηκε.</p>';
+            echo '<p>Παρακάτω εμφανίζονται οι πραγματικές τιμές WordPress, οι αναμενόμενες τιμές CSV και ο λόγος απόρριψης. Δεν γίνεται αυτόματη παράκαμψη των ελέγχων.</p><ul style="list-style:disc;padding-left:22px">';
+            foreach ($blockers as $problem) {
+                $bad = $problem['row'];
+                $live = $problem['actual'];
+                echo '<li style="margin-bottom:12px"><strong><a href="#spek-tc-row-' . esc_attr($bad['id']) . '">WP ID ' . esc_html($bad['id']) . ' / SKU ' . esc_html($bad['sku']) . '</a></strong> — ' . esc_html($problem['reason']);
+                echo '<div>SKU στη βάση: <code>' . esc_html($live['sku']) . '</code></div>';
+                foreach (['series' => 'Σειρά', 'categories' => 'Κατηγορίες'] as $field => $label) {
+                    echo '<div><strong>' . esc_html($label) . ':</strong> τώρα <code>' . esc_html($live[$field]) . '</code> · CSV αναμένει <code>' . esc_html($bad['expected_' . $field] === '' ? '—' : $bad['expected_' . $field]) . '</code> · CSV ζητά <code>' . esc_html($bad[$field] === '' ? 'χωρίς αλλαγή' : $bad[$field]) . '</code></div>';
+                }
+                echo '</li>';
+            }
+            echo '</ul><p>Επιβεβαιώστε την ασυμφωνία στο WordPress πριν διορθωθεί η εγγραφή. Μην αλλάξετε το εγκεκριμένο CSV ή τις ταξινομίες μόνο για να παρακαμφθεί ο έλεγχος.</p></div>';
+        }
+        echo $preview_table; // Escaped table cells, generated entirely above.
+        if ($errors) {
         } elseif ($pending === 0) {
             echo '<div class="notice notice-success inline"><p>Όλες οι διορθώσεις έχουν ήδη εφαρμοστεί.</p></div>';
         } else {
