@@ -50,7 +50,7 @@ $items = [
 
     <div class="<?php echo esc_attr($home_strip ? 'home-practical__grid' : 'why-spek__benefits'); ?>">
         <?php foreach ($items as $index => $item) : ?>
-            <article class="<?php echo esc_attr($home_strip ? 'home-practical__item' : 'why-spek__benefit'); ?>" data-reveal style="--reveal-delay: <?php echo esc_attr(($index * 60) + 100); ?>ms;">
+            <article class="<?php echo esc_attr($home_strip ? 'home-practical__item' : 'why-spek__benefit'); ?>" <?php if (!$home_strip) : ?>data-reveal style="--reveal-delay: <?php echo esc_attr(($index * 60) + 100); ?>ms;"<?php endif; ?>>
                 <span class="<?php echo esc_attr($home_strip ? 'home-practical__icon' : 'why-spek__benefit-icon'); ?>" aria-hidden="true">
                     <?php if ($item['icon'] === 'shield') : ?>
                         <svg viewBox="0 0 32 32"><path d="M16 3 27 8v8c0 7-4.4 11-11 14C9.4 27 5 23 5 16V8l11-5Z"/><path d="m10 16 4 4 8-9"/></svg>
