@@ -36,6 +36,11 @@
     const text = function (value) {
         return (window.spekI18n && window.spekI18n[value]) || value;
     };
+    const formatText = function (source, values) {
+        return text(source).replace(/\{(\d+)\}/g, function (_match, index) {
+            return values[Number(index)] === undefined ? '' : String(values[Number(index)]);
+        });
+    };
     const norm = function (value) {
         return String(value || '').toLocaleLowerCase('el-GR')
             .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ς/g, 'σ').trim();
@@ -142,7 +147,7 @@
         radiusSelect.disabled = !enabled;
         radiusSelect.title = enabled
             ? ''
-            : 'Η αναζήτηση χώρας εμφανίζει όλους τους συνεργάτες χωρίς περιορισμό χιλιομέτρων.';
+            : text('Η αναζήτηση χώρας εμφανίζει όλους τους συνεργάτες χωρίς περιορισμό χιλιομέτρων.');
     }
 
     function distanceKm(origin, partner) {
@@ -275,8 +280,8 @@
                         minimumFractionDigits: 1, maximumFractionDigits: 1
                     }) + ' km';
                     badge.title = lastOrigin
-                        ? 'Ευθεία απόσταση από το σημείο αναζήτησης'
-                        : 'Ευθεία απόσταση από το κέντρο του χάρτη';
+                        ? text('Ευθεία απόσταση από το σημείο αναζήτησης')
+                        : text('Ευθεία απόσταση από το κέντρο του χάρτη');
                 }
                 fragment.appendChild(partner.card);
             });
@@ -288,26 +293,20 @@
             if (!shown.length) {
                 const heading = emptyElement.querySelector('h3');
                 const description = emptyElement.querySelector('p');
-                if (heading) { heading.textContent = 'Δεν υπάρχουν συνεργάτες στην ορατή περιοχή'; }
+                if (heading) { heading.textContent = text('Δεν υπάρχουν συνεργάτες στην ορατή περιοχή'); }
                 if (description) {
                     description.textContent = lastOrigin
-                        ? 'Δεν υπάρχουν καταστήματα που να βρίσκονται ταυτόχρονα εντός του χάρτη και της επιλεγμένης ακτίνας.'
-                        : 'Μετακινήστε τον χάρτη ή μειώστε το zoom για να εμφανιστούν καταστήματα.';
+                        ? text('Δεν υπάρχουν καταστήματα που να βρίσκονται ταυτόχρονα εντός του χάρτη και της επιλεγμένης ακτίνας.')
+                        : text('Μετακινήστε τον χάρτη ή μειώστε το zoom για να εμφανιστούν καταστήματα.');
                 }
             }
         }
-        setStatus(lastMode === 'country'
-            ? 'Εμφανίζονται ' + shown.length + ' από ' + activePartners.length
-                + ' καταστήματα στη χώρα ' + countryLabel
-                + '. Η επιλογή ακτίνας δεν εφαρμόζεται.'
-                + (statusDetail ? ' ' + statusDetail : '')
+        const status = lastMode === 'country'
+            ? formatText('Εμφανίζονται {0} από {1} καταστήματα στη χώρα {2}. Η επιλογή ακτίνας δεν εφαρμόζεται.', [shown.length, activePartners.length, countryLabel])
             : lastOrigin
-            ? 'Εμφανίζονται ' + shown.length + ' από ' + activePartners.length
-                + ' σημεία εντός ' + radiusKm()
-                + ' km από την αναζήτηση, σε αύξουσα απόσταση ευθείας.'
-                + (statusDetail ? ' ' + statusDetail : '')
-            : 'Εμφανίζονται ' + shown.length + ' συνεργάτες εντός της ορατής περιοχής του χάρτη.'
-                + (statusDetail ? ' ' + statusDetail : ''));
+            ? formatText('Εμφανίζονται {0} από {1} σημεία εντός {2} km από την αναζήτηση, σε αύξουσα απόσταση ευθείας.', [shown.length, activePartners.length, radiusKm()])
+            : formatText('Εμφανίζονται {0} συνεργάτες εντός της ορατής περιοχής του χάρτη.', [shown.length]);
+        setStatus(status + (statusDetail ? ' ' + statusDetail : ''));
     }
 
     function showPartners(matches, origin) {
@@ -607,7 +606,7 @@
         setRadiusAvailability(true);
         countryViewport = null;
         countryLabel = '';
-        setStatus('Εντοπίζεται το σημείο αναζήτησης...');
+        setStatus(text('Εντοπίζεται το σημείο αναζήτησης...'));
         const origin = await geocode(query);
         if (version !== searchVersion) { return; }
 
@@ -616,8 +615,8 @@
             // search has no valid zero point.
             lastOrigin = null;
             statusDetail = geocodeFailure === 'api_error'
-                ? 'Η υπηρεσία γεωγραφικής αναζήτησης δεν είναι διαθέσιμη. Ελέγξτε το Geocoding API.'
-                : 'Η τοποθεσία δεν αναγνωρίστηκε. Δοκιμάστε άλλη περιοχή, ΤΚ ή χώρα.';
+                ? text('Η υπηρεσία γεωγραφικής αναζήτησης δεν είναι διαθέσιμη. Ελέγξτε το Geocoding API.')
+                : text('Η τοποθεσία δεν αναγνωρίστηκε. Δοκιμάστε άλλη περιοχή, ΤΚ ή χώρα.');
             showPartners([], null);
             return;
         }
@@ -626,7 +625,7 @@
             setRadiusAvailability(false);
             countryLabel = origin.countryName || query;
             countryViewport = origin.viewport || null;
-            setStatus('Εντοπίζονται όλα τα καταστήματα στη χώρα ' + countryLabel + '...');
+            setStatus(formatText('Εντοπίζονται όλα τα καταστήματα στη χώρα {0}...', [countryLabel]));
             try {
                 const matches = await getCountryPartners(origin.countryCode);
                 if (version !== searchVersion) { return; }
@@ -635,7 +634,7 @@
             } catch (error) {
                 if (version !== searchVersion) { return; }
                 console.warn('SPEK country filtering:', error);
-                statusDetail = 'Δεν ήταν δυνατή η φόρτωση των ορίων της χώρας. Δοκιμάστε ξανά.';
+                statusDetail = text('Δεν ήταν δυνατή η φόρτωση των ορίων της χώρας. Δοκιμάστε ξανά.');
                 showPartners([], null);
             }
             return;
@@ -648,11 +647,11 @@
 
     function nearMyLocation() {
         if (!navigator.geolocation) {
-            setStatus('Ο browser δεν υποστηρίζει εντοπισμό τοποθεσίας.');
+            setStatus(text('Ο browser δεν υποστηρίζει εντοπισμό τοποθεσίας.'));
             return;
         }
         const version = ++searchVersion;
-        setStatus('Εντοπίζεται η θέση σας...');
+        setStatus(text('Εντοπίζεται η θέση σας...'));
         navigator.geolocation.getCurrentPosition(function (position) {
             if (version !== searchVersion) { return; }
             const origin = {lat: position.coords.latitude, lng: position.coords.longitude};
@@ -664,7 +663,7 @@
             showPartners(partners, origin);
         }, function () {
             if (version === searchVersion) {
-                setStatus('Δεν δόθηκε πρόσβαση στην τοποθεσία. Συμπληρώστε περιοχή ή ΤΚ χειροκίνητα.');
+                setStatus(text('Δεν δόθηκε πρόσβαση στην τοποθεσία. Συμπληρώστε περιοχή ή ΤΚ χειροκίνητα.'));
             }
         }, {enableHighAccuracy: false, timeout: 10000, maximumAge: 300000});
     }
@@ -707,7 +706,7 @@
         if (emptyElement) {
             emptyElement.hidden = true;
         }
-        setStatus('Η λίστα συνεργατών είναι διαθέσιμη, αλλά ο χάρτης δεν φορτώθηκε.');
+        setStatus(text('Η λίστα συνεργατών είναι διαθέσιμη, αλλά ο χάρτης δεν φορτώθηκε.'));
     }
 
     function loadMapsSDK() {
@@ -761,7 +760,7 @@
             const oldAuthFailure = window.gm_authFailure;
             window.gm_authFailure = function () {
                 const error = new Error('Google Maps API key was rejected: check website referrers, API restrictions and billing');
-                showMapFailure('Η Google απέρριψε το κλειδί χάρτη. Ελέγξτε ότι επιτρέπεται το https://spek.iluma.gr/*, ότι είναι ενεργό το Maps JavaScript API και το Billing.');
+                showMapFailure(text('Η Google απέρριψε το κλειδί χάρτη. Ελέγξτε ότι επιτρέπεται το https://spek.iluma.gr/*, ότι είναι ενεργό το Maps JavaScript API και το Billing.'));
                 if (typeof oldAuthFailure === 'function') {
                     oldAuthFailure();
                 }
@@ -775,7 +774,7 @@
                 v: 'weekly',
                 loading: 'async',
                 callback: callbackName,
-                language: 'el',
+                language: config.lang === 'en' ? 'en' : 'el',
                 region: 'GR'
             });
             script.src = 'https://maps.googleapis.com/maps/api/js?' + params.toString();
@@ -875,7 +874,7 @@
             mapReady = true;
             showPartners(partners, null);
         } catch (error) {
-            showMapFailure('Ο χάρτης Google Maps δεν φορτώθηκε. Ελέγξτε τη σύνδεση, το API key, τους περιορισμούς domain και το Billing του Google Cloud.');
+            showMapFailure(text('Ο χάρτης Google Maps δεν φορτώθηκε. Ελέγξτε τη σύνδεση, το API key, τους περιορισμούς domain και το Billing του Google Cloud.'));
             if (window.console && window.console.error) {
                 window.console.error('SPEK Google Maps initialization:', error);
             }
