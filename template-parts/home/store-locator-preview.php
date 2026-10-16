@@ -15,14 +15,20 @@ if (!defined('ABSPATH')) {
     <div class="container store-preview__grid">
 
         <div class="store-preview__visual" data-reveal>
-            <div class="map-placeholder premium-map">
-                <div class="map-grid" aria-hidden="true"></div>
-
+            <div class="map-placeholder premium-map store-preview__illustrated-map">
+                <!-- Decorative Athens-inspired map. Three pins are illustrative,
+                     never partner locations or real geocoded coordinates. -->
+                <img
+                    class="store-preview__map-art"
+                    src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/home-partners-athens-illustration.svg'); ?>"
+                    alt=""
+                    width="1200"
+                    height="700"
+                    loading="lazy"
+                    decoding="async"
+                    aria-hidden="true"
+                >
                 <span class="store-preview__label"><?php esc_html_e('Δίκτυο Συνεργατών', 'spek-theme'); ?></span>
-
-                <i class="store-point store-point--one" aria-hidden="true"></i>
-                <i class="store-point store-point--two" aria-hidden="true"></i>
-                <i class="store-point store-point--three" aria-hidden="true"></i>
             </div>
         </div>
 
