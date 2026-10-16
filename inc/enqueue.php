@@ -156,6 +156,15 @@ function spek_enqueue_assets(): void
                 ['spek-why-spek-flow'],
                 filemtime(SPEK_THEME_DIR . '/assets/css/home-water-background.css')
             );
+
+            // Lightweight decorative Athens map for the homepage partner teaser.
+            // Never load in the functional Google Maps / partners locator.
+            wp_enqueue_style(
+                'spek-home-partners-map',
+                SPEK_THEME_URI . '/assets/css/home-partners-map.css',
+                ['spek-home-water-background'],
+                filemtime(SPEK_THEME_DIR . '/assets/css/home-partners-map.css')
+            );
         }
     }
 
