@@ -19470,3 +19470,101 @@ body.front-page .site-header.spek-smart-header .site-nav__menu a:hover {
     }
 }
 
+
+/* SPEK company October 2026 refinement: editorial philosophy and progress image. */
+.spek-company-page .company-values {
+    background: linear-gradient(180deg, rgba(238, 246, 250, .84) 0%, #fff 95%);
+}
+.spek-company-page .company-values__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(36px, 4vw, 60px);
+}
+.spek-company-page .company-values__statement {
+    position: static;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+    align-items: end;
+    gap: clamp(24px, 5vw, 96px);
+}
+.spek-company-page .company-values__statement .eyebrow {
+    grid-column: 1 / -1;
+    margin-bottom: -16px;
+}
+.spek-company-page .company-values__statement h2 {
+    max-width: 760px;
+    margin: 0;
+}
+.spek-company-page .company-values__statement p {
+    max-width: 620px;
+    margin: 0;
+}
+.spek-company-page .company-values__cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 26px);
+}
+.spek-company-page .company-value-card {
+    min-height: 235px;
+    padding: 98px 32px 32px;
+    border-radius: 28px 28px 55px 28px;
+    background: rgba(255, 255, 255, .94);
+}
+.spek-company-page .company-value-card > span {
+    left: 30px;
+    top: 28px;
+}
+.company-closing__media {
+    position: absolute;
+    z-index: 0;
+    inset: 0 0 0 auto;
+    width: 58%;
+    overflow: hidden;
+    pointer-events: none;
+}
+.company-closing__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,.48) 48%, rgba(255,255,255,.14) 100%);
+}
+.company-closing__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: .48;
+    filter: saturate(.75);
+}
+.spek-company-page .company-closing::after {
+    z-index: 1;
+}
+.spek-company-page .company-closing > span {
+    position: relative;
+    z-index: 2;
+}
+@media (max-width: 900px) {
+    .spek-company-page .company-values__statement {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+    .spek-company-page .company-values__statement .eyebrow {
+        margin-bottom: 0;
+    }
+    .spek-company-page .company-values__cards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .spek-company-page .company-value-card {
+        min-height: 165px;
+        padding: 28px 28px 28px 100px;
+    }
+    .spek-company-page .company-value-card > span {
+        left: 28px;
+        top: 28px;
+    }
+    .company-closing__media {
+        width: 100%;
+        opacity: .35;
+    }
+    .company-closing__media::after {
+        background: rgba(255,255,255,.54);
+    }
+}
