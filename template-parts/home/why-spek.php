@@ -9,34 +9,30 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+$spek_mechanism_photos = function_exists('spek_home_mechanism_images')
+    ? spek_home_mechanism_images()
+    : [];
+
 $values = [
     [
         'letter' => 'Σ',
         'title'  => __('Σχεδιάζουμε', 'spek-theme'),
         'text'   => __('Μελετάμε κάθε λύση με βάση την πραγματική ανάγκη της εγκατάστασης και της καθημερινής χρήσης.', 'spek-theme'),
-        'image_file' => 'spek-value-1.webp',
-        'image' => 'https://images.unsplash.com/photo-1608303588026-884930af2559?auto=format&fit=crop&w=740&q=82',
     ],
     [
         'letter' => 'Π',
         'title'  => __('Πρωτοπορούμε', 'spek-theme'),
         'text'   => __('Αναζητούμε πρακτικές ιδέες που βελτιώνουν τα προϊόντα, τις εφαρμογές και την εμπειρία του επαγγελματία.', 'spek-theme'),
-        'image_file' => 'spek-value-2.webp',
-        'image' => 'https://images.unsplash.com/photo-1689942007817-679c21614b25?auto=format&fit=crop&w=740&q=82',
     ],
     [
         'letter' => 'Ε',
         'title'  => __('Εξελισσόμαστε', 'spek-theme'),
         'text'   => __('Επενδύουμε διαρκώς σε τεχνογνωσία, παραγωγή και νέες προϊοντικές δυνατότητες.', 'spek-theme'),
-        'image_file' => 'spek-value-3.webp',
-        'image' => 'https://images.unsplash.com/photo-1764835746713-34a671e73569?auto=format&fit=crop&w=740&q=82',
     ],
     [
         'letter' => 'Κ',
         'title'  => __('Κατασκευάζουμε', 'spek-theme'),
         'text'   => __('Μετατρέπουμε τον σχεδιασμό σε αξιόπιστα προϊόντα, με συνέπεια, έλεγχο και προσοχή στη λεπτομέρεια.', 'spek-theme'),
-        'image_file' => 'spek-value-4.webp',
-        'image' => 'https://images.unsplash.com/photo-1698031610524-c35e7ebbba2c?auto=format&fit=crop&w=740&q=82',
     ],
 ];
 
@@ -89,12 +85,14 @@ $values = [
                     <article class="why-spek__value why-spek__value--<?php echo esc_attr($index + 1); ?>" data-reveal style="--reveal-delay: <?php echo esc_attr(($index * 65) + 90); ?>ms;">
                         <div class="why-spek__value-picture" aria-hidden="true">
                             <?php
-                                $local_image = 'assets/images/values/' . $value['image_file'];
-                                $image_url = file_exists(get_template_directory() . '/' . $local_image)
-                                    ? get_template_directory_uri() . '/' . $local_image
-                                    : $value['image'];
-                                ?>
-                            <img src="<?php echo esc_url($image_url); ?>" alt="" loading="lazy" decoding="async">
+                            $mechanism_photo = $spek_mechanism_photos[$index]['url'] ?? '';
+                            if ($mechanism_photo) : ?>
+                                <img src="<?php echo esc_url($mechanism_photo); ?>" alt="" loading="lazy" decoding="async">
+                            <?php else : ?>
+                                <img class="why-spek__mechanism-placeholder"
+                                     src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/categories/mechanisms.svg'); ?>"
+                                     alt="" loading="lazy" decoding="async">
+                            <?php endif; ?>
                         </div>
                         <span class="why-spek__value-letter" aria-hidden="true"><?php echo esc_html($value['letter']); ?></span>
                         <div class="why-spek__value-copy">
