@@ -7,7 +7,7 @@ return [
     'Προϊόν' => 'Product',
     'Προϊόν ενδιαφέροντος' => 'Product of interest',
     // October 2026: complete English copy for company, partner locator and public UI.
-    'Ελληνική τεχνογνωσία. Σύγχρονη παραγωγή.' => 'Greek expertise. Modern manufacturing.',
+    'Ελληνική τεχνογνωσία. Σύγχρονη παραγωγή' => 'Greek expertise. Modern manufacturing.',
     'Από την ιδέα, στο προϊόν.' => 'From idea to product.',
     'Από την εμπειρία, στην εξέλιξη.' => 'From experience to progress.',
     'Η ποιότητα δεν ελέγχεται μόνο στο τέλος. Χτίζεται σε κάθε στάδιο.' => 'Quality is not inspected only at the end. It is built into every stage.',
