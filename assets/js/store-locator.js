@@ -213,7 +213,7 @@
 
         const partner = {
             id: card.dataset.partnerId || '',
-            title: card.dataset.title || '',
+            title: (card.dataset.title || '').toLocaleUpperCase('el-GR'),
             area: card.dataset.area || '',
             postcode: card.dataset.postcode || '',
             address: card.dataset.address || '',
