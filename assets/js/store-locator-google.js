@@ -112,7 +112,7 @@
         }
         return {
             id: card.dataset.partnerId || '',
-            title: card.dataset.title || '',
+            title: (card.dataset.title || '').toLocaleUpperCase('el-GR'),
             area: card.dataset.area || '',
             postcode: postcode,
             address: card.dataset.address || '',
