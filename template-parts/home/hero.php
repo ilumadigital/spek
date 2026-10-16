@@ -10,8 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 $hero_video_base = get_template_directory_uri() . '/assets/videos/';
-$hero_video_file = get_template_directory() . '/assets/videos/spek_bg.mp4';
-$hero_video_name = file_exists($hero_video_file) ? 'spek_bg.mp4' : 'hero-bg.mp4';
+$hero_video_name = 'spek-bg01.mp4';
 $hero_is_en = function_exists('spek_is_english') && spek_is_english();
 ?>
 
