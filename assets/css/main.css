@@ -17589,8 +17589,14 @@ body .front-page .container {
 }
 
 .single-product-page .product-gallery__main {
-    min-height: clamp(500px, 42vw, 650px);
-    aspect-ratio: auto;
+    /* Keep portrait and landscape source images inside the same square stage. */
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     padding: clamp(30px, 4vw, 58px);
     border: 1px solid rgba(232, 224, 214, 0.95);
     border-radius: 28px;
@@ -17598,6 +17604,16 @@ body .front-page .container {
     background: #ffffff;
     box-shadow: 0 24px 70px rgba(17, 24, 32, 0.065);
     cursor: zoom-in;
+}
+
+/* Only the featured/gallery image fills the square's inner area; never crop it. */
+.single-product-page .product-gallery__main > img[data-product-gallery-main] {
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain !important;
+    object-position: center !important;
 }
 
 
@@ -18078,9 +18094,16 @@ body .front-page .container {
         padding: 38px;
     }
 
+    /* On the stacked tablet layout, avoid an oversized square image. */
+    .single-product-page .single-product-visual {
+        width: 100%;
+        max-width: 640px;
+        margin-inline: auto;
+    }
+
     .single-product-page .product-gallery__main {
         min-height: 0;
-        aspect-ratio: 1 / 0.82;
+        aspect-ratio: 1 / 1;
     }
 }
 
