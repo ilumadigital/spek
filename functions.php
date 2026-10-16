@@ -29,6 +29,7 @@ $required_files = [
     '/inc/product-image-processing.php',
     '/inc/product-importer.php',
     '/inc/product-taxonomy-corrections.php',
+    '/inc/product-sku-five-digits.php',
     '/inc/product-image-importer.php',
     '/inc/product-image-package-importer.php',
     '/inc/partner-metaboxes.php',
