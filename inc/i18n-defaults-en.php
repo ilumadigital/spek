@@ -2,6 +2,10 @@
 /** Bundled English defaults for the public SPEK frontend. Admin values override these. */
 if (!defined('ABSPATH')) { exit; }
 return [
+    'Γίνεται φόρτωση σημείων πώλησης...' => 'Loading points of sale...',
+    'Ενδιαφέρον για προϊόν: %s' => 'Enquiry about product: %s',
+    'Προϊόν' => 'Product',
+    'Προϊόν ενδιαφέροντος' => 'Product of interest',
     // October 2026: complete English copy for company, partner locator and public UI.
     'Ελληνική τεχνογνωσία. Σύγχρονη παραγωγή.' => 'Greek expertise. Modern manufacturing.',
     'Από την ιδέα, στο προϊόν.' => 'From idea to product.',
@@ -176,7 +180,44 @@ return [
     'Για προϊόντα, διαθεσιμότητα, τεχνική πληροφόρηση και εμπορική συνεργασία.' => 'For products, availability, technical information and commercial cooperation.',
     'Επικοινωνήστε μαζί μας' => 'Contact us',
 
-    // Contact corporate refresh.\n    'SPEK / B2B Contact' => 'SPEK / B2B Contact',\n    'Επικοινωνία με τη SPEK' => 'Contact SPEK',\n    'Για προϊόντα, τεχνικές πληροφορίες, διαθεσιμότητα και εμπορικές συνεργασίες, επικοινωνήστε απευθείας με την ομάδα μας.' => 'For products, technical information, availability and commercial partnerships, contact our team directly.',\n    'Παραγωγή & έδρα' => 'Production & headquarters',\n    'Σχηματάρι · Ελλάδα' => 'Schimatari · Greece',\n    'Business Contact' => 'Business Contact',\n    'Μιλήστε με την κατάλληλη ομάδα.' => 'Contact the right team.',\n    'Στείλτε το αίτημά σας με τα βασικά στοιχεία που χρειαζόμαστε. Έτσι μπορούμε να το προωθήσουμε άμεσα στο κατάλληλο τμήμα.' => 'Send us the key details of your enquiry so we can route it directly to the appropriate team.',\n    'SPEK Μεταλλοπλαστική Α.Β.Ε.Ε.' => 'SPEK Metal & Plastics S.A.',\n    'Έδρα / Παραγωγική βάση' => 'Headquarters / Production base',\n    'ΘΕΣΗ ΑΧΛΑΔΙΑ ΤΟΛΙΑ  -  Δ.Δ.. ΒΑΘΥ ΔΗΜΟΥ ΑΥΛΙΔΟΣ ΕΥΒΟΙΑΣ, ΤΚ 32009 - ΣΧΗΜΑΤΑΡΙ, Τ.Θ. 159' => 'Thesi Achladia Tolia, Vathy Avlidos, Evia 32009, P.O. Box 159, Greece',\n    'Εξυπηρετούμε αιτήματα για' => 'We handle enquiries for',\n    'Προϊόντα & τεχνικές πληροφορίες' => 'Products & technical information',\n    'Διαθεσιμότητα & εμπορικά αιτήματα' => 'Availability & commercial enquiries',\n    'B2B συνεργασίες & δίκτυο συνεργατών' => 'B2B partnerships & partner network',\n    'Επίσημα εταιρικά στοιχεία' => 'Official company details',\n    'Contact Form' => 'Contact Form',\n    'Στείλτε το αίτημά σας.' => 'Send your enquiry.',\n    'Συμπληρώστε τα στοιχεία σας και το θέμα επικοινωνίας.' => 'Enter your details and select the subject of your enquiry.',\n    'Το μήνυμά σας στάλθηκε. Η ομάδα της SPEK θα επικοινωνήσει μαζί σας.' => 'Your message has been sent. The SPEK team will contact you.',\n    'Δεν ήταν δυνατή η αποστολή. Ελέγξτε τα στοιχεία σας ή επικοινωνήστε μαζί μας τηλεφωνικά ή μέσω email.' => 'Your message could not be sent. Check your details or contact us by phone or email.',\n    'Εταιρεία / Οργανισμός' => 'Company / Organisation',\n    'Θέμα επικοινωνίας' => 'Enquiry subject',\n    'Επιλέξτε θέμα' => 'Select a subject',\n    'Εμπορική συνεργασία' => 'Commercial partnership',\n    'Δίκτυο συνεργατών / σημεία πώλησης' => 'Partner network / points of sale',\n    'Άλλο αίτημα' => 'Other enquiry',\n    'Έχω διαβάσει και αποδέχομαι την <a href="%s">Πολιτική Απορρήτου</a>.' => 'I have read and accept the <a href="%s">Privacy Policy</a>.',\n    'Τα στοιχεία χρησιμοποιούνται αποκλειστικά για την απάντηση στο αίτημά σας.' => 'Your details are used solely to respond to your enquiry.',\n    'Αποστολή αιτήματος' => 'Send enquiry',\n    'SPEK Σχηματάρι' => 'SPEK Schimatari',\n    'SPEK · Schimatari' => 'SPEK · Schimatari',\n    'Παραγωγή, εταιρική λειτουργία και υποστήριξη σε μία οργανωμένη βάση.' => 'Production, corporate operations and support from one organised base.',\n    'Προβολή στον χάρτη' => 'View on map',\n    'Παραγωγική βάση SPEK στο Σχηματάρι' => 'SPEK production base in Schimatari',\n\n    // Contact hub redesign.
+    // Contact corporate refresh.
+    'SPEK / B2B Contact' => 'SPEK / B2B Contact',
+    'Επικοινωνία με τη SPEK' => 'Contact SPEK',
+    'Για προϊόντα, τεχνικές πληροφορίες, διαθεσιμότητα και εμπορικές συνεργασίες, επικοινωνήστε απευθείας με την ομάδα μας.' => 'For products, technical information, availability and commercial partnerships, contact our team directly.',
+    'Παραγωγή & έδρα' => 'Production & headquarters',
+    'Σχηματάρι · Ελλάδα' => 'Schimatari · Greece',
+    'Business Contact' => 'Business Contact',
+    'Μιλήστε με την κατάλληλη ομάδα.' => 'Contact the right team.',
+    'Στείλτε το αίτημά σας με τα βασικά στοιχεία που χρειαζόμαστε. Έτσι μπορούμε να το προωθήσουμε άμεσα στο κατάλληλο τμήμα.' => 'Send us the key details of your enquiry so we can route it directly to the appropriate team.',
+    'SPEK Μεταλλοπλαστική Α.Β.Ε.Ε.' => 'SPEK Metal & Plastics S.A.',
+    'Έδρα / Παραγωγική βάση' => 'Headquarters / Production base',
+    'ΘΕΣΗ ΑΧΛΑΔΙΑ ΤΟΛΙΑ  -  Δ.Δ.. ΒΑΘΥ ΔΗΜΟΥ ΑΥΛΙΔΟΣ ΕΥΒΟΙΑΣ, ΤΚ 32009 - ΣΧΗΜΑΤΑΡΙ, Τ.Θ. 159' => 'Thesi Achladia Tolia, Vathy Avlidos, Evia 32009, P.O. Box 159, Greece',
+    'Εξυπηρετούμε αιτήματα για' => 'We handle enquiries for',
+    'Προϊόντα & τεχνικές πληροφορίες' => 'Products & technical information',
+    'Διαθεσιμότητα & εμπορικά αιτήματα' => 'Availability & commercial enquiries',
+    'B2B συνεργασίες & δίκτυο συνεργατών' => 'B2B partnerships & partner network',
+    'Επίσημα εταιρικά στοιχεία' => 'Official company details',
+    'Contact Form' => 'Contact Form',
+    'Στείλτε το αίτημά σας.' => 'Send your enquiry.',
+    'Συμπληρώστε τα στοιχεία σας και το θέμα επικοινωνίας.' => 'Enter your details and select the subject of your enquiry.',
+    'Το μήνυμά σας στάλθηκε. Η ομάδα της SPEK θα επικοινωνήσει μαζί σας.' => 'Your message has been sent. The SPEK team will contact you.',
+    'Δεν ήταν δυνατή η αποστολή. Ελέγξτε τα στοιχεία σας ή επικοινωνήστε μαζί μας τηλεφωνικά ή μέσω email.' => 'Your message could not be sent. Check your details or contact us by phone or email.',
+    'Εταιρεία / Οργανισμός' => 'Company / Organisation',
+    'Θέμα επικοινωνίας' => 'Enquiry subject',
+    'Επιλέξτε θέμα' => 'Select a subject',
+    'Εμπορική συνεργασία' => 'Commercial partnership',
+    'Δίκτυο συνεργατών / σημεία πώλησης' => 'Partner network / points of sale',
+    'Άλλο αίτημα' => 'Other enquiry',
+    'Έχω διαβάσει και αποδέχομαι την <a href="%s">Πολιτική Απορρήτου</a>.' => 'I have read and accept the <a href="%s">Privacy Policy</a>.',
+    'Τα στοιχεία χρησιμοποιούνται αποκλειστικά για την απάντηση στο αίτημά σας.' => 'Your details are used solely to respond to your enquiry.',
+    'Αποστολή αιτήματος' => 'Send enquiry',
+    'SPEK Σχηματάρι' => 'SPEK Schimatari',
+    'SPEK · Schimatari' => 'SPEK · Schimatari',
+    'Παραγωγή, εταιρική λειτουργία και υποστήριξη σε μία οργανωμένη βάση.' => 'Production, corporate operations and support from one organised base.',
+    'Προβολή στον χάρτη' => 'View on map',
+    'Παραγωγική βάση SPEK στο Σχηματάρι' => 'SPEK production base in Schimatari',
+
+    // Contact hub redesign.
     'SPEK / Contact' => 'SPEK / Contact',
     'Επιλέξτε τον σωστό τρόπο επικοινωνίας ανάλογα με το αίτημά σας. Για τεχνικά θέματα, εμπορική συνεργασία, δίκτυο συνεργατών ή εταιρικές πληροφορίες.' => 'Choose the right contact route for your enquiry: technical matters, commercial cooperation, partner network or corporate information.',
     'Contact Directory' => 'Contact Directory',
