@@ -1,0 +1,102 @@
+/*
+ * SPEK homepage partner preview — illustrative Athens-inspired network map.
+ * The three pins are decorative and do not represent real partners.
+ * Scoped to the home preview; the live partner locator is unaffected.
+ */
+
+body .front-page .store-preview .store-preview__illustrated-map {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 440px;
+    aspect-ratio: 1200 / 700;
+    overflow: hidden;
+    isolation: isolate;
+    border: 1px solid rgba(33, 85, 124, .09);
+    border-radius: 36px 36px 76px 36px;
+    background: #edf5f8;
+    box-shadow: 0 26px 60px rgba(17, 54, 85, .105);
+}
+
+body .front-page .store-preview .store-preview__illustrated-map::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, .08) 0%,
+        transparent 62%,
+        rgba(255, 255, 255, .15) 100%);
+}
+
+body .front-page .store-preview .store-preview__map-art {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+    user-select: none;
+}
+
+body .front-page .store-preview .store-preview__illustrated-map .store-preview__label {
+    position: absolute;
+    z-index: 2;
+    right: auto;
+    bottom: 26px;
+    left: 30px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid rgba(29, 77, 116, .1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 8px 20px rgba(23, 72, 109, .1);
+    color: #205489;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+/* The original preview floated as an abstract shape. Treat this as a
+ * static map thumbnail, with no faux interaction or moving pins. */
+body .front-page .store-preview__visual.is-visible .store-preview__illustrated-map {
+    animation: none !important;
+}
+
+@media (max-width: 1180px) {
+    body .front-page .store-preview .store-preview__illustrated-map {
+        min-height: 350px;
+        border-radius: 30px 30px 60px 30px;
+    }
+}
+@media (max-width: 760px) {
+    body .front-page .store-preview .store-preview__illustrated-map {
+        min-height: 280px;
+        aspect-ratio: 1.55;
+        border-radius: 26px 26px 48px 26px;
+    }
+    body .front-page .store-preview .store-preview__illustrated-map .store-preview__label {
+        bottom: 18px;
+        left: 18px;
+        min-height: 36px;
+        padding: 0 13px;
+        font-size: 10px;
+        letter-spacing: .12em;
+    }
+}
+@media (max-width: 420px) {
+    body .front-page .store-preview .store-preview__illustrated-map {
+        min-height: 245px;
+        aspect-ratio: 1.24;
+    }
+    body .front-page .store-preview .store-preview__map-art {
+        object-position: 47% center;
+    }
+}
