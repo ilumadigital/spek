@@ -85,6 +85,12 @@ $GLOBALS['fail_taxonomy'] = 'product_category';
 rejects(function () use ($both) {spek_tc_apply_row($both, spek_tc_plan($both));}, 'Rollback if second taxonomy write fails');
 check($GLOBALS['products'][102]['terms']['product_series'] === [1] && $GLOBALS['products'][102]['terms']['product_category'] === [11,12], 'Rollback restores old series/categories');
 
+// Replacement must remove ALL previous series, not just one.
+$GLOBALS['products'][101]['terms']['product_series'] = [1, 4];
+$multi = row(101, '10062', 'SPEK|Nemo', 'LB Plast');
+check(spek_tc_apply_row($multi, spek_tc_plan($multi)), 'Replace multiple old series with one new series');
+check($GLOBALS['products'][101]['terms']['product_series'] === [2], 'Neither SPEK nor Nemo remains assigned');
+
 $csv = tempnam(sys_get_temp_dir(), 'spek-tc-test-');
 $header = "id,sku,reference_title,expected_series,series,expected_categories,categories\n";
 file_put_contents($csv, "\xEF\xBB\xBF".$header."101,10062,Title,LB Plast,McAlpine,,\n");
