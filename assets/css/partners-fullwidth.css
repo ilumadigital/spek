@@ -237,3 +237,8 @@ body.page-template-template-partners .partners-page [data-partner-empty]:not([hi
     background: #f7fafc;
     color: #43596b;
 }
+
+/* Company names in the store locator are always displayed in capitals. */
+body.page-template-template-partners .partners-page .partner-card__title {
+    text-transform: uppercase;
+}
