@@ -21,7 +21,7 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
     <div class="container company-hero__grid">
         <div class="company-hero__content" data-reveal>
             <span class="eyebrow"><?php esc_html_e('Η εταιρεία μας', 'spek-theme'); ?></span>
-            <h1><?php esc_html_e('Ελληνική τεχνογνωσία Σύγχρονη παραγωγή', 'spek-theme'); ?></h1>
+            <h1><?php esc_html_e('Ελληνική τεχνογνωσία. Σύγχρονη παραγωγή.', 'spek-theme'); ?></h1>
             <p class="company-hero__lead"><?php esc_html_e('Από το 1990, η SPEK σχεδιάζει και παράγει αξιόπιστες λύσεις για υδραυλικές εφαρμογές και είδη υγιεινής, συνδυάζοντας εμπειρία, παραγωγική γνώση και διαρκή εξέλιξη.', 'spek-theme'); ?></p>
 
         </div>
@@ -77,8 +77,8 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
             <div data-reveal>
                 <span class="eyebrow"><?php esc_html_e('Η SPEK σήμερα', 'spek-theme'); ?></span>
                 <h2 class="company-intro__headline">
-                    <span class="company-intro__headline-line"><?php esc_html_e('Από την ιδέα, στο προϊόν', 'spek-theme'); ?></span>
-                    <span class="company-intro__headline-line"><?php esc_html_e('Από την εμπειρία, στην εξέλιξη', 'spek-theme'); ?></span>
+                    <span class="company-intro__headline-line"><?php esc_html_e('Από την ιδέα, στο προϊόν.', 'spek-theme'); ?></span>
+                    <span class="company-intro__headline-line"><?php esc_html_e('Από την εμπειρία, στην εξέλιξη.', 'spek-theme'); ?></span>
                 </h2>
             </div>
             <div class="company-intro__copy" data-reveal>
