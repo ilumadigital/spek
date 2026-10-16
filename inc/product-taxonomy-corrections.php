@@ -171,8 +171,25 @@ function spek_tc_assert_product(array $row): int
     return $id;
 }
 
+/**
+ * Recognize a narrowly defined, incomplete additive category update:
+ * CSV expects A, requests A|B, but WordPress already contains only B.
+ * Never accept missing/extra terms, category replacement, or series divergence.
+ * Such a discrepancy requires explicit administrator confirmation.
+ */
+function spek_tc_is_partial_additive_category(array $expected, array $target, array $current): bool
+{
+    if (!$expected || !$current || $expected === $current || $target === $current ||
+        count($target) <= count($expected) ||
+        array_diff($expected, $target) || array_diff($current, $target) ||
+        !array_diff($expected, $current) || !array_diff($current, $expected)) {
+        return false;
+    }
+    return spek_tc_sorted_ids(array_merge($expected, $current)) === $target;
+}
+
 /** Build a plan using LIVE taxonomy values; nothing here writes to WP. */
-function spek_tc_plan(array $row): array
+function spek_tc_plan(array $row, bool $accept_partial_category = false): array
 {
     $id = spek_tc_assert_product($row);
     $plan = [];
@@ -189,14 +206,34 @@ function spek_tc_plan(array $row): array
         $old = spek_tc_resolve_terms($expected, $taxonomy);
         $new = spek_tc_resolve_terms($target, $taxonomy);
         $current = spek_tc_current_terms($id, $taxonomy);
-        if ($current !== $old && $current !== $new) {
+        $partial = $field === 'categories' && spek_tc_is_partial_additive_category($old, $new, $current);
+        if ($current !== $old && $current !== $new && !($accept_partial_category && $partial)) {
             throw new RuntimeException('Ασυμφωνία ' . $taxonomy . ': πραγματικό «' .
                 spek_tc_term_names($current, $taxonomy) . '», αναμενόμενο «' . $expected . '», νέο «' . $target . '».');
         }
-        $plan[$taxonomy] = ['current' => $current, 'target' => $new];
+        $plan[$taxonomy] = ['current' => $current, 'target' => $new, 'partial' => $partial];
     }
     if (!$plan) {
         throw new RuntimeException('Η γραμμή δεν ζητά αλλαγή σε καμία ταξινομία.');
+    }
+    return $plan;
+}
+
+/**
+ * A confirmed partial category may be written only if the current state still
+ * matches what the admin previewed, or has already reached the CSV target.
+ */
+function spek_tc_session_plan(array $row, array $exceptions): array
+{
+    $id = (string) $row['id'];
+    $allow_partial = array_key_exists($id, $exceptions);
+    $plan = spek_tc_plan($row, $allow_partial);
+    if ($allow_partial) {
+        $current = $plan['product_category']['current'] ?? null;
+        $target = $plan['product_category']['target'] ?? null;
+        if ($current === null || ($current !== spek_tc_sorted_ids((array) $exceptions[$id]) && $current !== $target)) {
+            throw new RuntimeException('Η κατηγορία του SKU ' . $row['sku'] . ' άλλαξε μετά την επιβεβαίωση. Επαναλάβετε την προεπισκόπηση.');
+        }
     }
     return $plan;
 }
@@ -263,6 +300,8 @@ function spek_tc_render_page(): void
         $errors = 0;
         $pending = 0;
         $blockers = [];
+        $exceptions = [];
+        $partial_details = [];
         echo '<h2>Προεπισκόπηση — ' . count($rows) . ' προϊόντα</h2>';
         // Buffer the table so validation blockers can be shown ABOVE 189+ preview rows.
         ob_start();
@@ -270,10 +309,16 @@ function spek_tc_render_page(): void
         foreach ($rows as $row) {
             $display = [];
             try {
-                $plan = spek_tc_plan($row);
+                $plan = spek_tc_plan($row, true);
                 $needs_change = spek_tc_has_changes($plan);
                 $pending += (int) $needs_change;
-                $status = $needs_change ? 'Έτοιμο' : 'Ήδη διορθωμένο';
+                $partial = !empty($plan['product_category']['partial']);
+                if ($partial) {
+                    $exceptions[(string) $row['id']] = $plan['product_category']['current'];
+                    $partial_details[] = $row;
+                }
+                $status = $partial ? 'Απαιτείται ρητή επιβεβαίωση μερικής κατηγορίας' :
+                    ($needs_change ? 'Έτοιμο' : 'Ήδη διορθωμένο');
                 foreach (['series' => 'product_series', 'categories' => 'product_category'] as $field => $tax) {
                     $current = isset($plan[$tax]) ? spek_tc_term_names($plan[$tax]['current'], $tax) : spek_tc_term_names(spek_tc_current_terms((int) $row['id'], $tax), $tax);
                     $display[$field] = $current . ($row[$field] === '' ? ' (χωρίς αλλαγή)' : ' → ' . str_replace('|', ' | ', $row[$field]));
@@ -316,18 +361,33 @@ function spek_tc_render_page(): void
         }
         echo $preview_table; // Escaped table cells, generated entirely above.
         if ($errors) {
+            // Any unexpected divergence still blocks the entire import.
         } elseif ($pending === 0) {
             echo '<div class="notice notice-success inline"><p>Όλες οι διορθώσεις έχουν ήδη εφαρμοστεί.</p></div>';
         } else {
             $token = wp_generate_password(32, false, false);
             $path = spek_tc_session_path($token);
             $state = ['user_id' => get_current_user_id(), 'expires' => time() + HOUR_IN_SECONDS,
-                'rows' => $rows, 'cursor' => 0, 'updated' => 0, 'unchanged' => 0, 'preflight' => false];
+                'rows' => $rows, 'cursor' => 0, 'updated' => 0, 'unchanged' => 0, 'preflight' => false,
+                'exceptions' => $exceptions, 'confirmed_partial' => false];
             if (!spek_product_import_write_state($path, $state)) {
                 throw new RuntimeException('Αποτυχία αποθήκευσης της προεπισκόπησης.');
             }
             echo '<p><strong>Έτοιμα για αλλαγή: ' . (int) $pending . '. Ήδη διορθωμένα: ' . (count($rows) - $pending) . '.</strong></p>';
             echo '<p>Η εφαρμογή γίνεται με ξεχωριστά αιτήματα και ελέγχει ξανά τα δεδομένα πριν από κάθε αλλαγή.</p>';
+            if ($partial_details) {
+                echo '<div class="notice notice-warning inline" style="padding:12px 16px;max-width:1100px"><p><strong>Αναγνωρίστηκε μερικώς εφαρμοσμένη, προσθετική αλλαγή κατηγορίας:</strong></p>';
+                echo '<ul style="list-style:disc;padding-left:20px">';
+                foreach ($partial_details as $item) {
+                    $now = spek_tc_term_names($exceptions[(string) $item['id']], 'product_category');
+                    echo '<li><strong>WP ID ' . esc_html($item['id']) . ' / SKU ' . esc_html($item['sku']) . ':</strong> τώρα «' . esc_html($now) .
+                        '», CSV αναμένει «' . esc_html($item['expected_categories']) . '», τελικός εγκεκριμένος στόχος «' .
+                        esc_html(str_replace('|', ' | ', $item['categories'])) . '».</li>';
+                }
+                echo '</ul><p><label><input type="checkbox" id="spek-tc-confirm-partial" value="1"> ' .
+                    'Επιβεβαιώνω τις παραπάνω πραγματικές τιμές και επιτρέπω να εφαρμοστούν μόνο οι τελικές κατηγορίες του CSV.</label></p>';
+                echo '<p>Αν κάποια τιμή άλλαξε μετά την προεπισκόπηση, η εκτέλεση διακόπτεται. Χωρίς επιβεβαίωση δεν εκτελείται καμία αλλαγή.</p></div>';
+            }
             echo '<button type="button" class="button button-primary" id="spek-tc-apply">Εφαρμογή εγκεκριμένων διορθώσεων</button> <span id="spek-tc-progress" role="status"></span>';
             ?>
             <script>
@@ -335,6 +395,11 @@ function spek_tc_render_page(): void
                 const button = document.getElementById('spek-tc-apply');
                 const progress = document.getElementById('spek-tc-progress');
                 button.addEventListener('click', async () => {
+                    const confirmation = document.getElementById('spek-tc-confirm-partial');
+                    if (confirmation && !confirmation.checked) {
+                        progress.textContent = 'Για τη μερικώς εφαρμοσμένη κατηγορία απαιτείται επιβεβαίωση.';
+                        return;
+                    }
                     button.disabled = true;
                     progress.textContent = 'Επαλήθευση και εφαρμογή...';
                     try {
@@ -342,7 +407,8 @@ function spek_tc_render_page(): void
                         while (!done) {
                             const body = new URLSearchParams({action: 'spek_tc_apply',
                                 nonce: <?php echo wp_json_encode(wp_create_nonce('spek_tc_apply')); ?>,
-                                token: <?php echo wp_json_encode($token); ?>});
+                                token: <?php echo wp_json_encode($token); ?>,
+                                confirm_partial: confirmation && confirmation.checked ? '1' : '0'});
                             const response = await fetch(window.ajaxurl, {method: 'POST', credentials: 'same-origin', body});
                             const result = await response.json();
                             if (!result.success) throw new Error(result.data?.message || 'Αποτυχία εφαρμογής.');
@@ -430,17 +496,24 @@ function spek_tc_ajax_apply(): void
                 throw new RuntimeException('Η προεπισκόπηση έληξε ή δεν είναι δική σας. Ανεβάστε ξανά το CSV.');
             }
             $total = count($state['rows']);
+            $exceptions = (array) ($state['exceptions'] ?? []);
+            if ($exceptions && empty($state['confirmed_partial'])) {
+                if ((int) ($state['cursor'] ?? 0) !== 0 || empty($_POST['confirm_partial'])) {
+                    throw new RuntimeException('Απαιτείται ρητή επιβεβαίωση της μερικής κατάστασης κατηγοριών πριν από οποιαδήποτε εγγραφή.');
+                }
+                $state['confirmed_partial'] = true;
+            }
             if (!$state['preflight']) {
                 // Abort without product writes if any approved row changed after preview.
                 foreach ($state['rows'] as $row) {
-                    spek_tc_plan($row);
+                    spek_tc_session_plan($row, $exceptions);
                 }
                 $state['preflight'] = true;
             }
             if ($state['cursor'] < $total) {
                 $row = $state['rows'][$state['cursor']];
                 // Check current data and expected_* AGAIN immediately before this write.
-                $plan = spek_tc_plan($row);
+                $plan = spek_tc_session_plan($row, $exceptions);
                 if (spek_tc_apply_row($row, $plan)) {
                     ++$state['updated'];
                 } else {
