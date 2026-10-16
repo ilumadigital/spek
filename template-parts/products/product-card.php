@@ -20,7 +20,12 @@ $product_code_label = function_exists('spek_is_english') && spek_is_english()
 
 $product_subtitle = get_post_meta($product_id, '_spek_product_subtitle', true) ?: spek_get_product_field('product_short_description', $product_id);
 $product_application = get_post_meta($product_id, '_spek_product_application', true);
-$product_series = get_post_meta($product_id, '_spek_product_series', true);
+// Product series is a taxonomy assignment (updated by the taxonomy corrections importer).
+// Read live terms, not the legacy meta field, so corrected series display immediately.
+$product_series_terms = get_the_terms($product_id, 'product_series');
+$product_series = (!is_wp_error($product_series_terms) && !empty($product_series_terms))
+    ? implode(' / ', wp_list_pluck($product_series_terms, 'name'))
+    : '';
 $show_finder_dimensions = !empty($GLOBALS['spek_finder_show_dimensions']);
 $product_dimensions = ($show_finder_dimensions && function_exists('spek_finder_product_dimensions_label'))
     ? spek_finder_product_dimensions_label($product_id)
@@ -56,13 +61,9 @@ $product_dimensions = ($show_finder_dimensions && function_exists('spek_finder_p
     </a>
 
     <div class="spek-product-card__content">
-        <?php if ($product_series) : ?>
+        <?php if ($product_series !== '') : ?>
             <div class="spek-product-card__eyebrow">
                 <?php echo esc_html($product_series); ?>
-            </div>
-        <?php else : ?>
-            <div class="spek-product-card__eyebrow">
-                SPEK
             </div>
         <?php endif; ?>
 
