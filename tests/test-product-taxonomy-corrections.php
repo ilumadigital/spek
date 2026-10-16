@@ -95,6 +95,27 @@ $multi = row(101, '10062', 'SPEK|Nemo', 'LB Plast');
 check(spek_tc_apply_row($multi, spek_tc_plan($multi)), 'Replace multiple old series with one new series');
 check($GLOBALS['products'][101]['terms']['product_series'] === [2], 'Neither SPEK nor Nemo remains assigned');
 
+// Real SPEK 10064 case: current category is the *new* category only,
+// while the approved target must contain both the old and new categories.
+$GLOBALS['products'][102]['terms']['product_series'] = [3]; // McAlpine already applied.
+$GLOBALS['products'][102]['terms']['product_category'] = [12]; // Σιφόνια only.
+$partial = row(102, '10064', 'SPEK', 'McAlpine', 'Μπάνιο', 'Μπάνιο|Σιφόνια');
+rejects(function () use ($partial) { spek_tc_plan($partial); }, 'Unexpected category still rejected in strict mode');
+$partial_plan = spek_tc_plan($partial, true);
+check($partial_plan['product_category']['partial'] === true, 'Recognize additive category half-applied state');
+$session_exceptions = ['102' => [12]];
+check(spek_tc_has_changes(spek_tc_session_plan($partial, $session_exceptions)), 'Explicitly confirmed snapshot can be scheduled');
+$before = $GLOBALS['products'][102];
+check($GLOBALS['products'][102] === $before, 'Recognition and preview never write WordPress data');
+rejects(function () use ($partial) { spek_tc_session_plan($partial, ['102' => [11]]); }, 'Refuse unconfirmed/changed live snapshot');
+check(spek_tc_apply_row($partial, spek_tc_session_plan($partial, $session_exceptions)), 'Restore missing Bathroom alongside Siphons');
+check($GLOBALS['products'][102]['terms']['product_category'] === [11,12], 'Final category exactly Bathroom + Siphons');
+check(!spek_tc_apply_row($partial, spek_tc_session_plan($partial, $session_exceptions)), 'Confirmed partial-state correction is idempotent');
+$GLOBALS['products'][102]['terms']['product_category'] = [12,13]; // Siphons + unrelated.
+rejects(function () use ($partial) { spek_tc_plan($partial, true); }, 'Extra unrelated category is still blocked');
+$GLOBALS['products'][102]['terms']['product_category'] = [10]; // Cisterns.
+rejects(function () use ($partial) { spek_tc_plan($partial, true); }, 'Wrong category is still blocked');
+
 $csv = tempnam(sys_get_temp_dir(), 'spek-tc-test-');
 $header = "id,sku,reference_title,expected_series,series,expected_categories,categories\n";
 file_put_contents($csv, "\xEF\xBB\xBF".$header."101,10062,Title,LB Plast,McAlpine,,\n");
