@@ -474,3 +474,24 @@
   }
   .why-spek--flow .why-spek__value-copy h3 { font-size: 18px; line-height: 1.35; }
 }
+
+
+/* October 2026: authentic SPEK pneumatic-mechanism photos.
+   Keep the full mechanism visible, even when its product photo is portrait. */
+.why-spek--flow .why-spek__value-picture {
+  background: linear-gradient(145deg, #fafdff 0%, #e7f2f9 100%);
+}
+.why-spek--flow .why-spek__value-picture img {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: clamp(12px, 1.65vw, 25px);
+  object-fit: contain;
+  object-position: center center !important;
+  background: transparent;
+  filter: none;
+}
+.why-spek--flow .why-spek__value-picture img.why-spek__mechanism-placeholder {
+  padding: 22%;
+  opacity: .24;
+}
