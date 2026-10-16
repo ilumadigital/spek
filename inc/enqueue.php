@@ -20,6 +20,14 @@ function spek_enqueue_assets(): void
 
     wp_enqueue_style('spek-multilingual', SPEK_THEME_URI . '/assets/css/multilingual.css', ['spek-main'], filemtime(SPEK_THEME_DIR . '/assets/css/multilingual.css'));
 
+    // The product card footer is shared by the archive and Product Finder.
+    wp_enqueue_style(
+        'spek-product-card-sku',
+        SPEK_THEME_URI . '/assets/css/product-card-sku.css',
+        ['spek-main', 'spek-multilingual'],
+        filemtime(SPEK_THEME_DIR . '/assets/css/product-card-sku.css')
+    );
+
     if (is_singular('spek_product')) {
         wp_add_inline_style(
             'spek-main',

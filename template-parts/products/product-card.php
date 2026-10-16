@@ -10,6 +10,13 @@ if (!defined('ABSPATH')) {
 }
 
 $product_id = get_the_ID();
+$product_code = spek_get_product_field('product_code', $product_id);
+$product_code = !spek_product_value_is_empty($product_code)
+    ? spek_product_value_to_text($product_code)
+    : '';
+$product_code_label = function_exists('spek_is_english') && spek_is_english()
+    ? 'Product code:'
+    : 'Κωδ. Προϊόντος:';
 
 $product_subtitle = get_post_meta($product_id, '_spek_product_subtitle', true) ?: spek_get_product_field('product_short_description', $product_id);
 $product_application = get_post_meta($product_id, '_spek_product_application', true);
@@ -88,8 +95,16 @@ $product_dimensions = ($show_finder_dimensions && function_exists('spek_finder_p
             </div>
         <?php endif; ?>
 
-        <a class="spek-product-card__button" href="<?php the_permalink(); ?>">
-            <?php esc_html_e('Προβολή προϊόντος', 'spek-theme'); ?>
-        </a>
+        <div class="spek-product-card__footer">
+            <a class="spek-product-card__button" href="<?php the_permalink(); ?>">
+                <?php esc_html_e('Προβολή προϊόντος', 'spek-theme'); ?>
+            </a>
+            <?php if ($product_code !== '') : ?>
+                <a class="spek-product-card__code-link" href="<?php echo esc_url(get_permalink($product_id)); ?>">
+                    <span><?php echo esc_html($product_code_label); ?></span>
+                    <strong><?php echo esc_html($product_code); ?></strong>
+                </a>
+            <?php endif; ?>
+        </div>
     </div>
 </article>

@@ -1,0 +1,51 @@
+/**
+ * Product card action row: button on the left, unboxed SKU link on the right.
+ * Shared by product archives and finder results.
+ */
+.spek-product-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+    margin-top: auto;
+}
+
+.spek-product-card__footer .spek-product-card__button {
+    flex: 0 0 auto;
+    margin-top: 0;
+}
+
+.spek-product-card__code-link {
+    display: inline-block;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: right;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color 0.2s ease;
+}
+
+.spek-product-card__code-link strong {
+    color: var(--color-ink);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.spek-product-card__code-link:hover,
+.spek-product-card__code-link:focus-visible {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.spek-product-card__code-link:hover strong,
+.spek-product-card__code-link:focus-visible strong {
+    color: var(--color-accent);
+}
