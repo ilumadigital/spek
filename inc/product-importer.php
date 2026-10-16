@@ -43,6 +43,7 @@ function spek_render_product_importer_page(): void
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('Εισαγωγή προϊόντων από CSV', 'spek-theme'); ?></h1>
+        <p><a class="button button-secondary" href="<?php echo esc_url(admin_url('edit.php?post_type=spek_product&page=spek-sku-five-digits')); ?>"><?php esc_html_e('Μετατροπή κωδικών σε 5 ψηφία', 'spek-theme'); ?> &rarr;</a></p>
         <p><a class="button button-secondary" href="<?php echo esc_url(admin_url('edit.php?post_type=spek_product&page=spek-taxonomy-corrections')); ?>"><?php esc_html_e('Διορθώσεις σειρών / κατηγοριών', 'spek-theme'); ?> &rarr;</a></p>
 
         <?php $spek_sku_diag = function_exists('spek_import_product_sku_diagnostics') ? spek_import_product_sku_diagnostics() : []; ?>
