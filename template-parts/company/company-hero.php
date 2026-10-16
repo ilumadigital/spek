@@ -21,7 +21,7 @@ $intro_image_url  = get_template_directory_uri() . '/assets/images/spek-website-
     <div class="container company-hero__grid">
         <div class="company-hero__content" data-reveal>
             <span class="eyebrow"><?php esc_html_e('Η εταιρεία μας', 'spek-theme'); ?></span>
-            <h1><?php esc_html_e('Ελληνική τεχνογνωσία. Σύγχρονη παραγωγή.', 'spek-theme'); ?></h1>
+            <h1><?php esc_html_e('Ελληνική τεχνογνωσία. Σύγχρονη παραγωγή', 'spek-theme'); ?></h1>
             <p class="company-hero__lead"><?php esc_html_e('Από το 1990, η SPEK σχεδιάζει και παράγει αξιόπιστες λύσεις για υδραυλικές εφαρμογές και είδη υγιεινής, συνδυάζοντας εμπειρία, παραγωγική γνώση και διαρκή εξέλιξη.', 'spek-theme'); ?></p>
 
         </div>
