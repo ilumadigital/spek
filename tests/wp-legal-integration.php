@@ -17,11 +17,18 @@ function spek_wp_smoke_assert($ok, string $label): void {
 wp_set_current_user(1); // Disposable CI admin, not a real account.
 spek_wp_smoke_assert(current_user_can('manage_options'), 'WordPress admin context exists');
 
+$existing_privacy = get_page_by_path('privacy-policy', OBJECT, 'page');
+$existing_privacy_content = $existing_privacy ? $existing_privacy->post_content : null;
 do_action('admin_init');
 foreach (['privacy-policy', 'cookie-policy', 'terms-of-use', 'accessibility-statement'] as $slug) {
     $page = get_page_by_path($slug, OBJECT, 'page');
     spek_wp_smoke_assert($page instanceof WP_Post, $slug . ' exists');
     spek_wp_smoke_assert($page->post_status === 'draft', $slug . ' is unpublished');
+    if ($slug === 'privacy-policy' && $existing_privacy) {
+        spek_wp_smoke_assert($page->post_content === $existing_privacy_content, 'Existing WordPress privacy draft was not overwritten silently');
+        spek_wp_smoke_assert(spek_legal_published_page_url($slug) === '', 'Unapproved existing privacy draft is not advertised');
+        continue;
+    }
     spek_wp_smoke_assert(get_post_meta($page->ID, '_wp_page_template', true) === 'templates/template-legal.php', $slug . ' uses corporate template');
     spek_wp_smoke_assert((string) get_post_meta($page->ID, '_spek_content_en', true) !== '', $slug . ' has English legal draft');
     spek_wp_smoke_assert((string) get_post_meta($page->ID, '_spek_legal_approved', true) !== '1', $slug . ' is not falsely approved');
