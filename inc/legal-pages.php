@@ -123,3 +123,67 @@ add_action('save_post_page', static function (int $post_id, WP_Post $post): void
         update_post_meta($post_id, '_spek_legal_review_required', '1');
     }
 }, 20, 2);
+
+
+/**
+ * Existing WordPress Privacy Policy pages must never be overwritten silently.
+ * Offer a one-click, nonce-protected import ONLY for an existing unpublished
+ * draft. WordPress revisions will preserve previous content for rollback.
+ */
+add_action('admin_notices', static function (): void {
+    if (!current_user_can('manage_options') || !function_exists('get_current_screen')) { return; }
+    $screen = get_current_screen();
+    if (!$screen || !in_array($screen->id, ['dashboard', 'edit-page', 'page'], true)) { return; }
+
+    $existing = get_page_by_path('privacy-policy', OBJECT, 'page');
+    if (!$existing || $existing->post_status !== 'draft'
+        || get_post_meta($existing->ID, '_spek_legal_review_required', true) === '1') {
+        return;
+    }
+
+    $url = wp_nonce_url(
+        add_query_arg(['action' => 'spek_legal_import_draft', 'page_id' => $existing->ID], admin_url('admin-post.php')),
+        'spek_legal_import_draft_' . $existing->ID
+    );
+    echo '<div class="notice notice-warning"><p>'
+        . esc_html__('Υπάρχει ήδη σελίδα Πολιτικής Απορρήτου σε προσχέδιο. Η SPEK δεν την αντικατέστησε αυτόματα.', 'spek-theme')
+        . ' <a class="button button-secondary" href="' . esc_url($url) . '">'
+        . esc_html__('Εισαγωγή νέου προσχεδίου SPEK (διατηρείται αναθεώρηση)', 'spek-theme')
+        . '</a></p></div>';
+});
+
+add_action('admin_post_spek_legal_import_draft', static function (): void {
+    if (!current_user_can('manage_options')) { wp_die('Not allowed.'); }
+    $id = isset($_GET['page_id']) ? absint($_GET['page_id']) : 0;
+    check_admin_referer('spek_legal_import_draft_' . $id);
+    $page = get_post($id);
+    if (!$page || $page->post_type !== 'page' || $page->post_name !== 'privacy-policy'
+        || $page->post_status !== 'draft') {
+        wp_die('Import restricted to an existing, unpublished privacy-policy draft.');
+    }
+
+    $el_path = SPEK_THEME_DIR . '/legal/drafts/privacy-policy-el.php';
+    $en_path = SPEK_THEME_DIR . '/legal/drafts/privacy-policy-en.php';
+    if (!is_readable($el_path) || !is_readable($en_path)) { wp_die('Draft files unavailable.'); }
+
+    $el = require $el_path;
+    $en = require $en_path;
+    // Save a revision of existing text before replacing it.
+    if (function_exists('wp_save_post_revision')) {
+        wp_save_post_revision($id);
+    }
+    $res = wp_update_post([
+        'ID' => $id,
+        'post_title' => 'Πολιτική Απορρήτου',
+        'post_content' => $el,
+        'post_status' => 'draft',
+    ], true);
+    if (is_wp_error($res)) { wp_die(esc_html($res->get_error_message())); }
+    update_post_meta($id, '_wp_page_template', 'templates/template-legal.php');
+    update_post_meta($id, '_spek_title_en', 'Privacy Policy');
+    update_post_meta($id, '_spek_content_en', $en);
+    update_post_meta($id, '_spek_legal_review_required', '1');
+    delete_post_meta($id, '_spek_legal_approved');
+    wp_safe_redirect(get_edit_post_link($id, ''));
+    exit;
+});
