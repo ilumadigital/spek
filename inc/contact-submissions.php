@@ -389,7 +389,9 @@ function spek_handle_contact_submission(): void
         ? sanitize_textarea_field(wp_unslash((string) $_POST['message']))
         : '';
 
-    $newsletter_opt_in = !empty($_POST['newsletter_opt_in']);
+    $newsletter_opt_in = !empty($_POST['newsletter_opt_in'])
+        && function_exists('spek_legal_published_page_url')
+        && spek_legal_published_page_url('privacy-policy') !== '';
 
     $product_id = isset($_POST['product_id'])
         ? absint($_POST['product_id'])
