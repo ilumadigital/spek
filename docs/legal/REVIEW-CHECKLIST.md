@@ -1,6 +1,6 @@
 # SPEK Legal Pages — release review (19 October 2026)
 
-This branch is **review-only**, not a compliance sign-off. Four bilingual WordPress pages are created with `post_status=draft` when an administrator next visits WP Admin. Any existing pages are left untouched. Editorial content remains editable in WP (Greek main content; English in existing SPEK translated-content meta). Footer links appear only after publication. **No banner/CMP is claimed as installed.**
+This branch is **review-only**, not a compliance sign-off. No GitHub Actions or workflow files are included. The optional test PHP scripts are manual tools, not scheduled jobs. Four bilingual WordPress pages are created with `post_status=draft` when an administrator next visits WP Admin. Any existing pages are left untouched. Editorial content remains editable in WP (Greek main content; English in existing SPEK translated-content meta). Footer links appear only after publication. **No banner/CMP is claimed as installed.**
 
 ## Verified from current WordPress theme source
 
