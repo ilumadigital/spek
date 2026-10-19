@@ -1,9 +1,9 @@
 <?php
 if (!defined('ABSPATH')) { exit; }
 return <<<'SPEK_LEGAL_HTML'
-<p class="spek-pending"><strong>Verification needed:</strong> corporate legal name and registrations, any active online purchasing functionality, catalogue licensing conditions and final legal review.</p>
+<p class="spek-pending"><strong>Verification needed:</strong> current corporate registrations, any active online purchasing functionality, catalogue licensing conditions and final legal review.</p>
 <h2>1. About this website</h2>
-<p>This is the corporate website of SPEK METALLOPLASTIKI AVEE (legal name to be verified). It presents the company's activities, products, catalogues, technical resources, distribution network and contact channels. Use of the site must comply with applicable law and respect intellectual property and other rights.</p>
+<p>This is the corporate website of SPEK METALPLASTIC S.A. (registered details to be confirmed). It presents the company's activities, products, catalogues, technical resources, distribution network and contact channels. Use of the site must comply with applicable law and respect intellectual property and other rights.</p>
 <h2>2. Product and technical information</h2>
 <p>Product descriptions, photographs, codes, specifications and technical files are provided for information. We aim to keep them accurate, but content may contain mistakes or change as products develop. For any important compatibility, dimensional, performance or compliance requirement, request direct confirmation from SPEK before selecting, purchasing or installing a product.</p>
 <h2>3. Not an online checkout</h2>
