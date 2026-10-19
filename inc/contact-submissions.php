@@ -389,6 +389,8 @@ function spek_handle_contact_submission(): void
         ? sanitize_textarea_field(wp_unslash((string) $_POST['message']))
         : '';
 
+    $newsletter_opt_in = !empty($_POST['newsletter_opt_in']);
+
     $product_id = isset($_POST['product_id'])
         ? absint($_POST['product_id'])
         : 0;
@@ -516,8 +518,21 @@ function spek_handle_contact_submission(): void
         $customer_sent ? 'sent' : 'failed'
     );
 
-    // The request is safely stored in Contacts even if a mail transport fails.
-    wp_safe_redirect(spek_contact_redirect_url($lang, 'success'));
+    // Newsletter opt-in is separate from the enquiry. A subscriber remains
+    // pending until they verify ownership of their email address.
+    $newsletter_status = '';
+    if ($newsletter_opt_in && function_exists('spek_newsletter_register_interest')) {
+        $newsletter_status = spek_newsletter_register_interest($email, $first_name, $last_name, $lang)
+            ? 'pending'
+            : 'mail_error';
+    }
+
+    // The enquiry itself remains subject to its separate 12-month retention.
+    $redirect = spek_contact_redirect_url($lang, 'success');
+    if ($newsletter_status !== '') {
+        $redirect = add_query_arg('newsletter_status', $newsletter_status, $redirect);
+    }
+    wp_safe_redirect($redirect);
     exit;
 }
 add_action('admin_post_nopriv_spek_contact_submit', 'spek_handle_contact_submission');
