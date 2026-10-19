@@ -171,9 +171,18 @@ $footer_columns = [
 
         <div class="site-footer__bottom-links">
             <?php get_template_part('template-parts/global/language-switcher'); ?>
-            <a href="<?php echo esc_url(spek_page_url('privacy-policy/')); ?>">
-                <?php esc_html_e('Πολιτική Απορρήτου', 'spek-theme'); ?>
-            </a>
+            <?php
+            // Only publish links after legal approval and WordPress publication.
+            $spek_legal_footer = function_exists('spek_legal_page_definitions') ? spek_legal_page_definitions() : [];
+            $spek_footer_lang = function_exists('spek_current_language') ? spek_current_language() : 'el';
+            foreach ($spek_legal_footer as $spek_legal_slug => $spek_legal_labels) :
+                $spek_legal_url = spek_legal_published_page_url($spek_legal_slug);
+                if (!$spek_legal_url) { continue; }
+            ?>
+                <a href="<?php echo esc_url($spek_legal_url); ?>">
+                    <?php echo esc_html($spek_legal_labels[$spek_footer_lang] ?? $spek_legal_labels['el']); ?>
+                </a>
+            <?php endforeach; ?>
 
             <a href="#page">
                 <?php esc_html_e('Πάνω', 'spek-theme'); ?>
