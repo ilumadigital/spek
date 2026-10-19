@@ -120,6 +120,24 @@ get_header();
                     </div>
                 <?php endif; ?>
 
+                <?php $spek_newsletter_notice = isset($_GET['newsletter_status']) ? sanitize_key(wp_unslash((string) $_GET['newsletter_status'])) : ''; ?>
+                <?php if (in_array($spek_newsletter_notice, ['pending', 'confirmed', 'unsubscribed', 'expired', 'invalid', 'mail_error'], true)) : ?>
+                    <?php
+                    $spek_newsletter_is_en = function_exists('spek_current_language') && spek_current_language() === 'en';
+                    $spek_newsletter_messages = [
+                        'pending' => $spek_newsletter_is_en ? 'Check your inbox to confirm your optional newsletter registration. No promotional emails are sent yet.' : 'Ελέγξτε το email σας για να επιβεβαιώσετε την προαιρετική εγγραφή σας. Δεν αποστέλλονται ακόμη newsletters.',
+                        'confirmed' => $spek_newsletter_is_en ? 'Your email has been confirmed for future SPEK updates.' : 'Το email σας επιβεβαιώθηκε για μελλοντικές ενημερώσεις SPEK.',
+                        'unsubscribed' => $spek_newsletter_is_en ? 'Your newsletter subscription has been removed.' : 'Η εγγραφή σας στη λίστα ενημερώσεων διαγράφηκε.',
+                        'expired' => $spek_newsletter_is_en ? 'Your confirmation link has expired. You may opt in again using the contact form.' : 'Ο σύνδεσμος επιβεβαίωσης έληξε. Μπορείτε να επιλέξετε ξανά εγγραφή μέσω της φόρμας.',
+                        'invalid' => $spek_newsletter_is_en ? 'This newsletter link is invalid or has already been used.' : 'Ο σύνδεσμος newsletter δεν είναι έγκυρος ή έχει ήδη χρησιμοποιηθεί.',
+                        'mail_error' => $spek_newsletter_is_en ? 'Your enquiry was saved, but we could not email a newsletter confirmation link. Please contact SPEK to register.' : 'Το αίτημα επικοινωνίας καταχωρίστηκε, αλλά δεν ήταν δυνατή η αποστολή επιβεβαίωσης newsletter. Επικοινωνήστε με τη SPEK αν επιθυμείτε εγγραφή.',
+                    ];
+                    ?>
+                    <div class="contact-form-notice <?php echo in_array($spek_newsletter_notice, ['invalid', 'expired', 'mail_error'], true) ? 'contact-form-notice--error' : 'contact-form-notice--success'; ?>" role="status">
+                        <?php echo esc_html($spek_newsletter_messages[$spek_newsletter_notice]); ?>
+                    </div>
+                <?php endif; ?>
+
                 <form
                     class="spek-contact-form"
                     action="<?php echo esc_url(admin_url('admin-post.php')); ?>"
@@ -279,6 +297,14 @@ get_header();
                         </div>
 
                         <div class="contact-form-card__footer">
+                            <div class="spek-contact-newsletter">
+                                <label for="spek-contact-newsletter-optin">
+                                    <input id="spek-contact-newsletter-optin" type="checkbox" name="newsletter_opt_in" value="1">
+                                    <span><?php echo esc_html(function_exists('spek_newsletter_consent_text')
+                                        ? spek_newsletter_consent_text(function_exists('spek_current_language') ? spek_current_language() : 'el')
+                                        : ''); ?></span>
+                                </label>
+                            </div>
                             <p><?php esc_html_e('Όλα τα πεδία είναι υποχρεωτικά.', 'spek-theme'); ?></p>
                             <?php $spek_privacy_link = function_exists('spek_legal_published_page_url') ? spek_legal_published_page_url('privacy-policy') : ''; ?>
                             <?php if ($spek_privacy_link) : ?>
