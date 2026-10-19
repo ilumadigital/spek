@@ -166,6 +166,11 @@ $notices = [
                     </select>
                 </div>
 
+                <div class="career-field career-field--full">
+                    <label for="career-scientific-interest"><?php echo esc_html($lang === 'en' ? 'Scientific / professional interests' : 'Επιστημονικό / επαγγελματικό ενδιαφέρον'); ?> <small><?php echo esc_html($lang === 'en' ? 'Optional' : 'Προαιρετικό'); ?></small></label>
+                    <input id="career-scientific-interest" type="text" name="scientific_interest" maxlength="250">
+                </div>
+
                 <div class="career-field">
                     <label for="career-experience"><?php esc_html_e('Έτη σχετικής εμπειρίας', 'spek-theme'); ?> <small><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></small></label>
                     <input id="career-experience" type="number" name="experience_years" min="0" max="60" step="1" inputmode="numeric">
