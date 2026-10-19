@@ -22,6 +22,7 @@ $required_files = [
     '/inc/legal-pages.php',
     '/inc/custom-post-types.php',
     '/inc/contact-submissions.php',
+    '/inc/newsletter-interest.php',
     '/inc/career-applications.php',
     '/inc/data-retention.php',
     '/inc/taxonomies.php',
