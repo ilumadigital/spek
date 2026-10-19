@@ -5,6 +5,9 @@
  */
 declare(strict_types=1);
 define('ABSPATH', __DIR__ . '/../');
+define('DAY_IN_SECONDS', 86400);
+define('MINUTE_IN_SECONDS', 60);
+define('HOUR_IN_SECONDS', 3600);
 
 $GLOBALS['spek_test_posts'] = [];
 $GLOBALS['spek_test_meta'] = [];
@@ -19,6 +22,7 @@ function add_filter(...$args): void {}
 function sanitize_email($v): string { return filter_var(trim((string) $v), FILTER_SANITIZE_EMAIL); }
 function sanitize_text_field($v): string { return trim(strip_tags((string) $v)); }
 function is_email($v): bool { return filter_var($v, FILTER_VALIDATE_EMAIL) !== false; }
+function is_wp_error($v): bool { return false; }
 function get_posts(array $q): array {
     $matches = [];
     foreach ($GLOBALS['spek_test_posts'] as $id => $p) {
