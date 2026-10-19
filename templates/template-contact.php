@@ -280,6 +280,13 @@ get_header();
 
                         <div class="contact-form-card__footer">
                             <p><?php esc_html_e('Όλα τα πεδία είναι υποχρεωτικά.', 'spek-theme'); ?></p>
+                            <?php $spek_privacy_link = function_exists('spek_legal_published_page_url') ? spek_legal_published_page_url('privacy-policy') : ''; ?>
+                            <?php if ($spek_privacy_link) : ?>
+                                <p class="spek-contact-privacy-note">
+                                    <?php echo esc_html(function_exists('spek_current_language') && spek_current_language() === 'en' ? 'We use your details to respond to your request. Please read our ' : 'Χρησιμοποιούμε τα στοιχεία σας για να απαντήσουμε στο αίτημά σας. Διαβάστε την '); ?>
+                                    <a href="<?php echo esc_url($spek_privacy_link); ?>" target="_blank" rel="noopener"><?php echo esc_html(function_exists('spek_current_language') && spek_current_language() === 'en' ? 'Privacy Policy' : 'Πολιτική Απορρήτου'); ?></a>.
+                                </p>
+                            <?php endif; ?>
 
                             <button class="button button-primary" type="submit">
                                 <?php esc_html_e('Αποστολή αιτήματος', 'spek-theme'); ?>
