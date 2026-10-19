@@ -23,12 +23,12 @@ function spek_legal_create_review_drafts(): void {
     foreach (spek_legal_page_definitions() as $slug => $titles) {
         if (get_page_by_path($slug, OBJECT, 'page')) { continue; }
 
-        $el_path = SPEK_THEME_DIR . '/legal/drafts/' . $slug . '-el.html';
-        $en_path = SPEK_THEME_DIR . '/legal/drafts/' . $slug . '-en.html';
+        $el_path = SPEK_THEME_DIR . '/legal/drafts/' . $slug . '-el.php';
+        $en_path = SPEK_THEME_DIR . '/legal/drafts/' . $slug . '-en.php';
         if (!is_readable($el_path) || !is_readable($en_path)) { continue; }
 
-        $greek = file_get_contents($el_path);
-        $english = file_get_contents($en_path);
+        $greek = require $el_path;
+        $english = require $en_path;
         if ($greek === false || $english === false) { continue; }
 
         wp_insert_post([
