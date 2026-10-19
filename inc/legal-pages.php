@@ -51,7 +51,11 @@ add_action('admin_init', 'spek_legal_create_review_drafts', 25);
 function spek_legal_published_page_url(string $slug): string {
     if (!isset(spek_legal_page_definitions()[$slug])) { return ''; }
     $page = get_page_by_path($slug, OBJECT, 'page');
-    if (!$page || $page->post_status !== 'publish') { return ''; }
+    // A published legacy policy is not automatically considered legally reviewed.
+    if (!$page || $page->post_status !== 'publish'
+        || get_post_meta($page->ID, '_spek_legal_approved', true) !== '1') {
+        return '';
+    }
     return function_exists('spek_i18n_url')
         ? spek_i18n_url(get_permalink($page))
         : get_permalink($page);
@@ -67,3 +71,55 @@ add_action('wp_enqueue_scripts', static function (): void {
         file_exists($css) ? (string) filemtime($css) : SPEK_THEME_VERSION
     );
 }, 30);
+
+
+/**
+ * Explicit editor sign-off in the page editor.
+ * Require all visible placeholder warnings to be removed from both languages.
+ */
+add_action('add_meta_boxes_page', static function (WP_Post $post): void {
+    if (!isset(spek_legal_page_definitions()[$post->post_name])) {
+        return;
+    }
+    add_meta_box(
+        'spek-legal-approval',
+        __('Έλεγχος νομικής σελίδας', 'spek-theme'),
+        static function (WP_Post $post): void {
+            if (!current_user_can('manage_options')) {
+                return;
+            }
+            wp_nonce_field('spek_legal_approval_' . $post->ID, 'spek_legal_approval_nonce');
+            $approved = get_post_meta($post->ID, '_spek_legal_approved', true) === '1';
+            echo '<p>' . esc_html__('Μόνο μετά από τελική νομική και τεχνική έγκριση και των δύο γλωσσών.', 'spek-theme') . '</p>';
+            echo '<label><input type="checkbox" name="spek_legal_approval" value="1" ' . checked($approved, true, false) . '> '
+                . esc_html__('Έγινε ο έλεγχος και εγκρίνεται η δημοσίευση', 'spek-theme') . '</label>';
+        },
+        'page',
+        'side',
+        'high'
+    );
+});
+
+add_action('save_post_page', static function (int $post_id, WP_Post $post): void {
+    if (!isset(spek_legal_page_definitions()[$post->post_name])
+        || !current_user_can('manage_options')
+        || wp_is_post_revision($post_id)) {
+        return;
+    }
+    $nonce = isset($_POST['spek_legal_approval_nonce'])
+        ? sanitize_text_field(wp_unslash((string) $_POST['spek_legal_approval_nonce']))
+        : '';
+    if (!$nonce || !wp_verify_nonce($nonce, 'spek_legal_approval_' . $post_id)) {
+        return;
+    }
+    $approved = !empty($_POST['spek_legal_approval']);
+    $english = (string) get_post_meta($post_id, '_spek_content_en', true);
+    if ($approved && strpos($post->post_content, 'spek-pending') === false
+        && $english !== '' && strpos($english, 'spek-pending') === false) {
+        update_post_meta($post_id, '_spek_legal_approved', '1');
+        update_post_meta($post_id, '_spek_legal_review_required', '0');
+    } else {
+        delete_post_meta($post_id, '_spek_legal_approved');
+        update_post_meta($post_id, '_spek_legal_review_required', '1');
+    }
+}, 20, 2);
