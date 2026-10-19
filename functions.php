@@ -19,6 +19,7 @@ $required_files = [
     '/inc/multilingual-importer.php',
     '/inc/setup.php',
     '/inc/enqueue.php',
+    '/inc/legal-pages.php',
     '/inc/custom-post-types.php',
     '/inc/contact-submissions.php',
     '/inc/career-applications.php',
