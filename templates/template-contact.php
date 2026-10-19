@@ -297,6 +297,7 @@ get_header();
                         </div>
 
                         <div class="contact-form-card__footer">
+                            <?php if (function_exists('spek_legal_published_page_url') && spek_legal_published_page_url('privacy-policy') !== '') : ?>
                             <div class="spek-contact-newsletter">
                                 <label for="spek-contact-newsletter-optin">
                                     <input id="spek-contact-newsletter-optin" type="checkbox" name="newsletter_opt_in" value="1">
@@ -305,6 +306,7 @@ get_header();
                                         : ''); ?></span>
                                 </label>
                             </div>
+                            <?php endif; ?>
                             <p><?php echo esc_html(function_exists('spek_current_language') && spek_current_language() === 'en'
                                 ? 'Enquiry fields are required; newsletter registration is optional.'
                                 : 'Τα πεδία επικοινωνίας είναι υποχρεωτικά· η εγγραφή στις ενημερώσεις είναι προαιρετική.'); ?></p>
