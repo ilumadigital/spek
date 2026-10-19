@@ -310,3 +310,37 @@ add_action('restrict_manage_posts', static function ($post_type): void {
     $url = wp_nonce_url(admin_url('admin-post.php?action=spek_newsletter_export'), 'spek_newsletter_export');
     echo '<a class="button" style="margin-left:10px" href="' . esc_url($url) . '">' . esc_html__('Export confirmed subscribers (CSV)', 'spek-theme') . '</a>';
 });
+
+
+/**
+ * Remove unconfirmed newsletter interest after 14 days. This avoids keeping
+ * unverified emails indefinitely while no provider is connected.
+ */
+function spek_newsletter_schedule_pending_cleanup(): void
+{
+    if (!wp_next_scheduled('spek_newsletter_prune_pending')) {
+        wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', 'spek_newsletter_prune_pending');
+    }
+}
+add_action('init', 'spek_newsletter_schedule_pending_cleanup', 45);
+
+add_action('spek_newsletter_prune_pending', static function (): void {
+    $expired = get_posts([
+        'post_type' => 'spek_newsletter',
+        'post_status' => 'publish',
+        'posts_per_page' => 100,
+        'fields' => 'ids',
+        'suppress_filters' => true,
+        'meta_query' => [
+            'relation' => 'AND',
+            ['key' => '_spek_newsletter_status', 'value' => 'pending'],
+            ['key' => '_spek_newsletter_opted_at_utc', 'value' => gmdate('Y-m-d H:i:s', strtotime('-14 days')), 'compare' => '<', 'type' => 'DATETIME'],
+        ],
+    ]);
+
+    foreach ($expired as $id) {
+        if (get_post_type((int) $id) === 'spek_newsletter') {
+            wp_delete_post((int) $id, true);
+        }
+    }
+});
