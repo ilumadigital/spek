@@ -390,3 +390,50 @@
         font-size: 25px;
     }
 }
+
+
+/* Optional newsletter registration: separate purpose and clear unchecked choice. */
+.contact-form-card--dynamic .contact-form-card__footer {
+    flex-wrap: wrap;
+}
+
+.contact-form-card--dynamic .spek-contact-newsletter {
+    width: 100%;
+    flex: 0 0 100%;
+    padding: 20px 22px;
+    margin-bottom: 12px;
+    border: 1px solid var(--color-border-blue, #dce8f1);
+    border-radius: 18px;
+    background: var(--color-surface-blue, #eef6fb);
+}
+
+.contact-form-card--dynamic .spek-contact-newsletter label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.65;
+    color: var(--color-ink-soft, #303841);
+    cursor: pointer;
+}
+
+.contact-form-card--dynamic .spek-contact-newsletter input[type="checkbox"] {
+    flex: 0 0 19px;
+    width: 19px;
+    height: 19px;
+    margin: 2px 0 0;
+    accent-color: var(--color-accent, #0f4c81);
+}
+
+.contact-form-card--dynamic .spek-contact-newsletter input:focus-visible {
+    outline: 3px solid var(--color-accent, #0f4c81);
+    outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+    .contact-form-card--dynamic .spek-contact-newsletter {
+        padding: 16px;
+        border-radius: 14px;
+    }
+}

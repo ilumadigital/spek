@@ -166,6 +166,11 @@ $notices = [
                     </select>
                 </div>
 
+                <div class="career-field career-field--full">
+                    <label for="career-scientific-interest"><?php echo esc_html($lang === 'en' ? 'Scientific / professional interests' : 'Επιστημονικό / επαγγελματικό ενδιαφέρον'); ?> <small><?php echo esc_html($lang === 'en' ? 'Optional' : 'Προαιρετικό'); ?></small></label>
+                    <input id="career-scientific-interest" type="text" name="scientific_interest" maxlength="250">
+                </div>
+
                 <div class="career-field">
                     <label for="career-experience"><?php esc_html_e('Έτη σχετικής εμπειρίας', 'spek-theme'); ?> <small><?php esc_html_e('Προαιρετικό', 'spek-theme'); ?></small></label>
                     <input id="career-experience" type="number" name="experience_years" min="0" max="60" step="1" inputmode="numeric">
@@ -218,6 +223,9 @@ $notices = [
         </div>
 
         <div class="career-form__privacy">
+            <p><?php echo esc_html($lang === 'en'
+                ? 'Application details and attachments are kept for up to 9 months from submission, subject to lawful exceptions.'
+                : 'Τα στοιχεία και τα συνημμένα της αίτησης διατηρούνται έως 9 μήνες από την υποβολή, με την επιφύλαξη νόμιμων εξαιρέσεων.'); ?></p>
             <label>
                 <input type="checkbox" name="privacy_ack" value="1" required>
                 <span>
@@ -233,6 +241,12 @@ $notices = [
                 </span>
             </label>
 
+            <label class="career-form__future-roles">
+                <input type="checkbox" name="future_roles_opt_in" value="1">
+                <span><?php echo esc_html($lang === 'en'
+                    ? 'Optional: I consent to consideration for related or other suitable vacancies matching my declared scientific or professional interests, within the same 9-month period. I may withdraw this consent without affecting my original application.'
+                    : 'Προαιρετικά συναινώ να εξεταστεί η αίτησή μου και για συναφείς ή άλλες κατάλληλες θέσεις βάσει των δηλωμένων επιστημονικών ή επαγγελματικών ενδιαφερόντων μου, εντός των ίδιων 9 μηνών. Μπορώ να ανακαλέσω αυτή τη συγκατάθεση χωρίς να επηρεαστεί η αρχική μου αίτηση.'); ?></span>
+            </label>
             <p><?php esc_html_e('Μην αποστέλλετε ειδικές κατηγορίες προσωπικών δεδομένων ή άλλα στοιχεία που δεν είναι απαραίτητα για την αξιολόγηση της υποψηφιότητάς σας.', 'spek-theme'); ?></p>
         </div>
 
