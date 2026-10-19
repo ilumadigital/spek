@@ -23,6 +23,7 @@ $required_files = [
     '/inc/custom-post-types.php',
     '/inc/contact-submissions.php',
     '/inc/career-applications.php',
+    '/inc/data-retention.php',
     '/inc/taxonomies.php',
     '/inc/product-metaboxes.php',
     '/inc/product-admin-list.php',
