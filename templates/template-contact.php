@@ -305,7 +305,9 @@ get_header();
                                         : ''); ?></span>
                                 </label>
                             </div>
-                            <p><?php esc_html_e('Όλα τα πεδία είναι υποχρεωτικά.', 'spek-theme'); ?></p>
+                            <p><?php echo esc_html(function_exists('spek_current_language') && spek_current_language() === 'en'
+                                ? 'Enquiry fields are required; newsletter registration is optional.'
+                                : 'Τα πεδία επικοινωνίας είναι υποχρεωτικά· η εγγραφή στις ενημερώσεις είναι προαιρετική.'); ?></p>
                             <?php $spek_privacy_link = function_exists('spek_legal_published_page_url') ? spek_legal_published_page_url('privacy-policy') : ''; ?>
                             <?php if ($spek_privacy_link) : ?>
                                 <p class="spek-contact-privacy-note">
