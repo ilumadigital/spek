@@ -1,0 +1,50 @@
+name: SPEK WordPress Legal Integration
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feature/legal-pages-review-20261019]
+jobs:
+  wordpress-smoke:
+    name: WordPress database smoke tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_DATABASE: spek_test
+          MARIADB_USER: spek
+          MARIADB_PASSWORD: spek_test_password
+          MARIADB_ROOT_PASSWORD: spek_root_test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli, pdo_mysql, mbstring, curl, zip
+      - name: Download WordPress + WP-CLI
+        run: |
+          set -eu
+          curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /tmp/wp-cli.phar
+          php /tmp/wp-cli.phar --info
+          mkdir -p /tmp/spek-wp
+          php /tmp/wp-cli.phar core download --path=/tmp/spek-wp --skip-content --allow-root
+          mkdir -p /tmp/spek-wp/wp-content/themes
+          ln -s "$GITHUB_WORKSPACE" /tmp/spek-wp/wp-content/themes/spek
+      - name: Set up disposable WordPress
+        run: |
+          set -eu
+          php /tmp/wp-cli.phar config create --path=/tmp/spek-wp --dbname=spek_test --dbuser=spek --dbpass=spek_test_password --dbhost=127.0.0.1 --skip-check --allow-root
+          php /tmp/wp-cli.phar core install --path=/tmp/spek-wp --url=http://example.test --title="SPEK WP Smoke" --admin_user=testadmin --admin_password="temporary-ci-password" --admin_email=ci@example.test --skip-email --allow-root
+          php /tmp/wp-cli.phar theme activate spek --path=/tmp/spek-wp --allow-root
+      - name: Test real WP page and submission paths (no real email)
+        run: php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/wp-legal-integration.php" --path=/tmp/spek-wp --allow-root
