@@ -524,6 +524,8 @@ function spek_career_application_details_box(WP_Post $post): void
         __('Τομέας', 'spek-theme') => $department_labels[$department] ?? __('Δεν δηλώθηκε', 'spek-theme'),
         __('Έτη εμπειρίας', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_experience_years', true),
         __('Επιστημονικό / επαγγελματικό ενδιαφέρον', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_scientific_interest', true),
+        __('Αξιολόγηση για άλλες θέσεις', 'spek-theme') => get_post_meta($post->ID, '_spek_job_future_roles_opt_in', true) === '1' ? __('Ναι', 'spek-theme') : __('Όχι', 'spek-theme'),
+        __('Επιστημονικό / επαγγελματικό ενδιαφέρον', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_scientific_interest', true),
         __('Αξιολόγηση για άλλες θέσεις', 'spek-theme') => get_post_meta($post->ID, '_spek_job_future_roles_opt_in', true) === '1' ? __('Ναι, προαιρετική συγκατάθεση', 'spek-theme') : __('Όχι', 'spek-theme'),
         __('Διαθεσιμότητα από', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_available_from', true),
         'LinkedIn' => (string) get_post_meta($post->ID, '_spek_job_linkedin', true),
