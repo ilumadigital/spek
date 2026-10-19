@@ -1,0 +1,34 @@
+/* SPEK legal information — intentional, restrained industrial editorial layout. */
+.spek-legal-page { isolation: isolate; padding-bottom: clamp(4rem, 8vw, 8rem); }
+.spek-legal-hero { padding: clamp(5rem, 8vw, 9rem) 0 clamp(3rem, 5vw, 5rem); border-bottom: 1px solid var(--color-border); }
+.spek-legal-hero__inner { max-width: 920px; }
+.spek-legal-hero .eyebrow { letter-spacing: .18em; color: var(--color-accent); font-size: .72rem; font-weight: 700; }
+.spek-legal-hero h1 { margin: 1.2rem 0 1rem; font-size: clamp(2.7rem, 5.3vw, 5.25rem); letter-spacing: -.055em; line-height: 1.08; text-wrap: balance; }
+.spek-legal-hero p { font-size: clamp(1.05rem, 1.6vw, 1.3rem); color: var(--color-muted); max-width: 760px; }
+.spek-legal-layout { display: grid; grid-template-columns: minmax(230px, 290px) minmax(0, 790px); gap: clamp(2rem, 6vw, 7rem); align-items: start; padding-top: clamp(2.5rem, 6vw, 6rem); }
+.spek-legal-sidebar { position: sticky; top: 110px; border: 1px solid var(--color-border-blue); border-radius: 20px; background: rgba(255,255,255,.9); padding: 1.45rem; }
+.spek-legal-sidebar__label { display: block; font-size: .72rem; letter-spacing: .12em; font-weight: 700; color: var(--color-muted); margin-bottom: 1rem; }
+.spek-legal-links { display: grid; gap: .35rem; }
+.spek-legal-links a { display: block; color: var(--color-ink-soft); padding: .83rem .95rem; border-radius: 10px; text-decoration: none; font-size: .95rem; transition: background .2s, color .2s; }
+.spek-legal-links a:hover, .spek-legal-links a:focus-visible { background: var(--color-accent-soft); color: var(--color-accent-dark); }
+.spek-legal-links a.is-current { background: var(--color-accent); color: white; font-weight: 700; }
+.spek-legal-contact { margin-top: 1.25rem; display: flex; justify-content: space-between; gap: .6rem; border-top: 1px solid var(--color-border); padding: 1.15rem .3rem .1rem; color: var(--color-accent); text-decoration: none; font-weight: 700; font-size: .88rem; }
+.spek-legal-article { min-width: 0; }
+.spek-legal-article__content { font-size: 1rem; color: var(--color-ink-soft); line-height: 1.85; overflow-wrap: anywhere; }
+.spek-legal-article__content h2 { color: var(--color-ink); font-size: clamp(1.38rem, 2.2vw, 1.9rem); line-height: 1.25; letter-spacing: -.03em; margin: 2.8rem 0 .8rem; scroll-margin-top: 120px; }
+.spek-legal-article__content h2:first-child { margin-top: 0; }
+.spek-legal-article__content h3 { color: var(--color-ink); font-size: 1.14rem; margin: 1.65rem 0 .65rem; }
+.spek-legal-article__content p, .spek-legal-article__content ul { margin-bottom: 1.25rem; }
+.spek-legal-article__content ul { padding-left: 1.4rem; }
+.spek-legal-article__content li { margin-bottom: .55rem; }
+.spek-legal-article__content a { color: var(--color-accent); text-underline-offset: .2em; }
+.spek-legal-article__content table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; font-size: .9rem; }
+.spek-legal-article__content th, .spek-legal-article__content td { text-align: left; vertical-align: top; padding: .9rem .7rem; border-bottom: 1px solid var(--color-border); }
+.spek-legal-review-note, .spek-legal-article__content .spek-pending { background: #fff5dc; border-left: 3px solid #a66900; padding: 1rem 1.15rem; border-radius: 0 9px 9px 0; }
+.spek-legal-review-note { font-weight: 700; font-size: .9rem; }
+.spek-legal-article__end { border-top: 1px solid var(--color-border); margin-top: 4rem; padding-top: 1.6rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem; align-items: center; font-size: .9rem; color: var(--color-muted); }
+.spek-legal-article__end a { color: var(--color-accent); font-weight: 700; text-decoration: none; }
+.spek-legal-page a:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+@media(max-width:850px) { .spek-legal-layout { grid-template-columns: 1fr; } .spek-legal-sidebar { position: static; } .spek-legal-links { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:520px) { .spek-legal-hero { padding-top: 4rem; } .spek-legal-sidebar { padding: 1rem; } .spek-legal-links { grid-template-columns: 1fr; } .spek-legal-article__content { font-size: .96rem; } }
+@media(prefers-reduced-motion: reduce) { .spek-legal-links a { transition: none; } }
