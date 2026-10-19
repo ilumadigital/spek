@@ -247,11 +247,14 @@ function spek_handle_career_application(): void
     $linkedin = isset($_POST['linkedin']) ? esc_url_raw(wp_unslash((string) $_POST['linkedin'])) : '';
     $portfolio = isset($_POST['portfolio']) ? esc_url_raw(wp_unslash((string) $_POST['portfolio'])) : '';
     $message = isset($_POST['message']) ? sanitize_textarea_field(wp_unslash((string) $_POST['message'])) : '';
+    $scientific_interest = isset($_POST['scientific_interest']) ? sanitize_text_field(wp_unslash((string) $_POST['scientific_interest'])) : '';
+    $future_roles_opt_in = !empty($_POST['future_roles_opt_in']);
     $privacy_ack = !empty($_POST['privacy_ack']);
 
     $valid_employment = ['full_time', 'part_time'];
     $valid_departments = ['', 'production', 'warehouse_logistics', 'technical', 'quality', 'sales', 'administration', 'other'];
     $message_length = function_exists('mb_strlen') ? mb_strlen($message, 'UTF-8') : strlen($message);
+    $interest_length = function_exists('mb_strlen') ? mb_strlen($scientific_interest, 'UTF-8') : strlen($scientific_interest);
 
     $resume = isset($_FILES['resume']) && is_array($_FILES['resume']) ? $_FILES['resume'] : [];
     $resume_present = !empty($resume) && (($resume['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE);
@@ -264,7 +267,8 @@ function spek_handle_career_application(): void
         && in_array($department, $valid_departments, true)
         && $privacy_ack
         && $resume_present
-        && $message_length <= 3000;
+        && $message_length <= 3000
+        && $interest_length <= 250;
 
     if (!$is_valid) {
         wp_safe_redirect(spek_career_application_redirect_url($lang, 'invalid'));
@@ -337,6 +341,9 @@ function spek_handle_career_application(): void
         '_spek_job_city'              => $city,
         '_spek_job_employment_type'   => $employment_type,
         '_spek_job_department'        => $department,
+        '_spek_job_scientific_interest' => $scientific_interest,
+        '_spek_job_future_roles_opt_in' => $future_roles_opt_in ? '1' : '0',
+        '_spek_job_future_roles_opt_in_at' => $future_roles_opt_in ? current_time('mysql', true) : '',
         '_spek_job_position_id'       => $position_id,
         '_spek_job_position_label'    => $position_label,
         '_spek_job_experience_years'  => $experience_years,
@@ -516,6 +523,8 @@ function spek_career_application_details_box(WP_Post $post): void
         __('Τύπος απασχόλησης', 'spek-theme') => $employment_type === 'part_time' ? __('Μερική απασχόληση', 'spek-theme') : __('Πλήρης απασχόληση', 'spek-theme'),
         __('Τομέας', 'spek-theme') => $department_labels[$department] ?? __('Δεν δηλώθηκε', 'spek-theme'),
         __('Έτη εμπειρίας', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_experience_years', true),
+        __('Επιστημονικό / επαγγελματικό ενδιαφέρον', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_scientific_interest', true),
+        __('Αξιολόγηση για άλλες θέσεις', 'spek-theme') => get_post_meta($post->ID, '_spek_job_future_roles_opt_in', true) === '1' ? __('Ναι, προαιρετική συγκατάθεση', 'spek-theme') : __('Όχι', 'spek-theme'),
         __('Διαθεσιμότητα από', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_available_from', true),
         'LinkedIn' => (string) get_post_meta($post->ID, '_spek_job_linkedin', true),
         __('Portfolio', 'spek-theme') => (string) get_post_meta($post->ID, '_spek_job_portfolio', true),
