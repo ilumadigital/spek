@@ -2,7 +2,7 @@
 /**
  * Real WordPress database smoke tests. Executed by:
  * wp eval-file tests/wp-legal-integration.php
- * A disposable CI database and mocked outgoing mail are required.
+ * Run manually ONLY on a disposable WordPress database with outgoing mail intercepted.
  */
 if (!defined('ABSPATH') || !function_exists('wp_set_current_user')) {
     exit(1);
