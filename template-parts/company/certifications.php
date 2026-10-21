@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
-<section class="section company-quality">
+<section class="section company-quality company-quality--overview">
     <div class="container">
         <div class="section-heading company-quality__heading" data-reveal>
             <span class="eyebrow"><?php esc_html_e('Ποιότητα', 'spek-theme'); ?></span>
@@ -40,7 +40,13 @@ if (!defined('ABSPATH')) {
                 <p><?php esc_html_e('Από το 2012 εφαρμόζεται οργανωμένη διαδικασία ανακύκλωσης ως μέρος της παραγωγικής λειτουργίας.', 'spek-theme'); ?></p>
             </article>
         </div>
+    </div>
+</section>
 
+<?php get_template_part('template-parts/company/exclusive-partnerships'); ?>
+
+<section class="section company-quality company-quality--closing">
+    <div class="container">
         <div class="company-closing" data-reveal>
             <div class="company-closing__media" aria-hidden="true">
                 <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/spek-website-factory-line-4-blue.png'); ?>" alt="" loading="lazy" decoding="async">
