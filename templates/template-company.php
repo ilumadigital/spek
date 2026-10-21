@@ -20,7 +20,6 @@ get_header();
         <?php get_template_part('template-parts/home/why-spek'); ?>
     </div>
     <?php get_template_part('template-parts/company/certifications'); ?>
-    <?php get_template_part('template-parts/company/exclusive-partnerships'); ?>
     <?php get_template_part('template-parts/company/global'); ?>
 </main>
 
