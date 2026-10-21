@@ -44,16 +44,3 @@ if (!defined('ABSPATH')) {
 </section>
 
 <?php get_template_part('template-parts/company/exclusive-partnerships'); ?>
-
-<section class="section company-quality company-quality--closing">
-    <div class="container">
-        <div class="company-closing" data-reveal>
-            <div class="company-closing__media" aria-hidden="true">
-                <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/spek-website-factory-line-4-blue.png'); ?>" alt="" loading="lazy" decoding="async">
-            </div>
-            <span><?php esc_html_e('SPEK / Από το 1990', 'spek-theme'); ?></span>
-            <h2><?php esc_html_e('Πάνω από 35 χρόνια εξέλιξης. Και συνεχίζουμε.', 'spek-theme'); ?></h2>
-            <p><?php esc_html_e('Η εμπειρία μάς έφερε μέχρι εδώ. Η διαρκής βελτίωση είναι αυτή που καθορίζει το επόμενο βήμα.', 'spek-theme'); ?></p>
-        </div>
-    </div>
-</section>
