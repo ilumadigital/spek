@@ -267,6 +267,16 @@ function spek_enqueue_assets(): void
         'Φόρτωση PDF.js…' => __('Φόρτωση PDF.js…', 'spek-theme'),
     ]);
 
+    // Load the exclusive partnerships styles only on the Company page.
+    if (is_page_template('templates/template-company.php')) {
+        wp_enqueue_style(
+            'spek-company-partnerships',
+            SPEK_THEME_URI . '/assets/css/company-partnerships.css',
+            ['spek-main'],
+            filemtime(SPEK_THEME_DIR . '/assets/css/company-partnerships.css')
+        );
+    }
+
     if (is_page_template('templates/template-careers.php')) {
         wp_enqueue_style(
             'spek-careers',
