@@ -274,15 +274,7 @@
 }
 
 
-/* Keep the partnership feature between the Quality cards and the 35+ years closing. */
+/* The partnerships section follows the four quality cards directly. */
 .spek-company-page .company-quality--overview {
     padding-bottom: 0;
-}
-
-.spek-company-page .company-quality--closing {
-    padding-top: 0;
-}
-
-.spek-company-page .company-quality--closing .company-closing {
-    margin-top: 0;
 }
